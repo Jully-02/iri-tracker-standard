@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C02CB7B8-38D7-4C17-BA64-BBC8EF4AFB3B}</ProjectGuid>
+    <Keyword>QtVS_v304</Keyword>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0</WindowsTargetPlatformVersion>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
+    <QtInstall>5.15.2_msvc2019_64</QtInstall>
+    <QtModules>core;gui;widgets</QtModules>
+    <QtBuildConfig>debug</QtBuildConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
+    <QtInstall>5.15.2_msvc2019_64</QtInstall>
+    <QtModules>core;gui;widgets</QtModules>
+    <QtBuildConfig>release</QtBuildConfig>
+  </PropertyGroup>
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  </Target>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Program Files\MySQL\MySQL Connector C++ 8.0\include;C:\Program Files\MySQL\MySQL Server 8.0\include;D:\IrisTech\Project\IriTrackerStandard\include;D:\Qt\5.15.2\msvc2019_64\include\QtSql;D:\Qt\5.15.2\msvc2019_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>C:\Program Files\IriTech\IDDK 2000 3.6.9 (x64)\Demos\Iddk2000Demo\Lib\x64;C:\Program Files\MySQL\MySQL Connector C++ 8.0\lib64;D:\IrisTech\mysql-connector-c++-9.1.0-winx64\lib64;C:\Program Files\MySQL\MySQL Server 8.0\lib;D:\IrisTech\Project\IriTrackerStandard\library\x64;D:\Qt\5.15.2\msvc2019_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Qt5Sql.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;libIriSentinel64.lib;libmysql.lib;Iddk2000.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Qt\5.15.2\msvc2019_64\include\QtSql;D:\Qt\5.15.2\msvc2019_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>D:\Qt\5.15.2\msvc2019_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Qt5Sql.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AttendanceEvent.cpp" />
+    <ClCompile Include="AttendanceEventDeleteForm.cpp" />
+    <ClCompile Include="AttendanceEventForm.cpp" />
+    <ClCompile Include="AttendanceEventRepositoryMySQL.cpp" />
+    <ClCompile Include="AttendanceEventRepositorySQLite.cpp" />
+    <ClCompile Include="BulletinBoard.cpp" />
+    <ClCompile Include="ChangeDatabase.cpp" />
+    <ClCompile Include="CustomFilterProxyModel.cpp" />
+    <ClCompile Include="CustomLineEdit.cpp" />
+    <ClCompile Include="DatabaseHelper.cpp" />
+    <ClCompile Include="Department.cpp" />
+    <ClCompile Include="DepartmentForm.cpp" />
+    <ClCompile Include="DepartmentRepositoryMySQL.cpp" />
+    <ClCompile Include="DepartmentRepositorySQLite.cpp" />
+    <ClCompile Include="EmployeeForm.cpp">
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
+    </ClCompile>
+    <ClCompile Include="Exception.cpp" />
+    <ClCompile Include="ExceptionForm.cpp" />
+    <ClCompile Include="ExceptionRepositoryMySQL.cpp" />
+    <ClCompile Include="ExceptionRepositorySQLite.cpp" />
+    <ClCompile Include="FunctionPublic.cpp" />
+    <ClCompile Include="IDatabase.cpp" />
+    <ClCompile Include="Iddk2000_features.cpp" />
+    <ClCompile Include="Iddk2000_main.cpp" />
+    <ClCompile Include="IriTracker.cpp" />
+    <ClCompile Include="Login.cpp" />
+    <ClCompile Include="Logout.cpp" />
+    <ClCompile Include="MySQLDatabase.cpp" />
+    <ClCompile Include="QMessageBoxCustom.cpp" />
+    <ClCompile Include="Role.cpp" />
+    <ClCompile Include="SetAdministratorPassword.cpp" />
+    <ClCompile Include="SQLiteDatabase.cpp" />
+    <ClCompile Include="User.cpp" />
+    <ClCompile Include="UserException.cpp" />
+    <ClCompile Include="UserRepositoryMySQL.cpp" />
+    <ClCompile Include="UserRepositorySQLite.cpp" />
+    <QtRcc Include="IriTrackerStandard.qrc" />
+    <QtUic Include="AttendanceEventDeleteForm.ui" />
+    <QtUic Include="AttendanceEventForm.ui" />
+    <QtUic Include="ChangeDatabase.ui" />
+    <QtUic Include="DepartmentForm.ui" />
+    <QtUic Include="EmployeeForm.ui" />
+    <QtUic Include="ExceptionForm.ui" />
+    <QtUic Include="IriTrackerStandard.ui" />
+    <QtMoc Include="IriTrackerStandard.h" />
+    <ClCompile Include="IriTrackerStandard.cpp" />
+    <ClCompile Include="main.cpp" />
+    <QtUic Include="Login.ui" />
+    <QtUic Include="Logout.ui" />
+    <QtUic Include="QMessageBoxCustom.ui" />
+    <QtUic Include="SetAdministratorPassword.ui" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="SetAdministratorPassword.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="Login.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="Logout.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AttendanceEvent.h" />
+    <ClInclude Include="AttendanceEventRepository.h" />
+    <ClInclude Include="AttendanceEventRepositoryMySQL.h" />
+    <ClInclude Include="AttendanceEventRepositorySQLite.h" />
+    <QtMoc Include="ChangeDatabase.h" />
+    <ClInclude Include="DepartmentRepository.h" />
+    <ClInclude Include="DepartmentRepositoryMySQL.h" />
+    <ClInclude Include="DepartmentRepositorySQLite.h" />
+    <QtMoc Include="ExceptionForm.h" />
+    <ClInclude Include="ExceptionRepository.h" />
+    <ClInclude Include="ExceptionRepositoryMySQL.h" />
+    <ClInclude Include="ExceptionRepositorySQLite.h" />
+    <ClInclude Include="IDatabase.h" />
+    <ClInclude Include="MySQLDatabase.h" />
+    <ClInclude Include="SQLiteDatabase.h" />
+    <ClInclude Include="UserRepository.h" />
+    <ClInclude Include="UserRepositoryMySQL.h" />
+    <ClInclude Include="UserRepositorySQLite.h" />
+    <QtMoc Include="AttendanceEventForm.h" />
+    <QtMoc Include="AttendanceEventDeleteForm.h" />
+    <ClInclude Include="BulletinBoard.h" />
+    <QtMoc Include="CustomFilterProxyModel.h" />
+    <QtMoc Include="CustomLineEdit.h" />
+    <ClInclude Include="DatabaseHelper.h" />
+    <ClInclude Include="Department.h" />
+    <ClInclude Include="Exception.h" />
+    <ClInclude Include="FunctionPublic.h" />
+    <QtMoc Include="QMessageBoxCustom.h" />
+    <QtMoc Include="IriTracker.h" />
+    <ClInclude Include="Role.h" />
+    <ClInclude Include="User.h" />
+    <ClInclude Include="UserException.h" />
+    <QtMoc Include="EmployeeForm.h" />
+    <QtMoc Include="DepartmentForm.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

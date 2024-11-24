@@ -1,0 +1,385 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>qml;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>qrc;rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Translation Files">
+      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
+      <Extensions>ts</Extensions>
+    </Filter>
+    <Filter Include="Models">
+      <UniqueIdentifier>{b90d00e9-b536-4764-9b41-b191b3617482}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controllers">
+      <UniqueIdentifier>{a446793d-f66b-4538-88d3-e8691e1df57e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Models\Header Files">
+      <UniqueIdentifier>{792f4b2f-0ae2-4f21-8303-1c3c651134a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Models\Source Files">
+      <UniqueIdentifier>{d9c7d172-7c12-4ee3-82f2-09d6a83d01fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Views">
+      <UniqueIdentifier>{012a202e-98f4-4c4e-8f3e-23866c52f573}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Views\Forms">
+      <UniqueIdentifier>{6a79984e-c53f-4696-aa6d-299b51890c5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Views\Auth">
+      <UniqueIdentifier>{3a1be15c-16de-4aa3-a619-8a06934cd3c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Databases">
+      <UniqueIdentifier>{2afdbc78-dcb0-448c-ac40-9cfa5e101544}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controllers\Header Files">
+      <UniqueIdentifier>{8965fefd-2f8e-4915-aadc-14fac229658c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controllers\Source Files">
+      <UniqueIdentifier>{e29d56c5-da6d-47d0-9ad0-950ba8f706e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Databases\Header Files">
+      <UniqueIdentifier>{0f69418d-b7a6-4d6f-9088-bb232bfe32cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Databases\Source Files">
+      <UniqueIdentifier>{eae8304c-ac47-419f-8b30-26a1cc44747a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{a287ee33-7a88-4cba-a2e6-596efb0109aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Header Files">
+      <UniqueIdentifier>{bc53fe04-f23d-4dea-91b3-eb841af0eb51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Source Files">
+      <UniqueIdentifier>{da438f6f-6528-4322-beee-54abde05f60b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controllers\Header Files\Custome Filter">
+      <UniqueIdentifier>{bda2fa34-10df-4f1d-9cd1-d99b7ee948e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controllers\Source Files\Custom Filter">
+      <UniqueIdentifier>{4dbcb0e2-4aee-497a-8e87-a55e7192245f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Repositories">
+      <UniqueIdentifier>{aa4eac5e-1d66-47da-80cb-e13d332b9cfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Repositories\Header Files">
+      <UniqueIdentifier>{1c54750b-e039-408e-9bc0-3c6f31127aac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Repositories\Source Files">
+      <UniqueIdentifier>{45638089-5b4c-4511-a9a9-537cd1710859}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Repositories\MySQL">
+      <UniqueIdentifier>{8ed9744c-010e-4c22-b04d-c64d2358db3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Repositories\SQLite">
+      <UniqueIdentifier>{8138bbf1-3e49-4bf5-a80a-23482ec1e0ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Repositories\MySQL\Header Files">
+      <UniqueIdentifier>{73e9a5c7-4da0-4f65-9703-e92cb4ccfd57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Repositories\MySQL\Source Files">
+      <UniqueIdentifier>{b0a40108-8e9d-4538-aabe-19f9e502aaf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Repositories\SQLite\Header Files">
+      <UniqueIdentifier>{8ae6a899-c0bb-4e4d-8ee3-5fce5aff51cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Repositories\SQLite\Source Files">
+      <UniqueIdentifier>{b7d1df63-65cf-478a-93d8-12846580f87c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Repositories\Header Files\Repository Models">
+      <UniqueIdentifier>{7b11b437-5eee-4a5c-826a-8013dd3cfcdb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controllers\Header Files\Forms">
+      <UniqueIdentifier>{42a92748-4775-4701-9a33-9e548075d4cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controllers\Source Files\Forms">
+      <UniqueIdentifier>{8c27c685-4679-4c9a-8ee6-bf960d9279d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IriTracker">
+      <UniqueIdentifier>{df79f51a-be29-41d3-8268-dbbb11a9339c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IriTracker\Header Files">
+      <UniqueIdentifier>{8e8ffaf9-d3fe-4b29-99f1-e0a2d42f8cd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IriTracker\Source Files">
+      <UniqueIdentifier>{e11801d4-0845-4bb9-ad64-76c1fb8446e8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="IriTrackerStandard.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseHelper.cpp">
+      <Filter>Databases\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Login.cpp">
+      <Filter>Controllers\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Logout.cpp">
+      <Filter>Controllers\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IriTrackerStandard.cpp">
+      <Filter>Controllers\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SetAdministratorPassword.cpp">
+      <Filter>Controllers\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Role.cpp">
+      <Filter>Models\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Department.cpp">
+      <Filter>Models\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Exception.cpp">
+      <Filter>Models\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletinBoard.cpp">
+      <Filter>Models\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AttendanceEvent.cpp">
+      <Filter>Models\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="User.cpp">
+      <Filter>Models\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UserException.cpp">
+      <Filter>Models\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionPublic.cpp">
+      <Filter>Utils\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomLineEdit.cpp">
+      <Filter>Controllers\Source Files\Custom Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomFilterProxyModel.cpp">
+      <Filter>Controllers\Source Files\Custom Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="QMessageBoxCustom.cpp">
+      <Filter>Controllers\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IDatabase.cpp">
+      <Filter>Repositories\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AttendanceEventRepositoryMySQL.cpp">
+      <Filter>Repositories\MySQL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DepartmentRepositoryMySQL.cpp">
+      <Filter>Repositories\MySQL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UserRepositoryMySQL.cpp">
+      <Filter>Repositories\MySQL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AttendanceEventRepositorySQLite.cpp">
+      <Filter>Repositories\SQLite\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DepartmentRepositorySQLite.cpp">
+      <Filter>Repositories\SQLite\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UserRepositorySQLite.cpp">
+      <Filter>Repositories\SQLite\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MySQLDatabase.cpp">
+      <Filter>Repositories\MySQL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SQLiteDatabase.cpp">
+      <Filter>Repositories\SQLite\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AttendanceEventDeleteForm.cpp">
+      <Filter>Controllers\Source Files\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="AttendanceEventForm.cpp">
+      <Filter>Controllers\Source Files\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="DepartmentForm.cpp">
+      <Filter>Controllers\Source Files\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="EmployeeForm.cpp">
+      <Filter>Controllers\Source Files\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="ChangeDatabase.cpp">
+      <Filter>Controllers\Source Files\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="ExceptionForm.cpp">
+      <Filter>Controllers\Source Files\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="ExceptionRepositoryMySQL.cpp">
+      <Filter>Repositories\MySQL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExceptionRepositorySQLite.cpp">
+      <Filter>Repositories\SQLite\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IriTracker.cpp">
+      <Filter>IriTracker\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Iddk2000_main.cpp">
+      <Filter>IriTracker\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Iddk2000_features.cpp">
+      <Filter>IriTracker\Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="IriTrackerStandard.h">
+      <Filter>Controllers\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Logout.h">
+      <Filter>Controllers\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Login.h">
+      <Filter>Controllers\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SetAdministratorPassword.h">
+      <Filter>Controllers\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CustomLineEdit.h">
+      <Filter>Controllers\Header Files\Custome Filter</Filter>
+    </QtMoc>
+    <QtMoc Include="CustomFilterProxyModel.h">
+      <Filter>Controllers\Header Files\Custome Filter</Filter>
+    </QtMoc>
+    <QtMoc Include="QMessageBoxCustom.h">
+      <Filter>Controllers\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AttendanceEventForm.h">
+      <Filter>Controllers\Header Files\Forms</Filter>
+    </QtMoc>
+    <QtMoc Include="AttendanceEventDeleteForm.h">
+      <Filter>Controllers\Header Files\Forms</Filter>
+    </QtMoc>
+    <QtMoc Include="DepartmentForm.h">
+      <Filter>Controllers\Header Files\Forms</Filter>
+    </QtMoc>
+    <QtMoc Include="EmployeeForm.h">
+      <Filter>Controllers\Header Files\Forms</Filter>
+    </QtMoc>
+    <QtMoc Include="ChangeDatabase.h">
+      <Filter>Controllers\Header Files\Forms</Filter>
+    </QtMoc>
+    <QtMoc Include="ExceptionForm.h" />
+    <QtMoc Include="IriTracker.h">
+      <Filter>IriTracker\Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="IriTrackerStandard.ui">
+      <Filter>Views</Filter>
+    </QtUic>
+    <QtUic Include="DepartmentForm.ui">
+      <Filter>Views\Forms</Filter>
+    </QtUic>
+    <QtUic Include="EmployeeForm.ui">
+      <Filter>Views\Forms</Filter>
+    </QtUic>
+    <QtUic Include="Logout.ui">
+      <Filter>Views\Auth</Filter>
+    </QtUic>
+    <QtUic Include="Login.ui">
+      <Filter>Views\Auth</Filter>
+    </QtUic>
+    <QtUic Include="SetAdministratorPassword.ui">
+      <Filter>Views\Auth</Filter>
+    </QtUic>
+    <QtUic Include="AttendanceEventForm.ui">
+      <Filter>Views\Forms</Filter>
+    </QtUic>
+    <QtUic Include="AttendanceEventDeleteForm.ui">
+      <Filter>Views\Forms</Filter>
+    </QtUic>
+    <QtUic Include="QMessageBoxCustom.ui">
+      <Filter>Views\Forms</Filter>
+    </QtUic>
+    <QtUic Include="ChangeDatabase.ui">
+      <Filter>Views\Forms</Filter>
+    </QtUic>
+    <QtUic Include="ExceptionForm.ui">
+      <Filter>Views\Forms</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DatabaseHelper.h">
+      <Filter>Databases\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Role.h">
+      <Filter>Models\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Department.h">
+      <Filter>Models\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Exception.h">
+      <Filter>Models\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletinBoard.h">
+      <Filter>Models\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AttendanceEvent.h">
+      <Filter>Models\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="User.h">
+      <Filter>Models\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UserException.h">
+      <Filter>Models\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionPublic.h">
+      <Filter>Utils\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IDatabase.h">
+      <Filter>Repositories\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MySQLDatabase.h">
+      <Filter>Repositories\MySQL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SQLiteDatabase.h">
+      <Filter>Repositories\SQLite\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UserRepository.h">
+      <Filter>Repositories\Header Files\Repository Models</Filter>
+    </ClInclude>
+    <ClInclude Include="DepartmentRepository.h">
+      <Filter>Repositories\Header Files\Repository Models</Filter>
+    </ClInclude>
+    <ClInclude Include="AttendanceEventRepository.h">
+      <Filter>Repositories\Header Files\Repository Models</Filter>
+    </ClInclude>
+    <ClInclude Include="UserRepositoryMySQL.h">
+      <Filter>Repositories\MySQL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DepartmentRepositoryMySQL.h">
+      <Filter>Repositories\MySQL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AttendanceEventRepositoryMySQL.h">
+      <Filter>Repositories\MySQL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UserRepositorySQLite.h">
+      <Filter>Repositories\SQLite\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DepartmentRepositorySQLite.h">
+      <Filter>Repositories\SQLite\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AttendanceEventRepositorySQLite.h">
+      <Filter>Repositories\SQLite\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExceptionRepository.h">
+      <Filter>Repositories\Header Files\Repository Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ExceptionRepositoryMySQL.h">
+      <Filter>Repositories\MySQL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExceptionRepositorySQLite.h">
+      <Filter>Repositories\SQLite\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
