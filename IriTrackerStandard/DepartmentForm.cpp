@@ -56,7 +56,10 @@ void DepartmentForm::btnOkClicked() {
 
 	bool success = false;
 
-	Department department = Department(departmentId, name, desc);
+	Department department;
+	department.setDepartmentId(departmentId);
+	department.setName(name);
+	department.setDesc(desc);
 
 	if (currentAction == "Add") {
 		success = DatabaseHelper::getDatabaseInstance()->getDepartmentRepository()->insert(department);

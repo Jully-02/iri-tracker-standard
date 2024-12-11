@@ -116,9 +116,6 @@
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DatabaseHelper.cpp">
       <Filter>Databases\Source Files</Filter>
     </ClCompile>
@@ -227,6 +224,36 @@
     <ClCompile Include="Iddk2000_features.cpp">
       <Filter>IriTracker\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ChangePassword.cpp">
+      <Filter>Controllers\Source Files\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="AssignmentExceptionForm.cpp">
+      <Filter>Controllers\Source Files\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletinBoardForm.cpp">
+      <Filter>Controllers\Source Files\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletinBoardRepositoryMySQL.cpp">
+      <Filter>Repositories\MySQL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletinBoardRepositorySQLite.cpp">
+      <Filter>Repositories\SQLite\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UserBulletinBoard.cpp">
+      <Filter>Models\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UserBulletinBoardRepositorySQLite.cpp">
+      <Filter>Repositories\SQLite\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UserBulletinBoardRepositoryMySQL.cpp">
+      <Filter>Repositories\MySQL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EmployeeBulletins.cpp">
+      <Filter>Controllers\Source Files\Forms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="IriTrackerStandard.h">
@@ -265,9 +292,23 @@
     <QtMoc Include="ChangeDatabase.h">
       <Filter>Controllers\Header Files\Forms</Filter>
     </QtMoc>
-    <QtMoc Include="ExceptionForm.h" />
     <QtMoc Include="IriTracker.h">
       <Filter>IriTracker\Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ChangePassword.h">
+      <Filter>Controllers\Header Files\Forms</Filter>
+    </QtMoc>
+    <QtMoc Include="ExceptionForm.h">
+      <Filter>Controllers\Header Files\Forms</Filter>
+    </QtMoc>
+    <QtMoc Include="AssignmentExceptionForm.h">
+      <Filter>Controllers\Header Files\Forms</Filter>
+    </QtMoc>
+    <QtMoc Include="BulletinBoardForm.h">
+      <Filter>Controllers\Header Files\Forms</Filter>
+    </QtMoc>
+    <QtMoc Include="EmployeeBulletins.h">
+      <Filter>Controllers\Header Files\Forms</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -302,6 +343,18 @@
       <Filter>Views\Forms</Filter>
     </QtUic>
     <QtUic Include="ExceptionForm.ui">
+      <Filter>Views\Forms</Filter>
+    </QtUic>
+    <QtUic Include="ChangePassword.ui">
+      <Filter>Views\Forms</Filter>
+    </QtUic>
+    <QtUic Include="AssignmentExceptionForm.ui">
+      <Filter>Views\Forms</Filter>
+    </QtUic>
+    <QtUic Include="BulletinBoardForm.ui">
+      <Filter>Views\Forms</Filter>
+    </QtUic>
+    <QtUic Include="EmployeeBulletins.ui">
       <Filter>Views\Forms</Filter>
     </QtUic>
   </ItemGroup>
@@ -380,6 +433,27 @@
     </ClInclude>
     <ClInclude Include="ExceptionRepositorySQLite.h">
       <Filter>Repositories\SQLite\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletinBoardRepository.h">
+      <Filter>Repositories\Header Files\Repository Models</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletinBoardRepositoryMySQL.h">
+      <Filter>Repositories\MySQL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletinBoardRepositorySQLite.h">
+      <Filter>Repositories\SQLite\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UserBulletinBoard.h">
+      <Filter>Models\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UserBulletinBoardRepository.h">
+      <Filter>Repositories\Header Files\Repository Models</Filter>
+    </ClInclude>
+    <ClInclude Include="UserBulletinBoardRepositorySQLite.h">
+      <Filter>Repositories\SQLite\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UserBulletinBoardRepositoryMySQL.h">
+      <Filter>Repositories\MySQL\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

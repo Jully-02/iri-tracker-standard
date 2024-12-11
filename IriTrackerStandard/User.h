@@ -17,7 +17,7 @@ public:
     User();
     User(const QString& userId, const QString& firstName, const QString& lastName, bool isPassword, const QString& password,
         const QString& dateOfBirth, qint64 startWorkingDate, bool isActive, const QByteArray& avatar,
-        const QString& email, const QString& phone, const QString& cellPhone, const QString& address, const QString& eyeRight, const QString& eyeLeft,
+        const QString& email, const QString& phone, const QString& cellPhone, const QString& address, const QByteArray& eyeRight, const QByteArray& eyeLeft,
         const QDateTime& createdAt, const QDateTime& updatedAt, int departmentId, int roleId);
 
     // Getters and Setters
@@ -60,11 +60,11 @@ public:
     QString getAddress() const;
     void setAddress(const QString& address);
 
-    QString getEyeRight() const;
-    void setEyeRight(const QString& eyeRight);
+    QByteArray getEyeRight() const;
+    void setEyeRight(const QByteArray& eyeRight);
 
-    QString getEyeLeft() const;
-    void setEyeLeft(const QString& eyeLeft);
+    QByteArray getEyeLeft() const;
+    void setEyeLeft(const QByteArray& eyeLeft);
 
     QDateTime getCreatedAt() const;
     void setCreatedAt(const QDateTime& createdAt);
@@ -92,8 +92,8 @@ private:
     QString m_phone;
     QString m_cellPhone;
     QString m_address;
-    QString m_eyeRight;
-    QString m_eyeLeft;
+    QByteArray m_eyeRight;
+    QByteArray m_eyeLeft;
     QDateTime m_createdAt;
     QDateTime m_updatedAt;
     int m_departmentId;

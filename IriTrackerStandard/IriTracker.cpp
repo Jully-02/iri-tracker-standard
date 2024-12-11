@@ -7,20 +7,295 @@
 #include <utility>
 #include "Iddk2000_features.h"
 #include "IriLivenessBase.h"
+#include <QThread>
+#include "IriTrackerStandard.h"
 
 IriTracker::IriTracker()
 {
+
 }
 
-void IriTracker::get_divice() {
-	get_device_handle_custom();
+void IriTracker::changedScreen(int index) {
+	qDebug() << "Screen Index: " << index;
+	currentScreenIndex = index;
 }
 
-void IriTracker::run()
+void IriTracker::get_device() {
+	//IriTrackerStandard* iriTrackerStandard = new IriTrackerStandard();
+	//connect(iriTrackerStandard, &IriTrackerStandard::screenIndexOpened, this, &IriTracker::changedScreen);
+	/*get_device_handle_custom();*/
+	int i = 0;
+	int option = -1;
+	IddkConfig config;
+	IddkResult iRet = IDDK_OK;
+	unsigned int baudrate = 115200;
+	const char** ppDeviceDescs = NULL;
+	int nDeviceCnt = 0;
+	char buffer[256];
+
+	bool flagCheckOpen = false;
+
+	/* We should get the current configuration before setting new one */
+	iRet = Iddk_GetSdkConfig(&config);
+	if (iRet != IDDK_OK)
+	{
+		/* Oops ! Something wrong happens */
+		goto RETSEC;
+	}
+
+	/* Now we check the configuration of the currently attached device to change the SDK configuration accordingly */
+	config.commStd = IDDK_COMM_USB;
+	//g_isUsbDevice = true;
+
+	// Reset device
+	config.resetOnOpenDevice = 1;
+
+	/* Set new SDK configuration */
+	iRet = Iddk_SetSdkConfig(&config);
+	if (iRet != IDDK_OK)
+	{
+		printf("\nFailed to set new configuration !\n");
+		goto RETSEC;
+	}
+
+	/* Now, we can open the device and retrieve the handle */
+	/* If USB, we should scan devices first */
+	while (true) {
+		QThread::sleep(3);
+		printf("\nScan devices ... ");
+		qDebug("\nScan devices ... ");
+		iRet = Iddk_ScanDevices(&ppDeviceDescs, &nDeviceCnt);
+		if (iRet != IDDK_OK)
+		{
+			if (iRet == IDDK_DEVICE_NOT_FOUND)
+			{
+				printf("No IriTech devices found.\n");
+			}
+			emit onOpenDevice(false);
+			goto RETSEC;
+		}
+		printf("%d device(s) found !\n", nDeviceCnt);
+		for (i = 0; i < nDeviceCnt; i++)
+		{
+			printf("\t%d. %s\n", i + 1, ppDeviceDescs[i]);
+		}
+
+		/* Open the first found device */
+		printf("\nOpen device %s ... ", ppDeviceDescs[0]);
+		if (!flagCheckOpen) {
+			iRet = Iddk_OpenDevice(ppDeviceDescs[0], &g_hDevice);
+			flagCheckOpen = true;
+		}
+		if (iRet == IDDK_OK)
+		{
+			printf("done.\n");
+			// check type of device is monocular or binocular
+			IddkDeviceInfo deviceInfo;
+			if (IDDK_OK == Iddk_GetDeviceInfo(g_hDevice, &deviceInfo))
+			{
+				g_isBinocular = deviceInfo.isBinocular;
+			}
+			emit onOpenDevice(true);
+			continue;
+		}
+		else
+		{
+			flagCheckOpen = false;
+			emit onOpenDevice(false);
+			continue;
+		}
+
+	RETSEC:
+		if (iRet != IDDK_OK)
+		{
+			handle_error(iRet);
+		}
+
+		reset_error_level(iRet);
+	}
+
+}
+
+bool check_image_quality_custom(bool forEnrollment, bool& isGrayZone, int& numAcceptableEyes)
 {
-	bool bDefaultParams = false;
-	bool bMultiple = true;
-	bool bProcessResult = true;
+	bool bRet = false;
+	IddkIrisQuality* pQualities = NULL;
+	int nQualityCount = 0;
+	numAcceptableEyes = 0;
+	int nBadTotalScore = forEnrollment ? 50 : 30;
+	int nBadUsableArea = forEnrollment ? 50 : 30;
+	int nGoodTotalScore = 70;
+	int nGoodUsableArea = 70;
+
+	IddkResult iRet = Iddk_GetResultQuality(g_hDevice, &pQualities, &nQualityCount);
+
+	if (iRet == IDDK_OK || iRet == IDDK_SE_LEFT_FRAME_UNQUALIFIED || iRet == IDDK_SE_RIGHT_FRAME_UNQUALIFIED)
+	{
+		if (forEnrollment)
+		{
+			// at least one eye's quality is in grayzone
+			isGrayZone = ((pQualities[RIGHT_EYE_IDX].totalScore > nBadTotalScore && pQualities[RIGHT_EYE_IDX].usableArea > nBadUsableArea
+				&& (pQualities[RIGHT_EYE_IDX].totalScore <= nGoodTotalScore || pQualities[RIGHT_EYE_IDX].usableArea <= nGoodUsableArea))
+				|| (pQualities[LEFT_EYE_IDX].totalScore > nBadTotalScore && pQualities[LEFT_EYE_IDX].usableArea > nBadUsableArea
+					&& (pQualities[LEFT_EYE_IDX].totalScore <= nGoodTotalScore || pQualities[LEFT_EYE_IDX].usableArea <= nGoodUsableArea)));
+		}
+		else
+		{
+			//For verification there is no grayzone, just one threshold (30) 
+			isGrayZone = false;
+		}
+
+		// number of eyes with acceptable quality (not bad)
+		if (pQualities[RIGHT_EYE_IDX].totalScore > nBadTotalScore && pQualities[RIGHT_EYE_IDX].usableArea > nBadUsableArea)
+			numAcceptableEyes++;
+
+		if (pQualities[LEFT_EYE_IDX].totalScore > nBadTotalScore && pQualities[LEFT_EYE_IDX].usableArea > nBadUsableArea)
+			numAcceptableEyes++;
+
+		if (numAcceptableEyes == 0)
+		{
+			//Clear all captured iris images in the camera device
+			Iddk_ClearCapture(g_hDevice, IDDK_UNKNOWN_EYE);
+			printf("\nNo captured iris image has acceptable quality for the %s. Please try to capture your iris(es) again!\n", forEnrollment ? "enrollment" : "matching");
+			bRet = false;
+			goto RETSEC;
+		}
+
+		if (g_isBinocular)
+		{
+			if (iRet != IDDK_SE_RIGHT_FRAME_UNQUALIFIED && (pQualities[RIGHT_EYE_IDX].totalScore <= nBadTotalScore || pQualities[RIGHT_EYE_IDX].usableArea <= nBadUsableArea))
+			{
+				// clear right eye
+				if (Iddk_ClearCapture(g_hDevice, IDDK_RIGHT_EYE))
+				{
+					bRet = false;
+					goto RETSEC;
+				}
+				printf("\nThe right iris image has bad quality. It was cleared!\n");
+			}
+			if (iRet != IDDK_SE_LEFT_FRAME_UNQUALIFIED && (pQualities[LEFT_EYE_IDX].totalScore <= nBadTotalScore || pQualities[LEFT_EYE_IDX].usableArea <= nBadUsableArea))
+			{
+				// clear left eye
+				if (Iddk_ClearCapture(g_hDevice, IDDK_LEFT_EYE))
+				{
+					bRet = false;
+					goto RETSEC;
+				}
+				printf("\nThe left iris image has bad quality. It was cleared!\n");
+			}
+		}
+	}
+	else
+	{
+		handle_error(iRet);
+		goto RETSEC;
+	}
+	bRet = true;
+RETSEC:
+	reset_error_level(iRet);
+	return bRet;
+}
+
+void clear_capture_custom()
+{
+	IddkResult iRet = IDDK_OK;
+	// default to clear both captured eyes for binocular device
+	iRet = Iddk_ClearCapture(g_hDevice, IDDK_UNKNOWN_EYE);
+	if (iRet == IDDK_OK)
+	{
+		//printf("Clear capture successfully\n");
+	}
+	else
+	{
+		printf("Clear capture failed \n");
+		handle_error(iRet);
+	}
+}
+
+bool process_matching_result_custom(float distance, char* enrollID)
+{
+	//Success case
+	if (distance <= 1.0f)//Match
+	{
+		if (enrollID)
+			printf("\nMatched with '%s'!!!\n", enrollID);
+		else
+			printf("\nMatched!!!\n");
+		return true;
+	}
+	else if (distance > 1.1f)// Non-match
+	{
+		printf("\nNo match found!\n");
+	}
+	else//greyzone
+	{
+		// Grey Zone: we are not sure about the result due to bad image quality, users should make a capture again ...
+		printf("The quality of this image may be not good enough.\r\nPlease re-capture another image and try again!\n");
+	}
+	return false;
+}
+
+bool IriTracker::compare_templates_custom(int dataSize, unsigned char* data)
+{
+	char templateFile[256];
+	float compareDis = 1000.0f;
+	float minDis = 3.0f;
+	int nComparisonResults = 0;
+	IddkComparisonResult* pComparisonResults = NULL;
+	IddkResult iRet = IDDK_OK;
+	int option = 0;
+	IddkCaptureStatus captureStatus = IDDK_IDLE;
+	char enrollID[255];
+	int i = 0;
+	IddkDataBuffer pEnrollTemplate;
+	char temp[256];
+	char minEnrollID[32];
+	/* Compare1N */
+	char sMaxDistance[100];
+	// default maxDistance = 0: return all distances
+	float fMaxDistance = 0;
+	nComparisonResults = 0;
+	pComparisonResults = NULL;
+
+	/* Init */
+	pEnrollTemplate.data = data;
+	pEnrollTemplate.dataSize = dataSize;
+
+	printf("Compare the captured iris image with the specified template...");
+	iRet = Iddk_Compare11WithTemplate(g_hDevice, &pEnrollTemplate, &compareDis);
+	if (iRet == IDDK_OK)
+	{
+		printf("done.");
+		printf("\n\tCompare Distance = %f\n", compareDis);
+
+		bool isMatch = process_matching_result_custom(compareDis, NULL);
+
+		if (isMatch) {
+			clear_capture_custom();
+			return true;
+		}
+	}
+	else if (iRet == IDDK_GAL_EMPTY)
+	{
+		printf("No match found. The gallery is empty !\n");
+	}
+	else if (iRet == IDDK_SE_NO_QUALIFIED_FRAME)
+	{
+		printf("Failed. No qualified image!\n");
+
+	}
+	else
+	{
+		printf("Failed.\n");
+		handle_error(iRet);
+	}
+	reset_error_level(iRet);
+	clear_capture_custom();
+	return false;
+}
+
+void IriTracker::run(bool bDefaultParams, bool bMultiple, bool bProcessResult)
+{
 	/* For streaming images */
 	IddkImage* pImages = NULL;
 	int nMaxEyeSubtypes = 0;
@@ -46,7 +321,7 @@ void IriTracker::run()
 	IddkIrisQuality* pQualities;
 	int nQualityCount = 0;
 
-	qDebug() << "hello CC nè";
+
 	/* We have to init camera first */
 	printf("\nInit Camera: \n");
 	iRet = Iddk_InitCamera(g_hDevice, &imageWidth, &imageHeight);
@@ -70,15 +345,15 @@ void IriTracker::run()
 		times++;
 
 		/* Ask user to fill in all parameters again */
-//		if (!bDefaultParams)
-//		{
-//			prepare_param_for_capturing(captureMode, qualityMode, eyeSubtype, autoLeds, iCount);
-//		}
+		if (!bDefaultParams)
+		{
+			prepare_param_for_capturing(captureMode, qualityMode, eyeSubtype, autoLeds, iCount);
+		}
 
 		/* Now, we capture user's eyes */
 		printf("\nPut your eyes in front of the camera\n");
 		iRet = Iddk_StartCapture(g_hDevice, captureMode, iCount, qualityMode, IDDK_AUTO_CAPTURE, eyeSubtype, autoLeds, NULL, NULL);
-		
+
 
 #ifdef _MSC_VER
 		/******************************************************************************************/
@@ -123,7 +398,12 @@ void IriTracker::run()
 					// Your code to process stream image.
 					// 230523
 					//////////////////////////////////////////////////////////////////////
-					emit imageProcessed(pImages->imageData, pImages->imageDataLen, pImages->imageWidth, pImages->imageHeight);
+	/*				if (currentScreenIndex == 5) {*/
+						emit imageProcessedForInOut(pImages->imageData, pImages->imageDataLen, pImages->imageWidth, pImages->imageHeight);
+					//}
+					//else {
+						emit imageProcessed(pImages->imageData, pImages->imageDataLen, pImages->imageWidth, pImages->imageHeight);
+					//}
 				}
 				//If the stream image is not allowed by device configuration
 				else if (iRet == IDDK_DEV_FUNCTION_DISABLED)
@@ -159,7 +439,13 @@ void IriTracker::run()
 				else if (captureStatus == IDDK_COMPLETE)
 				{
 					/* capture has finished */
+					//if (currentScreenIndex == 5) {
+						emit resultTemplateForInOut();
+					//}
 					bRun = false;
+					if (bDefaultParams == true) {
+						return;
+					}
 				}
 				else if (captureStatus == IDDK_ABORT)
 				{
@@ -267,8 +553,9 @@ void IriTracker::run()
 			//get_result_ISO_image(times);
 
 			/* Get the result template */
-			QString pathTemplate = get_result_template_custom(timestamp);
-			emit resultTemplate(pathTemplate);
+			IddkDataBuffer pathTemplate = get_result_template_custom(timestamp);
+			emit resultTemplate(pathTemplate.data, pathTemplate.dataSize);
+
 			return;
 		}
 

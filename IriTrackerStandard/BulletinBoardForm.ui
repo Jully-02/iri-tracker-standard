@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BulletinBoardFormClass</class>
+ <widget class="QWidget" name="BulletinBoardFormClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>534</width>
+    <height>616</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>BulletinBoardForm</string>
+  </property>
+  <widget class="QWidget" name="formLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>511</width>
+     <height>541</height>
+    </rect>
+   </property>
+   <layout class="QFormLayout" name="formLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="titleLabel">
+      <property name="text">
+       <string>Title (*)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="titleLineEdit"/>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="contentLabel">
+      <property name="text">
+       <string>Content (*)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="startDateLabel">
+      <property name="text">
+       <string>Start date</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QDateEdit" name="startDateEdit">
+      <property name="calendarPopup">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QDateEdit" name="endDateEdit">
+      <property name="calendarPopup">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="endDateLabel">
+      <property name="text">
+       <string>End date</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QCheckBox" name="activatedCheckbox">
+      <property name="text">
+       <string>Activated</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QCheckBox" name="highPriorityCheckbox">
+      <property name="text">
+       <string>High priority</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="toEmployeeLabel">
+      <property name="text">
+       <string>To employee</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QTextEdit" name="contentTextEdit"/>
+    </item>
+    <item row="6" column="1">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QRadioButton" name="allRadio">
+        <property name="text">
+         <string>All</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="departmentRadio">
+        <property name="text">
+         <string>Department</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="departmentComboBox">
+        <property name="maximumSize">
+         <size>
+          <width>400</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LayoutDirection::RightToLeft</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QFormLayout" name="formLayout_3">
+        <item row="0" column="0">
+         <widget class="QRadioButton" name="selectionRadio">
+          <property name="text">
+           <string>Selection</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="filterEmployee">
+          <property name="placeholderText">
+           <string>Filter</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QTableWidget" name="employeeTable">
+          <property name="styleSheet">
+           <string notr="true">QTableWidget {
+	background: transparent;
+}
+
+QHeaderView::section {	
+	color: white; 
+	background-color: rgba(70, 133, 210, 1);
+}
+
+QTableWidget::item:selected {
+    background-color: #0e6c96;
+	color: #fff;
+}</string>
+          </property>
+          <column>
+           <property name="text">
+            <string/>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Employees</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QPushButton" name="btnOk">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>560</y>
+     <width>80</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	text-align: center;
+	color: #fff;
+	background-color: rgba(70, 133, 210, 1);
+	border-radius: 4px;
+}
+
+QPushButton:hover {
+	background-color: rgba(70, 133, 210, 0.7);
+}</string>
+   </property>
+   <property name="text">
+    <string>OK</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../icons/check.png</normaloff>../icons/check.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnCancel">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>560</y>
+     <width>80</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	text-align: center;
+	color: #fff;
+	background-color: rgba(70, 133, 210, 1);
+	border-radius: 4px;
+}
+
+QPushButton:hover {
+	background-color: rgba(70, 133, 210, 0.7);
+}</string>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../icons/close.png</normaloff>../icons/close.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>12</width>
+     <height>12</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QLabel" name="errorLabel">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>590</y>
+     <width>541</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

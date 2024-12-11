@@ -12,12 +12,16 @@ public:
     DepartmentRepository* getDepartmentRepository() override;
     AttendanceEventRepository* getAttendanceEventRepository() override;
     ExceptionRepository* getExceptionRepository() override;
+    BulletinBoardRepository* getBulletinBoardRepository();
+    UserBulletinBoardRepository* getUserBulletinBoardRepository();
 
 private:
     UserRepository* userRepository;
     DepartmentRepository* departmentRepository;
     AttendanceEventRepository* attendanceEventRepository;
     ExceptionRepository* exceptionRepository;
+    BulletinBoardRepository* bulletinBoardRepository;
+    UserBulletinBoardRepository* userBulletinBoardRepository;
 };
 
 #endif // SQLITEDATABASE_H

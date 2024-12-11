@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS "attendance_event" (
 CREATE TABLE IF NOT EXISTS "bulletin_board" (
 	"bulletin_board_id"	INTEGER NOT NULL UNIQUE,
 	"title"	TEXT NOT NULL,
+	"to_employee" TEXT NOT NULL,
 	"content"	TEXT NOT NULL,
 	"start_date"	INTEGER,
 	"end_date"	INTEGER,
@@ -84,6 +85,15 @@ CREATE TABLE IF NOT EXISTS "user_exception" (
 	PRIMARY KEY("user_exception_id" AUTOINCREMENT),
 	FOREIGN KEY("exception_id") REFERENCES "exception"("exception_id"),
 	FOREIGN KEY("user_id") REFERENCES "user"("user_id")
+);
+
+CREATE TABLE IF NOT EXISTS "user_bulletin_board" (
+    "id" INTEGER NOT NULL UNIQUE,
+    "user_id" TEXT NOT NULL,
+    "bulletin_board_id" INTEGER NOT NULL,
+    PRIMARY KEY("id" AUTOINCREMENT),
+    FOREIGN KEY("user_id") REFERENCES "user"("user_id"),
+    FOREIGN KEY("bulletin_board_id") REFERENCES "bulletin_board"("bulletin_board_id")
 );
 INSERT INTO "department" ("department_id","name","description","created_at","updated_at","is_active") VALUES (1, 'Others','Other', datetime('now'), datetime('now'), 1);
 INSERT INTO "exception" ("exception_id","name","paid_hours","paid_coefficient","work_coefficient","is_overtime","created_at","updated_at") VALUES (1, 'Sickly',28800,1.0,1.0,1, datetime('now'), datetime('now')),

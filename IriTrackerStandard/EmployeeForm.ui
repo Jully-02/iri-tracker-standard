@@ -28,7 +28,7 @@
 QTabWidget::pane { background: transparent; border: none;}</string>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="icon">
@@ -369,7 +369,7 @@ QPushButton:hover {
      </property>
      <layout class="QFormLayout" name="formLayout_3">
       <property name="formAlignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
       <item row="0" column="0">
        <widget class="QLabel" name="emailLabel">
@@ -483,7 +483,7 @@ QPushButton:hover {
          <string>(? Not register yet )</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
         </property>
        </widget>
       </item>
@@ -491,7 +491,6 @@ QPushButton:hover {
        <widget class="QLabel" name="label">
         <property name="font">
          <font>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -499,7 +498,7 @@ QPushButton:hover {
          <string>Right iris</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+         <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignHCenter</set>
         </property>
        </widget>
       </item>
@@ -509,7 +508,7 @@ QPushButton:hover {
          <string>(? Not register yet )</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
         </property>
        </widget>
       </item>
@@ -517,7 +516,6 @@ QPushButton:hover {
        <widget class="QLabel" name="label_2">
         <property name="font">
          <font>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -525,7 +523,7 @@ QPushButton:hover {
          <string>Left iris</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+         <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignHCenter</set>
         </property>
        </widget>
       </item>

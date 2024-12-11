@@ -11,8 +11,8 @@ class Department {
 public:
     // Constructors
     Department();
-    Department(int departmentId, const QString& name, const QString& desc);
-    Department(int departmentId, const QString& name, const QString& desc, const QDateTime& createdAt, const QDateTime& updatedAt);
+    Department(int departmentId, const QString& name, const QString& desc, int isActive);
+    Department(int departmentId, const QString& name, const QString& desc, int isActive, const QDateTime& createdAt, const QDateTime& updatedAt);
 
     // Getters and Setters
     int getDepartmentId() const;
@@ -24,6 +24,9 @@ public:
     QString getDesc() const;
     void setDesc(const QString& desc);
 
+    int getIsActive() const;
+    void setIsActive(int isActive);
+
     QDateTime getCreatedAt() const;
     void setCreatedAt(const QDateTime& createdAt);
 
@@ -34,6 +37,7 @@ private:
     int m_departmentId;
     QString m_name;
     QString m_desc;
+    int m_isActive;
     QDateTime m_createdAt;
     QDateTime m_updatedAt;
 };

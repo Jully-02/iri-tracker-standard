@@ -18,6 +18,7 @@ public:
     Department selectById(int id) override;
     bool deleteItem(int id) override;
     QList<Department> selectAll(bool condition) override;
+    Department existByName(const QString& name) override;
 };
 
 #endif // DEPARTMENTREPOSITORYSQLITE_H

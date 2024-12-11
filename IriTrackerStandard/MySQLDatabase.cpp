@@ -3,6 +3,8 @@
 #include "DepartmentRepositoryMySQL.h"
 #include "AttendanceEventRepositoryMySQL.h"
 #include "ExceptionRepositoryMySQL.h"
+#include "BulletinBoardRepositoryMySQL.h"
+#include "UserBulletinBoardRepositoryMySQL.h"
 
 MySQLDatabase::MySQLDatabase() {
     // Khởi tạo các repository cụ thể cho MySQL
@@ -10,6 +12,8 @@ MySQLDatabase::MySQLDatabase() {
     departmentRepository = new DepartmentRepositoryMySQL();
     attendanceEventRepository = new AttendanceEventRepositoryMySQL();
     exceptionRepository = new ExceptionRepositoryMySQL();
+    bulletinBoardRepository = new BulletinBoardRepositoryMySQL();
+    userBulletinBoardRepository = new UserBulletinBoardRepositoryMySQL();
 }
 
 MySQLDatabase::~MySQLDatabase() {
@@ -17,6 +21,8 @@ MySQLDatabase::~MySQLDatabase() {
     delete departmentRepository;
     delete attendanceEventRepository;
     delete exceptionRepository;
+    delete bulletinBoardRepository;
+    delete userBulletinBoardRepository;
 }
 
 UserRepository* MySQLDatabase::getUserRepository() {
@@ -33,4 +39,12 @@ AttendanceEventRepository* MySQLDatabase::getAttendanceEventRepository() {
 
 ExceptionRepository* MySQLDatabase::getExceptionRepository() {
     return exceptionRepository;
+}
+
+BulletinBoardRepository* MySQLDatabase::getBulletinBoardRepository() {
+    return bulletinBoardRepository;
+}
+
+UserBulletinBoardRepository* MySQLDatabase::getUserBulletinBoardRepository() {
+    return userBulletinBoardRepository;
 }

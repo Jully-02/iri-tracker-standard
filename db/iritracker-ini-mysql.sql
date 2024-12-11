@@ -43,6 +43,7 @@ CREATE TABLE `attendance_event` (
 CREATE TABLE `bulletin_board` (
   `bulletin_board_id` int(11) NOT NULL,
   `title` text NOT NULL,
+  `to_employee` TEXT NOT NULL,
   `content` text NOT NULL,
   `start_date` int(11) DEFAULT NULL,
   `end_date` int(11) DEFAULT NULL,
@@ -139,13 +140,13 @@ CREATE TABLE `user` (
   `date_of_birth` varchar(50) DEFAULT NULL,
   `start_working_date` int(11) DEFAULT NULL,
   `is_active` int(11) NOT NULL,
-  `avatar` blob DEFAULT NULL,
+  `avatar` longblob DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `phone` varchar(15) DEFAULT NULL,
   `cell_phone` varchar(15) DEFAULT NULL,
   `address` text DEFAULT NULL,
-  `eye_right` blob DEFAULT NULL,
-  `eye_left` blob DEFAULT NULL,
+  `eye_right` longblob DEFAULT NULL,
+  `eye_left` longblob DEFAULT NULL,
   `role_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -167,6 +168,22 @@ CREATE TABLE `user_exception` (
   `day_of_week` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE `user_bulletin_board` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(36) NOT NULL,
+  `bulletin_board_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Chỉ mục cho bảng `user_bulletin_board`
+ALTER TABLE `user_bulletin_board`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `bulletin_board_id` (`bulletin_board_id`);
+
+-- Ràng buộc cho bảng `user_bulletin_board`
+ALTER TABLE `user_bulletin_board`
+  ADD CONSTRAINT `user_bulletin_board_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`),
+  ADD CONSTRAINT `user_bulletin_board_ibfk_2` FOREIGN KEY (`bulletin_board_id`) REFERENCES `bulletin_board` (`bulletin_board_id`);
 --
 -- Chỉ mục cho các bảng đã đổ
 --

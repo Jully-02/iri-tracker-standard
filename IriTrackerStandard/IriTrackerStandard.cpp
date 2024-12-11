@@ -30,6 +30,14 @@
 #include "ChangeDatabase.h"
 #include "ExceptionForm.h"
 #include <QTime>
+#include <QFileDialog>
+#include "ChangePassword.h"
+#include "AssignmentExceptionForm.h"
+#include "BulletinBoardForm.h"
+#include "BulletinBoard.h"
+#include "EmployeeBulletins.h"
+#include <QCoreApplication>
+#include <QMediaPlayer>
 
 IriTrackerStandard::IriTrackerStandard(QWidget *parent)
     : QMainWindow(parent)
@@ -37,6 +45,8 @@ IriTrackerStandard::IriTrackerStandard(QWidget *parent)
     ui.setupUi(this);
 
 	this->setWindowTitle("IriTracker - Time And Attendence Management System");
+
+	threadStream = new QThread();
 
 	QIcon logoIcon("../icons/logo.png");
 	this->setWindowIcon(logoIcon);
@@ -92,15 +102,35 @@ IriTrackerStandard::IriTrackerStandard(QWidget *parent)
 	connect(ui.btnEditException, &QPushButton::clicked, this, &IriTrackerStandard::btnEditExceptionClicked);
 	connect(ui.btnDeleteException, &QPushButton::clicked, this, &IriTrackerStandard::btnDeleteExceptionClicked);
 
+	connect(ui.btnCreateAssignmentException, &QPushButton::clicked, this, &IriTrackerStandard::btnAssignmentExceptionClicked);
 	
 	connect(ui.btnTool, &QPushButton::clicked, this, &IriTrackerStandard::btnToolClicked);
 	// Functions of Tools
 	connect(ui.btnChangeDB, &QPushButton::clicked, this, &IriTrackerStandard::btnChangeDBClicked);
+	connect(ui.btnBackup, &QPushButton::clicked, this, &IriTrackerStandard::btnBackupClicked);
+	connect(ui.btnRestore, &QPushButton::clicked, this, &IriTrackerStandard::btnRestoreClicked);
+	connect(ui.btnChangePassword, &QPushButton::clicked, this, &IriTrackerStandard::btnChangePasswordClicked);
+
+	// Functions of Bulletin Board
+	connect(ui.btnBullentin, &QPushButton::clicked, this, &IriTrackerStandard::btnBullentinClicked);
+	connect(ui.btnBullentinBoardAdd, &QPushButton::clicked, this, &IriTrackerStandard::btnBullentinBoardAddClicked);
+	connect(ui.btnBullentinBoardEdit, &QPushButton::clicked, this, &IriTrackerStandard::btnBullentinBoardEditClicked);
+	connect(ui.btnBullentinBoardDelete, &QPushButton::clicked, this, &IriTrackerStandard::btnBullentinBoardDeleteClicked);
+
+	IriTracker* iriTracker = new IriTracker();
+	connect(iriTracker, &IriTracker::onOpenDevice, this, &IriTrackerStandard::changeImageDevice, Qt::QueuedConnection);
+
 
 	connect(ui.viewFormComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &IriTrackerStandard::handleViewFormCombobox);
 	ui.viewFormComboBox->setCurrentIndex(5);
 
-	!DatabaseHelper::getDatabaseInstance()->getUserRepository()->selectAll().isEmpty() ? ui.stackedWidget->setCurrentIndex(5) : ui.stackedWidget->setCurrentIndex(0);
+	if (!DatabaseHelper::getDatabaseInstance()->getUserRepository()->selectAll().isEmpty()) {
+		ui.stackedWidget->setCurrentIndex(5);
+		emit screenIndexOpened(5);
+	}
+	else {
+		ui.stackedWidget->setCurrentIndex(0);
+	}
 	loadDepartmentsAndUsers();
 	setupRealTimeClock();
 }
@@ -252,73 +282,8 @@ void IriTrackerStandard::loadDepartmentsAndUsers() {
 
 		bool result = DatabaseHelper::getDatabaseInstance()->getUserRepository()->checkInOut(userId, FunctionPublic::hashPassword(password));
 		if (result) {
-			qint64 currentTimestamp = QDateTime::currentDateTime().toSecsSinceEpoch();
-			QString checkType = ui.btnCheckInOut->text();
-
-
-			AttendanceEvent inEvent;
-			inEvent.setType("In");
-			inEvent.setDate(currentTimestamp);
-			inEvent.setUserId(userId);
-
-			AttendanceEvent outEvent;
-			outEvent.setType("Out");
-			outEvent.setDate(currentTimestamp);
-			outEvent.setUserId(userId);
-
-			bool success = false;
-			if (checkType == "Check In") {
-				success = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->insert(inEvent);
-			}
-			else if (checkType == "Check Out") {
-				success = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->insert(outEvent);
-			}
-
-			if (success) {
-				ui.checkInOutStackedWidget->setCurrentIndex(2);
-				// Cập nhật trạng thái nút và trường password
-				ui.passwordInOutEdit->setText("");
-				bool isOrphan = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->checkForOrphanInEvents(userId);
-
-				ui.btnCheckInOut->setText(isOrphan ? "Check In" : "Check Out");
-
-				// Lấy thông tin người dùng
-				User user = DatabaseHelper::getDatabaseInstance()->getUserRepository()->selectById(userId);
-
-				// Tính toán thời gian làm việc
-				double todayWorkHours = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->calculateTotalHours(userId, "Today");
-				double weekWorkHours = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->calculateTotalHours(userId, "This Week");
-				double monthWorkHours = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->calculateTotalHours(userId, "This Month");
-
-				// Hiển thị thông tin
-				QString welcomeMessage = (checkType == "Check In") ? "Welcome" : "Goodbye";
-
-				ui.welcomeLabel_4->setText(welcomeMessage + ", " + user.getFirstName() + " " + user.getLastName());
-				ui.idInOutLabel->setText("ID: " + user.getUserId());
-				ui.todayLabel_4->setText("     Today: " + QString::number(todayWorkHours, 'f', 2) + " hours");
-				ui.thisWeekLabel_4->setText("     This week: " + QString::number(weekWorkHours, 'f', 2) + " hours");
-				ui.thisMonthLabel_4->setText("     This month: " + QString::number(monthWorkHours, 'f', 2) + " hours");
-
-				if (checkType == "Check In") {
-					ui.checkInOutLabel_4->setText("CHECK IN SUCCESSFULLY");
-					ui.checkInOutLabel_4->setStyleSheet("QLabel {"
-						"background-color: #6647ed;"
-						"color: #fff;"
-						"border - radius: 4px;"
-						"}");
-				}
-				else if (checkType == "Check Out") {
-					ui.checkInOutLabel_4->setText("CHECK OUT SUCCESSFULLY");
-					ui.checkInOutLabel_4->setStyleSheet("QLabel {"
-						"background-color: #a32a2a;"
-						"color: #fff;"
-						"border - radius: 4px;"
-						"}");
-				}
-			}
-			else {
-				qDebug() << "Error updating attendance events for user:" << userId;
-			}
+			// In Out Success
+			checkInOutSuccess(userId);
 		}
 		else {
 			qDebug() << "Wrong password!";
@@ -336,6 +301,95 @@ void IriTrackerStandard::onLoginSuccessful() {
 	connect(ui.btnLogin, &QPushButton::clicked, this, &IriTrackerStandard::btnLogoutClicked);
 }
 
+void IriTrackerStandard::checkInOutSuccess(QString userId) {
+	qint64 currentTimestamp = QDateTime::currentDateTime().toSecsSinceEpoch();
+	QString checkType = ui.btnCheckInOut->text();
+	bool isOrphan = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->checkForOrphanInEvents(userId);
+
+	AttendanceEvent inEvent;
+	inEvent.setType("In");
+	inEvent.setDate(currentTimestamp);
+	inEvent.setUserId(userId);
+
+	AttendanceEvent outEvent;
+	outEvent.setType("Out");
+	outEvent.setDate(currentTimestamp);
+	outEvent.setUserId(userId);
+
+	bool success = false;
+	if (isOrphan) {
+		success = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->insert(inEvent);
+	}
+	else {
+		qDebug() << "Checkout";
+		success = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->insert(outEvent);
+	}
+
+	if (success) {
+		ui.checkInOutStackedWidget->setCurrentIndex(2);
+		// Cập nhật trạng thái nút và trường password
+		ui.passwordInOutEdit->setText("");
+		bool isOrphan = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->checkForOrphanInEvents(userId);
+
+		ui.btnCheckInOut->setText(isOrphan ? "Check In" : "Check Out");
+
+		// Lấy thông tin người dùng
+		User user = DatabaseHelper::getDatabaseInstance()->getUserRepository()->selectById(userId);
+
+		// Tính toán thời gian làm việc
+		double todayWorkHours = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->calculateTotalHours(userId, "Today");
+		double weekWorkHours = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->calculateTotalHours(userId, "This Week");
+		double monthWorkHours = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->calculateTotalHours(userId, "This Month");
+
+		// Hiển thị thông tin
+		QString welcomeMessage = (checkType == "Check In") ? "Welcome" : "Goodbye";
+
+		ui.welcomeLabel_4->setText(welcomeMessage + ", " + user.getFirstName() + " " + user.getLastName());
+		ui.idInOutLabel->setText("ID: " + user.getUserId());
+		ui.todayLabel_4->setText("     Today: " + QString::number(todayWorkHours, 'f', 2) + " hours");
+		ui.thisWeekLabel_4->setText("     This week: " + QString::number(weekWorkHours, 'f', 2) + " hours");
+		ui.thisMonthLabel_4->setText("     This month: " + QString::number(monthWorkHours, 'f', 2) + " hours");
+
+		if (checkType == "Check In") {
+			ui.checkInOutLabel_4->setText("CHECK IN SUCCESSFULLY");
+			ui.checkInOutLabel_4->setStyleSheet("QLabel {"
+				"background-color: #6647ed;"
+				"color: #fff;"
+				"border - radius: 4px;"
+				"}");
+
+			QMediaPlayer* player = new QMediaPlayer();
+			player->setMedia(QUrl::fromLocalFile("D:\\IrisTech\\Project\\IriTrackerStandard\\sounds\\welcome.mp3"));
+			player->setVolume(70);
+			player->play();
+
+			QList<BulletinBoard> bulletins = DatabaseHelper::getDatabaseInstance()->getBulletinBoardRepository()->selectBulletinsForUser(userId);
+			qDebug() << "Size of bulletins: " << bulletins.size();
+			if (bulletins.size() != 0) {
+				EmployeeBulletins* employeeBulletins = new EmployeeBulletins();
+				connect(this, &IriTrackerStandard::employeeBulletinsOpened, employeeBulletins, &EmployeeBulletins::handleEmit);
+				emit employeeBulletinsOpened(userId);
+				employeeBulletins->show();
+			}
+		}
+		else if (checkType == "Check Out") {
+			ui.checkInOutLabel_4->setText("CHECK OUT SUCCESSFULLY");
+			ui.checkInOutLabel_4->setStyleSheet("QLabel {"
+				"background-color: #a32a2a;"
+				"color: #fff;"
+				"border - radius: 4px;"
+				"}");
+			QMediaPlayer* player = new QMediaPlayer();
+			player->setMedia(QUrl::fromLocalFile("D:\\IrisTech\\Project\\IriTrackerStandard\\sounds\\goodbye.mp3"));
+			player->setVolume(70);
+			player->play();
+		}
+	}
+	else {
+		qDebug() << "Error updating attendance events for user:" << userId;
+	}
+}
+
 void IriTrackerStandard::onLogoutSuccessful()
 {
 	ui.btnLogin->setText("Log In");
@@ -350,6 +404,7 @@ void IriTrackerStandard::onLogoutSuccessful()
 		if (!DatabaseHelper::getDatabaseInstance()->getUserRepository()->selectAll().isEmpty()) {
 			loadDepartmentsAndUsers();
 			ui.stackedWidget->setCurrentIndex(5);
+			emit screenIndexOpened(5);
 		}
 		else {
 			ui.stackedWidget->setCurrentIndex(0);
@@ -452,6 +507,7 @@ void IriTrackerStandard::btnDepartmentClicked() {
 void IriTrackerStandard::btnEmployeeClicked() {
 	qDebug() << "Test";
 	ui.stackedWidget->setCurrentIndex(3);
+	emit screenIndexOpened(3);
 	initializeBackButton();
 
 	// Reset lại bảng
@@ -873,7 +929,7 @@ void IriTrackerStandard::btnExceptionClicked() {
 		qint64 seconds = exp.getPaidHours();
 
 		// Thêm dữ liệu vào bảng
-		ui.tableException->setItem(row, 0, new QTableWidgetItem((exp.getExceptionId())));
+		ui.tableException->setItem(row, 0, new QTableWidgetItem((QString::number(exp.getExceptionId()))));
 		ui.tableException->setItem(row, 1, new QTableWidgetItem(exp.getName()));
 		ui.tableException->setItem(row, 2, new QTableWidgetItem(QTime(seconds / 3600, (seconds % 3600) / 60).toString("HH:mm")));
 		ui.tableException->setItem(row, 3, new QTableWidgetItem(QString::number(exp.getPaidCoefficient(), 'f', 2)));
@@ -901,21 +957,59 @@ void IriTrackerStandard::btnExceptionClicked() {
 void IriTrackerStandard::btnAddExceptionClicked() {
 	ExceptionForm* exceptionForm = new ExceptionForm();
 	exceptionForm->setWindowTitle("Add Exception");
-
+	connect(this, &IriTrackerStandard::exceptionFormOpened, exceptionForm, &ExceptionForm::handleFormAction);
+	connect(exceptionForm, &ExceptionForm::exceptionChanged, this, &IriTrackerStandard::btnExceptionClicked);
+	emit exceptionFormOpened("Add");
 
 	exceptionForm->show();
 }
 
 void IriTrackerStandard::btnEditExceptionClicked() {
+	int currentRow = ui.tableException->currentRow();
+
+	if (currentRow < 0) {
+		qDebug() << "Vui lòng chọn một hàng để chỉnh sửa!";
+		return;
+	}
+	int exceptionId = ui.tableException->item(currentRow, 0)->text().toInt();
+
 	ExceptionForm* exceptionForm = new ExceptionForm();
 	exceptionForm->setWindowTitle("Edit Exception");
-
+	connect(this, &IriTrackerStandard::exceptionFormOpened, exceptionForm, &ExceptionForm::handleFormAction);
+	connect(exceptionForm, &ExceptionForm::exceptionChanged, this, &IriTrackerStandard::btnExceptionClicked);
+	emit exceptionFormOpened("Edit", exceptionId);
 
 	exceptionForm->show();
 }
 
 void IriTrackerStandard::btnDeleteExceptionClicked() {
+	int currentRow = ui.tableException->currentRow();
 
+	if (currentRow < 0) {
+		qDebug() << "Please select a row to delete!";
+		return;
+	}
+
+	int exceptionId = ui.tableException->item(currentRow, 0)->text().toInt();
+
+	QMessageBoxCustom msgBox(this);
+	msgBox.setQuestionLabel("Are you sure you want to delete this exception?");
+	msgBox.setWindowTitleCustom("Delete Exception");
+
+	if (msgBox.exec() == QDialog::Accepted) {
+		if (DatabaseHelper::getDatabaseInstance()->getExceptionRepository()->deleteItem(exceptionId)) {
+			qDebug() << "Exception deleted successfully!";
+			btnExceptionClicked();
+		}
+		else {
+			qDebug() << "Error while deleting exception!";
+		}
+	}
+}
+
+void IriTrackerStandard::btnAssignmentExceptionClicked() {
+	AssignmentExceptionForm* assignmentExceptionForm = new AssignmentExceptionForm();
+	assignmentExceptionForm->show();
 }
 
 // Tools
@@ -928,4 +1022,276 @@ void IriTrackerStandard::btnToolClicked() {
 void IriTrackerStandard::btnChangeDBClicked() {
 	ChangeDatabase* changeDatabase = new ChangeDatabase();
 	changeDatabase->show();
+}
+
+void IriTrackerStandard::btnBackupClicked() {
+	QMessageBoxCustom msgBox(this);
+	msgBox.setQuestionLabel("This will backup database that contains all IriTracker data. \nAre you sure you want to do this?");
+	msgBox.setWindowTitleCustom("Backup Database Warning");
+
+	if (msgBox.exec() == QDialog::Accepted) {
+		// Mở hộp thoại để chọn đường dẫn lưu file
+		qDebug() << DatabaseHelper::getDatabase().driverName();
+		QString backupPath = QFileDialog::getSaveFileName(this,
+			"Backup Database IriTracker",
+			DatabaseHelper::getDatabase().driverName() == "QSQLITE" ? QDir::homePath() + "/iri-tracker-standard.db" : QDir::homePath() + "/iri-tracker-standard.sql",
+			"Database Files (*.db *.sqlite *.sql);;All Files (*)");
+
+		if (!backupPath.isEmpty()) {
+			// Đường dẫn database gốc
+			QString dbPath = DatabaseHelper::getDatabaseName(); 
+
+			// Gọi hàm backup
+			DatabaseHelper dbHelper;
+			if (dbHelper.backupDatabase(dbPath, backupPath)) {
+				QMessageBox::information(this, "Backup Success", "Database has been backed up successfully!");
+			}
+			else {
+				QMessageBox::critical(this, "Backup Failed", "Failed to backup database. Please check the file path and permissions.");
+			}
+		}
+		else {
+			qDebug() << "Backup operation canceled by user.";
+		}
+	}
+	if (DatabaseHelper::getCurrentDatabaseType() == DatabaseType::SQLite) {
+		DatabaseHelper::reconnectDefaultDatabase();
+	}
+	else if (DatabaseHelper::getCurrentDatabaseType() == DatabaseType::MySQL) {
+		DatabaseHelper::reconnectMySQL();
+	}
+}
+
+void IriTrackerStandard::btnRestoreClicked() {
+	QMessageBoxCustom msgBox(this);
+	msgBox.setQuestionLabel("This will use the backup database to overwite all the existing IriTracker data. \nAre you sure you want to do this ? ");
+	msgBox.setWindowTitleCustom("Restore Database Warning");
+	if (msgBox.exec() == QDialog::Accepted) {
+		// Mở hộp thoại để chọn file backup để restore
+		QString backupPath = QFileDialog::getOpenFileName(this,
+			"Restore Database IriTracker",
+			DatabaseHelper::getDatabase().driverName() == "QSQLITE" ? QDir::homePath() + "/iri-tracker-standard.db" : QDir::homePath() + "/iri-tracker-standard.sql",
+			"Database Files (*.db *.sqlite *.sql);;All Files (*)");
+
+		if (!backupPath.isEmpty()) {
+			// Đường dẫn database gốc
+			QString dbPath = DatabaseHelper::getDatabaseName();
+			qDebug() << backupPath;
+
+			// Gọi hàm restore
+			bool isCheck = false;
+			if (DatabaseHelper::getCurrentDatabaseType() == DatabaseType::SQLite) {
+				isCheck = DatabaseHelper::restoreSQLiteFromFile(dbPath, backupPath);
+			}
+			else if (DatabaseHelper::getCurrentDatabaseType() == DatabaseType::MySQL) {
+				isCheck = DatabaseHelper::restoreMySQLFromFile(backupPath);
+			}
+			if (isCheck) {
+				QMessageBox::information(this, "Restore Success", "Database has been restored successfully!");
+			}
+			else {
+				QMessageBox::critical(this, "Restore Failed", "Failed to restore database. Please check the file and permissions.");
+			}
+		}
+		else {
+			qDebug() << "Restore operation canceled by user.";
+		}
+	}
+	if (DatabaseHelper::getCurrentDatabaseType() == DatabaseType::MySQL) {
+		DatabaseHelper::reconnectMySQL();
+	}
+	else if (DatabaseHelper::getCurrentDatabaseType() == DatabaseType::SQLite) {
+		DatabaseHelper::reconnectDefaultDatabase();
+	}
+}
+
+void IriTrackerStandard::btnChangePasswordClicked() {
+	ChangePassword* changePassword = new ChangePassword();
+	changePassword->show();
+}
+
+// Functions of Bulletin Board
+void IriTrackerStandard::btnBullentinClicked() {
+	qDebug() << "hello";
+	ui.stackedWidget->setCurrentIndex(4);
+	initializeBackButton();
+
+	ui.tableBullentinBoard->setRowCount(0);
+	ui.tableBullentinBoard->verticalHeader()->setVisible(false);
+	ui.tableBullentinBoard->setColumnHidden(0, true);
+
+	QList<BulletinBoard> bulletinBoards = DatabaseHelper::getDatabaseInstance()->getBulletinBoardRepository()->selectAll();
+
+	for (const BulletinBoard& bulletinBoard : bulletinBoards) {
+		int row = ui.tableDepartment->rowCount();
+		ui.tableBullentinBoard->insertRow(row);
+
+		// Thêm dữ liệu vào bảng
+		ui.tableBullentinBoard->setItem(row, 0, new QTableWidgetItem(QString::number(bulletinBoard.getBulletinBoardId())));
+		ui.tableBullentinBoard->setItem(row, 1, new QTableWidgetItem(bulletinBoard.getTitle()));
+		ui.tableBullentinBoard->setItem(row, 2, new QTableWidgetItem(bulletinBoard.getToEmployee()));
+
+		QDateTime startDateTime = QDateTime::fromSecsSinceEpoch(bulletinBoard.getStartDate());
+		QDate startDate = startDateTime.date();
+		ui.tableBullentinBoard->setItem(row, 3, new QTableWidgetItem(startDate.toString("MM/dd/yyyy")));
+
+		QDateTime endDateTime = QDateTime::fromSecsSinceEpoch(bulletinBoard.getEndDate());
+		QDate endDate = endDateTime.date();
+		ui.tableBullentinBoard->setItem(row, 4, new QTableWidgetItem(endDate.toString("MM/dd/yyyy")));
+
+		QCheckBox* checkBox = new QCheckBox();
+		checkBox->setChecked(bulletinBoard.getIsActive() == 1); // Nếu là 1 thì check, ngược lại bỏ check
+
+		// Tạo một widget để chứa checkbox và căn giữa nó trong ô
+		QWidget* checkBoxWidget = new QWidget();
+		QHBoxLayout* layout = new QHBoxLayout(checkBoxWidget);
+		layout->addWidget(checkBox);
+		layout->setAlignment(Qt::AlignCenter);
+		layout->setContentsMargins(0, 0, 0, 0);
+		checkBoxWidget->setLayout(layout);
+
+		ui.tableBullentinBoard->setCellWidget(row, 5, checkBoxWidget);
+
+		// Tô màu cho hàng
+		QColor rowColor = (row % 2 == 0) ? QColor("#e3e9f1") : QColor("#dbdbd8");
+		for (int col = 0; col < ui.tableBullentinBoard->columnCount(); ++col) {
+			QTableWidgetItem* item = ui.tableBullentinBoard->item(row, col);
+			if (item) {
+				item->setBackground(QBrush(rowColor));
+			}
+		}
+	}
+
+	ui.tableBullentinBoard->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+	// Kết nối sự kiện khi click vào ô
+	connect(ui.tableBullentinBoard, &QTableWidget::cellClicked, this, [this](int row, int column) {
+		ui.tableBullentinBoard->selectRow(row);
+		ui.tableBullentinBoard->setCurrentItem(ui.tableBullentinBoard->item(row, column));
+		});
+}
+
+void IriTrackerStandard::btnBullentinBoardAddClicked() {
+	BulletinBoardForm* bulletinBoardForm = new BulletinBoardForm();
+	bulletinBoardForm->setWindowTitle("Add Bulletin Board");
+
+
+	connect(this, &IriTrackerStandard::bulletinBoardFormOpened, bulletinBoardForm, &BulletinBoardForm::handleFormAction);
+	connect(bulletinBoardForm, &BulletinBoardForm::bulletinBoardChanged, this, &IriTrackerStandard::btnBullentinClicked);
+	emit bulletinBoardFormOpened("Add");
+
+	bulletinBoardForm->show();
+}
+
+void IriTrackerStandard::btnBullentinBoardEditClicked() {
+	int currentRow = ui.tableBullentinBoard->currentRow();
+
+	if (currentRow < 0) {
+		qDebug() << "Vui lòng chọn một hàng để chỉnh sửa!";
+		return;
+	}
+
+	int bulletinBoardId = ui.tableBullentinBoard->item(currentRow, 0)->text().toInt();
+	BulletinBoardForm* bulletinBoardForm = new BulletinBoardForm();
+	bulletinBoardForm->setWindowTitle("Edit Bulletin Board");
+
+	connect(this, &IriTrackerStandard::bulletinBoardFormOpened, bulletinBoardForm, &BulletinBoardForm::handleFormAction);
+	connect(bulletinBoardForm, &BulletinBoardForm::bulletinBoardChanged, this, &IriTrackerStandard::btnBullentinClicked);
+	emit bulletinBoardFormOpened("Edit", bulletinBoardId);
+
+	bulletinBoardForm->show();
+}
+
+void IriTrackerStandard::btnBullentinBoardDeleteClicked() {
+
+}
+
+void IriTrackerStandard::changeImageDevice(bool isDevice) {
+	if (isDevice) {
+		if (threadStream->isRunning()) {
+			threadStream->quit();
+		}
+		else {
+			ui.deviceLabel_4->setPixmap(QPixmap("../icons/has-device.JPG"));
+		}
+
+		IriTracker* iriTracker = new IriTracker();
+		// Kết nối tín hiệu từ IriTracker đến updateFrame trong UI thread
+		connect(iriTracker, &IriTracker::imageProcessedForInOut, this, &IriTrackerStandard::onImageProcessed);
+		connect(iriTracker, &IriTracker::resultTemplateForInOut, this, &IriTrackerStandard::onPathTemplate);
+
+		// Di chuyển IriTracker vào thread để xử lý capture
+		iriTracker->moveToThread(threadStream);
+
+		// Kết nối captureThread đã được bắt đầu để gọi run trong IriTracker
+		connect(threadStream, &QThread::started, iriTracker, [=]() {
+			iriTracker->run(true, false, false);
+			});
+
+		// Bắt đầu thread
+		threadStream->start();
+	}
+	else {
+		ui.deviceLabel_4->setPixmap(QPixmap("../icons/no-device.jpg"));
+	}
+}
+
+void IriTrackerStandard::onImageProcessed(unsigned char* imageData,
+	int imageLen,
+	int imageWidth,
+	int imageHeight) {
+	// Kiểm tra dữ liệu hình ảnh
+	if (imageData == nullptr || imageLen <= 0) {
+		qDebug() << "Dữ liệu hình ảnh không hợp lệ!";
+		return;
+	}
+
+	// Tạo QImage từ dữ liệu raw
+	QImage img(imageData, imageWidth, imageHeight, QImage::Format_Grayscale8);
+
+	// Kiểm tra xem ảnh đã tạo thành công chưa
+	if (img.isNull()) {
+		qDebug() << "Không thể tạo QImage từ dữ liệu hình ảnh!";
+		return;
+	}
+
+	// Chuyển đổi ảnh thành QPixmap và hiển thị trên QLabel
+	QPixmap pixmap = QPixmap::fromImage(img);
+	ui.deviceLabel_4->setPixmap(pixmap.scaled(ui.deviceLabel_4->size(), Qt::KeepAspectRatio));
+}
+
+void IriTrackerStandard::onPathTemplate() {
+	if (ui.stackedWidget->currentIndex() == 5) {
+		QList<QPair<QString, QPair<QByteArray, QByteArray>>> eyes = DatabaseHelper::getDatabaseInstance()->getUserRepository()->selectAllEyes();
+		qDebug() << "Size: " << eyes.size();
+		IriTracker* iriTracker = new IriTracker();
+		for (const QPair<QString, QPair<QByteArray, QByteArray>>& eye : eyes) {
+			// Lấy dữ liệu mắt phải và mắt trái
+			QByteArray eyeRight = eye.second.first;
+			QByteArray eyeLeft = eye.second.second;
+
+			// Chuyển QByteArray thành unsigned char* và kích thước
+			std::pair<unsigned char*, int> eyeRightData = FunctionPublic::convertByteArrayToUnsignedChar(eyeRight);
+			std::pair<unsigned char*, int> eyeLeftData = FunctionPublic::convertByteArrayToUnsignedChar(eyeLeft);
+
+			// Gọi hàm compare_templates_custom cho từng eye
+			if (iriTracker->compare_templates_custom(eyeRightData.second, eyeRightData.first)) {
+				qDebug() << "Eye right of user " << eye.first << " matches!";
+				checkInOutSuccess(eye.first);
+				break;
+			}
+			else {
+				qDebug() << "No matching!";
+			}
+
+			if (iriTracker->compare_templates_custom(eyeLeftData.second, eyeLeftData.first)) {
+				qDebug() << "Eye left of user " << eye.first << " matches!";
+				checkInOutSuccess(eye.first);
+				break;
+			}
+			else {
+				qDebug() << "No matching!";
+			}
+		}
+	}
 }

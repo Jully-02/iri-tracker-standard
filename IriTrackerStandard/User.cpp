@@ -4,11 +4,11 @@
 
 // Constructors
 User::User()
-    : m_isPassword(false), m_isActive(true), m_departmentId(0), m_roleId(0) {}
+    :m_isPassword(false), m_isActive(true), m_departmentId(0), m_roleId(0) {}
 
 User::User(const QString& userId, const QString& firstName, const QString& lastName, bool isPassword, const QString& password,
     const QString& dateOfBirth, qint64 startWorkingDate, bool isActive, const QByteArray& avatar,
-    const QString& email, const QString& phone, const QString& cellPhone, const QString& address, const QString& eyeRight, const QString& eyeLeft,
+    const QString& email, const QString& phone, const QString& cellPhone, const QString& address, const QByteArray& eyeRight, const QByteArray& eyeLeft,
     const QDateTime& createdAt, const QDateTime& updatedAt, int departmentId, int roleId)
     : m_userId(userId), m_firstName(firstName), m_lastName(lastName), m_isPassword(isPassword), m_password(password),
     m_dateOfBirth(dateOfBirth), m_startWorkingDate(startWorkingDate), m_isActive(isActive), m_avatar(avatar),
@@ -55,11 +55,11 @@ void User::setCellPhone(const QString& cellPhone) { m_cellPhone = cellPhone; }
 QString User::getAddress() const { return m_address; }
 void User::setAddress(const QString& address) { m_address = address; }
 
-QString User::getEyeRight() const { return m_eyeRight; }
-void User::setEyeRight(const QString& eyeRight) { m_eyeRight = eyeRight; };
+QByteArray User::getEyeRight() const { return m_eyeRight; }
+void User::setEyeRight(const QByteArray& eyeRight) { m_eyeRight = eyeRight; };
 
-QString User::getEyeLeft() const { return m_eyeLeft; }
-void User::setEyeLeft(const QString& eyeLeft) { m_eyeLeft = eyeLeft; }
+QByteArray User::getEyeLeft() const { return m_eyeLeft; }
+void User::setEyeLeft(const QByteArray& eyeLeft) { m_eyeLeft = eyeLeft; }
 
 QDateTime User::getCreatedAt() const { return m_createdAt; }
 void User::setCreatedAt(const QDateTime& createdAt) { m_createdAt = createdAt; }

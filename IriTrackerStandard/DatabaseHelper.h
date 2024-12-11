@@ -36,11 +36,24 @@ public:
         const QString& userName = "",
         const QString& password = "");
 
-    bool backupSQLite(const QString& dbPath, const QString& backupPath);
-    bool backupMySQL(const QString& host, const QString& user, const QString& password, const QString& database, const QString& backupPath);
+    static void revertDatabaseConnection(QSqlDatabase& backupDb, IDatabase* backupDbInstance);
 
-    bool backupDatabase(const QString& dbType, const QString& dbPath, const QString& backupPath,
-        const QString& host = "", const QString& user = "", const QString& password = "", const QString& database = "");
+    // Reconnect Database
+    static void reconnectDefaultDatabase();
+    static void reconnectMySQL();
+
+    static bool setupSQLiteDatabase(QSqlDatabase& db, const User& user);
+
+    static bool createMySQLDatabase(QSqlDatabase& db, const QString& dbName);
+    static bool setupMySQLDatabase(QSqlDatabase& db, const QString& dbName, const User& user);
+
+    static bool restoreSQLiteFromFile(const QString& dbPath, const QString& backupFilePath);
+    static bool restoreMySQLFromFile(const QString& backupPath);
+
+    bool backupSQLite(const QString& dbPath, const QString& backupPath);
+    bool backupMySQL(const QString& backupPath);
+
+    bool backupDatabase(const QString& dbPath, const QString& backupPath);
 
 
 
@@ -49,7 +62,12 @@ private:
 
     static IDatabase* dbInstance;
     static QSqlDatabase db;
+
     static QString databaseName;
+    static QString m_hostName;
+    static QString m_userName;
+    static QString m_password;
+    static DatabaseType currentDatabaseType;
 };
 
 #endif 

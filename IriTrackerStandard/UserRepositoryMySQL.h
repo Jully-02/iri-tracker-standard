@@ -21,6 +21,8 @@ public:
     QList<QVariantList> selectByDepartmentId(int departmentId) override;
     bool checkInOut(const QString& userId, const QString& password) override;
     User checkIfAdminExist() override;
+    bool changePasswordAdmin(const QString& oldPassword, const QString& newPassword) override;
+    QList<QPair<QString, QPair<QByteArray, QByteArray>>> selectAllEyes() override;
 };
 
 #endif // USERREPOSITORYMYSQL_H

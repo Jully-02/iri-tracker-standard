@@ -24,3 +24,19 @@ bool FunctionPublic::deleteFile(const QString& filePath) {
         return false;
     }
 }
+
+QByteArray FunctionPublic::templateConvertToByte(const unsigned char* buffer, int size) {
+    QByteArray byteArray(reinterpret_cast<const char*>(buffer), size);
+    return byteArray;
+}
+
+std::pair<unsigned char*, int> FunctionPublic::convertByteArrayToUnsignedChar(const QByteArray& byteArray) {
+    // Cấp phát bộ nhớ cho buffer
+    unsigned char* buffer = new unsigned char[byteArray.size()];
+
+    // Sao chép dữ liệu từ QByteArray vào buffer
+    memcpy(buffer, byteArray.data(), byteArray.size());
+
+    // Trả về một std::pair chứa buffer và kích thước của nó
+    return std::make_pair(buffer, byteArray.size());
+}

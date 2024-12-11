@@ -65,11 +65,11 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Program Files\MySQL\MySQL Connector C++ 8.0\include;C:\Program Files\MySQL\MySQL Server 8.0\include;D:\IrisTech\Project\IriTrackerStandard\include;D:\Qt\5.15.2\msvc2019_64\include\QtSql;D:\Qt\5.15.2\msvc2019_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\MySQL\MySQL Connector C++ 8.0\include;C:\Program Files\MySQL\MySQL Server 8.0\include;D:\IrisTech\Project\IriTrackerStandard\include;D:\Qt\5.15.2\msvc2019_64\include\QtSql;D:\Qt\5.15.2\msvc2019_64\include;D:\Qt\5.15.2\msvc2019_64\include\QtMultimedia;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>C:\Program Files\IriTech\IDDK 2000 3.6.9 (x64)\Demos\Iddk2000Demo\Lib\x64;C:\Program Files\MySQL\MySQL Connector C++ 8.0\lib64;D:\IrisTech\mysql-connector-c++-9.1.0-winx64\lib64;C:\Program Files\MySQL\MySQL Server 8.0\lib;D:\IrisTech\Project\IriTrackerStandard\library\x64;D:\Qt\5.15.2\msvc2019_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Qt5Sql.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;libIriSentinel64.lib;libmysql.lib;Iddk2000.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Qt5Sql.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;libIriSentinel64.lib;libmysql.lib;Iddk2000.lib;Qt5Multimedia.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -110,13 +110,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AssignmentExceptionForm.cpp" />
     <ClCompile Include="AttendanceEvent.cpp" />
     <ClCompile Include="AttendanceEventDeleteForm.cpp" />
     <ClCompile Include="AttendanceEventForm.cpp" />
     <ClCompile Include="AttendanceEventRepositoryMySQL.cpp" />
     <ClCompile Include="AttendanceEventRepositorySQLite.cpp" />
     <ClCompile Include="BulletinBoard.cpp" />
+    <ClCompile Include="BulletinBoardForm.cpp" />
+    <ClCompile Include="BulletinBoardRepositoryMySQL.cpp" />
+    <ClCompile Include="BulletinBoardRepositorySQLite.cpp" />
     <ClCompile Include="ChangeDatabase.cpp" />
+    <ClCompile Include="ChangePassword.cpp" />
     <ClCompile Include="CustomFilterProxyModel.cpp" />
     <ClCompile Include="CustomLineEdit.cpp" />
     <ClCompile Include="DatabaseHelper.cpp" />
@@ -124,6 +129,7 @@
     <ClCompile Include="DepartmentForm.cpp" />
     <ClCompile Include="DepartmentRepositoryMySQL.cpp" />
     <ClCompile Include="DepartmentRepositorySQLite.cpp" />
+    <ClCompile Include="EmployeeBulletins.cpp" />
     <ClCompile Include="EmployeeForm.cpp">
       <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
       <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
@@ -147,14 +153,21 @@
     <ClCompile Include="SetAdministratorPassword.cpp" />
     <ClCompile Include="SQLiteDatabase.cpp" />
     <ClCompile Include="User.cpp" />
+    <ClCompile Include="UserBulletinBoard.cpp" />
+    <ClCompile Include="UserBulletinBoardRepositoryMySQL.cpp" />
+    <ClCompile Include="UserBulletinBoardRepositorySQLite.cpp" />
     <ClCompile Include="UserException.cpp" />
     <ClCompile Include="UserRepositoryMySQL.cpp" />
     <ClCompile Include="UserRepositorySQLite.cpp" />
     <QtRcc Include="IriTrackerStandard.qrc" />
+    <QtUic Include="AssignmentExceptionForm.ui" />
     <QtUic Include="AttendanceEventDeleteForm.ui" />
     <QtUic Include="AttendanceEventForm.ui" />
+    <QtUic Include="BulletinBoardForm.ui" />
     <QtUic Include="ChangeDatabase.ui" />
+    <QtUic Include="ChangePassword.ui" />
     <QtUic Include="DepartmentForm.ui" />
+    <QtUic Include="EmployeeBulletins.ui" />
     <QtUic Include="EmployeeForm.ui" />
     <QtUic Include="ExceptionForm.ui" />
     <QtUic Include="IriTrackerStandard.ui" />
@@ -179,21 +192,32 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="AssignmentExceptionForm.h" />
     <ClInclude Include="AttendanceEvent.h" />
     <ClInclude Include="AttendanceEventRepository.h" />
     <ClInclude Include="AttendanceEventRepositoryMySQL.h" />
     <ClInclude Include="AttendanceEventRepositorySQLite.h" />
     <QtMoc Include="ChangeDatabase.h" />
+    <QtMoc Include="ChangePassword.h" />
+    <QtMoc Include="BulletinBoardForm.h" />
+    <ClInclude Include="BulletinBoardRepository.h" />
+    <ClInclude Include="BulletinBoardRepositoryMySQL.h" />
+    <ClInclude Include="BulletinBoardRepositorySQLite.h" />
     <ClInclude Include="DepartmentRepository.h" />
     <ClInclude Include="DepartmentRepositoryMySQL.h" />
     <ClInclude Include="DepartmentRepositorySQLite.h" />
     <QtMoc Include="ExceptionForm.h" />
+    <QtMoc Include="EmployeeBulletins.h" />
     <ClInclude Include="ExceptionRepository.h" />
     <ClInclude Include="ExceptionRepositoryMySQL.h" />
     <ClInclude Include="ExceptionRepositorySQLite.h" />
     <ClInclude Include="IDatabase.h" />
     <ClInclude Include="MySQLDatabase.h" />
     <ClInclude Include="SQLiteDatabase.h" />
+    <ClInclude Include="UserBulletinBoard.h" />
+    <ClInclude Include="UserBulletinBoardRepository.h" />
+    <ClInclude Include="UserBulletinBoardRepositoryMySQL.h" />
+    <ClInclude Include="UserBulletinBoardRepositorySQLite.h" />
     <ClInclude Include="UserRepository.h" />
     <ClInclude Include="UserRepositoryMySQL.h" />
     <ClInclude Include="UserRepositorySQLite.h" />

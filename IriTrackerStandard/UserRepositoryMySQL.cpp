@@ -33,11 +33,15 @@
     }
 
     bool UserRepositoryMySQL::update(const User& user) {
+        User existingUser = selectById(user.getUserId());
+        if (existingUser.getDepartmentId() == 0) {
+            return false;
+        }
         QSqlQuery query;
-        query.prepare("UPDATE user SET first_name = :first_name, last_name = :last_name, "
+        query.prepare("UPDATE user SET first_name = :first_name, last_name = :last_name, password = :password, "
             "date_of_birth = :date_of_birth, start_working_date = :start_working_date, "
             "is_active = :is_active, avatar = :avatar, email = :email, phone = :phone, "
-            "cell_phone = :cell_phone, address = :address, department_id = :department_id "
+            "cell_phone = :cell_phone, address = :address, department_id = :department_id, eye_right = :eye_right, eye_left = :eye_left "
             "WHERE user_id = :user_id");
 
         query.bindValue(":user_id", user.getUserId());
@@ -48,10 +52,13 @@
         query.bindValue(":is_active", user.getIsActive());
         query.bindValue(":avatar", user.getAvatar());
         query.bindValue(":email", user.getEmail());
+        query.bindValue(":password", user.getPassword());
         query.bindValue(":phone", user.getPhone());
         query.bindValue(":cell_phone", user.getCellPhone());
         query.bindValue(":address", user.getAddress());
         query.bindValue(":department_id", user.getDepartmentId());
+        query.bindValue(":eye_right", user.getEyeRight().isEmpty() ? existingUser.getEyeRight() : user.getEyeRight());
+        query.bindValue(":eye_left", user.getEyeLeft().isEmpty() ? existingUser.getEyeLeft() : user.getEyeLeft());
 
         if (!query.exec()) {
             qDebug() << "Error updating user:" << query.lastError().text();
@@ -97,8 +104,8 @@
                 query.value(10).toString(),
                 query.value(11).toString(),
                 query.value(12).toString(),
-                query.value(13).toString(),
-                query.value(14).toString(),
+                query.value(13).toByteArray(),
+                query.value(14).toByteArray(),
                 query.value(15).toDateTime(),
                 query.value(16).toDateTime(),
                 query.value(17).toInt(),
@@ -114,7 +121,7 @@
         QSqlQuery query;
         User user;
 
-        query.prepare("SELECT first_name, last_name, email, phone, cell_phone, address, is_password, "
+        query.prepare("SELECT first_name, last_name, email, phone, cell_phone, address, is_password, password, "
             "date_of_birth, start_working_date, is_active, avatar, department_id, eye_right, eye_left "
             "FROM user WHERE user_id = :user_id");
         query.bindValue(":user_id", userId);
@@ -133,13 +140,14 @@
             user.setCellPhone(query.value(4).toString());
             user.setAddress(query.value(5).toString());
             user.setIsPassword(query.value(6).toBool());
-            user.setDateOfBirth(query.value(7).toString());
-            user.setStartWorkingDate(query.value(8).toLongLong());
-            user.setIsActive(query.value(9).toBool());
-            user.setAvatar(query.value(10).toByteArray());
-            user.setDepartmentId(query.value(11).toInt());
-            user.setEyeRight(query.value(12).toString());
-            user.setEyeLeft(query.value(13).toString());
+            user.setPassword(query.value(7).toString());
+            user.setDateOfBirth(query.value(8).toString());
+            user.setStartWorkingDate(query.value(9).toLongLong());
+            user.setIsActive(query.value(10).toBool());
+            user.setAvatar(query.value(11).toByteArray());
+            user.setDepartmentId(query.value(12).toInt());
+            user.setEyeRight(query.value(13).toByteArray());
+            user.setEyeLeft(query.value(14).toByteArray());
         }
         else {
             qDebug() << "No user found with user_id:" << userId;
@@ -222,4 +230,43 @@
         }
 
         return user;
+    }
+
+    bool UserRepositoryMySQL::changePasswordAdmin(const QString& oldPassword, const QString& newPassword) {
+        QSqlQuery query;
+        User admin = selectById("admin");
+        if (oldPassword != admin.getPassword()) {
+            return false;
+        }
+        else {
+            admin.setPassword(newPassword);
+            update(admin);
+            return true;
+        }
+}
+
+    QList<QPair<QString, QPair<QByteArray, QByteArray>>> UserRepositoryMySQL::selectAllEyes() {
+        QList<QPair<QString, QPair<QByteArray, QByteArray>>> userEyes;
+
+        // Truy vấn tất cả user_id, eye_right và eye_left
+        QSqlQuery query("SELECT user_id, eye_right, eye_left FROM user WHERE eye_right IS NOT NULL AND eye_left IS NOT NULL AND is_active = true");
+
+        if (!query.exec()) {
+            qDebug() << "Error selecting eyes:" << query.lastError().text();
+            return userEyes;
+        }
+
+        while (query.next()) {
+            QString userId = query.value(0).toString();  // user_id
+            QByteArray eyeRight = query.value(1).toByteArray();  // eye_right
+            QByteArray eyeLeft = query.value(2).toByteArray();  // eye_left
+
+            // Kiểm tra nếu cả eyeRight và eyeLeft đều không rỗng
+            if (!eyeRight.isEmpty() && !eyeLeft.isEmpty()) {
+                // Thêm vào danh sách kết quả dưới dạng QPair
+                userEyes.append(qMakePair(userId, qMakePair(eyeRight, eyeLeft)));
+            }
+        }
+
+        return userEyes;
     }

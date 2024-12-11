@@ -4,6 +4,7 @@
 #include "ui_EmployeeForm.h"
 #include <QTimer>
 #include "IriTracker.h"
+#include <QThread>
 
 enum class EyeSide {
 	Left,
@@ -30,8 +31,10 @@ public slots:
 		int imageLen,
 		int imageWidth,
 		int imageHeight);
-	void onPathTemplate(QString pathTemplate);
+	void onPathTemplate(unsigned char* data, int size);
 	void processStreaming();
+
+	void changeImageDevice(bool isDevice);
 private: 
 	void btnOkClicked();
 	void btnCancelClicked();
@@ -42,13 +45,14 @@ private:
 
 	bool eventFilter(QObject* obj, QEvent* event);
 
-
 private:
 	Ui::EmployeeFormClass ui;
 	IriTracker* iriTracker;
 	QString currentAction;
 	QString userId;
 	EyeSide eyeSide = EyeSide::Unknow;
-	QString eyeRight = "";
-	QString eyeLeft = "";
+	QByteArray eyeRight = "";
+	QByteArray eyeLeft = "";
+
+	QThread* threadStream;
 };

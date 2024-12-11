@@ -15,6 +15,8 @@ public:
     virtual QList<QVariantList> selectByDepartmentId(int departmentId) = 0;
     virtual bool checkInOut(const QString& userId, const QString& password) = 0;
     virtual User checkIfAdminExist() = 0;
+    virtual bool changePasswordAdmin(const QString& oldPassword, const QString& newPassword) = 0;
+    virtual QList<QPair<QString, QPair<QByteArray, QByteArray>>> selectAllEyes() = 0;
 };
 
 #endif // USERREPOSITORY_H

@@ -44,6 +44,8 @@ void get_result_template(int times);
 
 IddkImage* get_result_image_custom(int times);
 
-QString get_result_template_custom(int times);
+IddkDataBuffer get_result_template_custom(int times);
+
+bool compare_templates_custom(int dataSize, unsigned char* data);
 
 ////////////////////////////////////////////////

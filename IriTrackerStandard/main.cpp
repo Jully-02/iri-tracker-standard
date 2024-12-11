@@ -13,17 +13,23 @@
 #include "IriTracker.h"
 #include <QDebug>
 #include <QThread>
+#include "EmployeeForm.h"
 
 int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
+    QThread* threadScanDevice = new QThread();
+    IriTracker* iriTracker = new IriTracker();
+    EmployeeForm* employeeForm = new EmployeeForm();
+    iriTracker->moveToThread(threadScanDevice);
 
-    //QThread* thread = QThread::create([]() {
-    //    IriTracker::get_divice();
-    //    });
+    QObject::connect(iriTracker, &IriTracker::onOpenDevice,
+        employeeForm, &EmployeeForm::changeImageDevice);
 
-    //// Bắt đầu thread
-    //thread->start();
+    QObject::connect(threadScanDevice, &QThread::started, iriTracker, &IriTracker::get_device);
+
+    // Bắt đầu thread
+    threadScanDevice->start();
 
     qDebug() << QSqlDatabase::drivers();
     DatabaseHelper dbHelper;
@@ -35,6 +41,10 @@ int main(int argc, char* argv[])
 
     if (DatabaseHelper::getDatabaseInstance()->getUserRepository()->checkIfAdminExist().getUserId() == "admin") {
         mainWin = new IriTrackerStandard();
+        QObject::connect(iriTracker, &IriTracker::onOpenDevice,
+            mainWin, &IriTrackerStandard::changeImageDevice);
+
+
         mainWin->show();
     }
     else {
@@ -43,6 +53,10 @@ int main(int argc, char* argv[])
 
         QObject::connect(setAdmin, &SetAdministratorPassword::adminCreated, [&]() {
             mainWin = new IriTrackerStandard();
+            QObject::connect(iriTracker, &IriTracker::onOpenDevice,
+                mainWin, &IriTrackerStandard::changeImageDevice);
+
+
             mainWin->show();
 
             setAdmin->close();  

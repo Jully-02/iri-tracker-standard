@@ -369,7 +369,7 @@ QPushButton:hover {
 }</string>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="page_notice">
      <widget class="QLabel" name="label_3">
@@ -1304,6 +1304,16 @@ QHeaderView::section {
       </attribute>
       <column>
        <property name="text">
+        <string>ID</string>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
+      </column>
+      <column>
+       <property name="text">
         <string>Title</string>
        </property>
        <property name="font">
@@ -1315,11 +1325,6 @@ QHeaderView::section {
       <column>
        <property name="text">
         <string>To Employee</string>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-        </font>
        </property>
       </column>
       <column>
@@ -1580,10 +1585,10 @@ QPushButton:hover {
        <widget class="QLabel" name="deviceLabel_4">
         <property name="geometry">
          <rect>
-          <x>130</x>
+          <x>100</x>
           <y>30</y>
-          <width>211</width>
-          <height>201</height>
+          <width>261</width>
+          <height>211</height>
          </rect>
         </property>
         <property name="autoFillBackground">
@@ -2653,6 +2658,47 @@ QPushButton:hover {
        <size>
         <width>16</width>
         <height>16</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnCreateAssignmentException">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>340</y>
+        <width>211</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+	text-align: center;
+	color: #fff;
+	background-color: rgba(70, 133, 210, 1);
+	border-radius: 4px;
+}
+
+QPushButton:hover {
+	background-color: rgba(70, 133, 210, 0.7);
+}</string>
+      </property>
+      <property name="text">
+       <string>Create Assignment Exception</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../icons/assigment.png</normaloff>../icons/assigment.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>20</width>
+        <height>20</height>
        </size>
       </property>
      </widget>

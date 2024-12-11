@@ -21,6 +21,7 @@ EmployeeForm::EmployeeForm(QWidget* parent)
 	ui.setupUi(this);
 
 	iriTracker = new IriTracker();
+	threadStream = new QThread();
 
 	QLinearGradient gradient(0, 0, 0, this->height());
 	gradient.setColorAt(0.0, Qt::white);
@@ -50,6 +51,8 @@ EmployeeForm::EmployeeForm(QWidget* parent)
 
 	connect(ui.passwordCheckbox, &QCheckBox::stateChanged, this, &EmployeeForm::updatePasswordFields);
 
+	connect(iriTracker, &IriTracker::onOpenDevice, this, &EmployeeForm::changeImageDevice, Qt::QueuedConnection);
+
 	ui.rightIrisImgLabel->installEventFilter(this);
 	ui.leftIrisImgLabel->installEventFilter(this);
 
@@ -64,39 +67,40 @@ EmployeeForm::~EmployeeForm()
 
 void EmployeeForm::processStreaming() {
 	// Tạo thread mới cho quá trình capture
-	QThread* captureThread = new QThread();
+	if (threadStream->isRunning()) {
+		threadStream->quit();
+	}
 
 	// Kết nối tín hiệu từ IriTracker đến updateFrame trong UI thread
 	connect(iriTracker, &IriTracker::imageProcessed, this, &EmployeeForm::onImageProcessed);
 	connect(iriTracker, &IriTracker::imageResult, this, &EmployeeForm::onImageProcessed);
 	connect(iriTracker, &IriTracker::resultTemplate, this, &EmployeeForm::onPathTemplate);
 
-	// Kết nối tín hiệu imageResult để dừng và xóa thread
-	//connect(iriTracker, &IriTracker::imageResult, this, [captureThread, this]() {
-	//	// Dừng luồng khi nhận được tín hiệu
-	//	captureThread->quit();
-	//	captureThread->wait(); // Chờ cho thread dừng hẳn
-	//	captureThread->deleteLater(); // Xóa thread
-	//	});
-
 	// Di chuyển IriTracker vào thread để xử lý capture
-	iriTracker->moveToThread(captureThread);
+	iriTracker->moveToThread(threadStream);
 
 	// Kết nối captureThread đã được bắt đầu để gọi run trong IriTracker
-	connect(captureThread, &QThread::started, iriTracker, &IriTracker::run);
+	connect(threadStream, &QThread::started, iriTracker, [=]() {
+		iriTracker->run(false, true, true);
+		});
+
 
 	// Bắt đầu thread
-	captureThread->start();
+	threadStream->start();
 }
 
-void EmployeeForm::onPathTemplate(QString pathTemplate) {
+
+void EmployeeForm::onPathTemplate(unsigned char* data, int size) {
+	if (threadStream && threadStream->isRunning()) {
+		threadStream->quit();
+	}
 	if (eyeSide == EyeSide::Right) {
-		qDebug() << "Eye Right: " << pathTemplate;
-		eyeRight = pathTemplate;
+		qDebug() << "Eye Right: " << FunctionPublic::templateConvertToByte(data, size);
+		eyeRight = FunctionPublic::templateConvertToByte(data,size);
 	}
 	else if (eyeSide == EyeSide::Left) {
-		qDebug() << "Eye Left: " << pathTemplate;
-		eyeLeft = pathTemplate;
+		qDebug() << "Eye Left: " << FunctionPublic::templateConvertToByte(data, size);
+		eyeLeft = FunctionPublic::templateConvertToByte(data, size);
 	}
 }
 
@@ -105,22 +109,18 @@ void EmployeeForm::onImageProcessed(unsigned char* imageData,
 	int imageLen,
 	int imageWidth,
 	int imageHeight) {
-	// Kiểm tra dữ liệu hình ảnh
 	if (imageData == nullptr || imageLen <= 0) {
 		qDebug() << "Dữ liệu hình ảnh không hợp lệ!";
 		return;
 	}
 
-	// Tạo QImage từ dữ liệu raw
 	QImage img(imageData, imageWidth, imageHeight, QImage::Format_Grayscale8);
 
-	// Kiểm tra xem ảnh đã tạo thành công chưa
 	if (img.isNull()) {
 		qDebug() << "Không thể tạo QImage từ dữ liệu hình ảnh!";
 		return;
 	}
 
-	// Chuyển đổi ảnh thành QPixmap và hiển thị trên QLabel
 	QPixmap pixmap = QPixmap::fromImage(img);
 	if (eyeSide == EyeSide::Right) {
 		ui.rightIrisImgLabel->setPixmap(pixmap.scaled(ui.rightIrisImgLabel->size(), Qt::KeepAspectRatio));
@@ -139,6 +139,8 @@ bool EmployeeForm::eventFilter(QObject* obj, QEvent* event) {
 			qDebug() << "Eye Right Clicked";
 			eyeRight = "";
 			eyeSide = EyeSide::Right;
+			/*QPixmap pixmap("D:\\IrisTech\\Project\\IriTrackerStandard\\icons\\has-device.jpg");
+			ui.leftIrisImgLabel->setPixmap(pixmap.scaled(ui.leftIrisImgLabel->size(), Qt::KeepAspectRatio));*/
 			processStreaming();
 			return true;
 		}
@@ -146,6 +148,8 @@ bool EmployeeForm::eventFilter(QObject* obj, QEvent* event) {
 			qDebug() << "Eye Left Clicked";
 			eyeLeft = "";
 			eyeSide = EyeSide::Left;
+			/*QPixmap pixmap("D:\\IrisTech\\Project\\IriTrackerStandard\\icons\\has-device.jpg");
+			ui.rightIrisImgLabel->setPixmap(pixmap.scaled(ui.rightIrisImgLabel->size(), Qt::KeepAspectRatio));*/
 			processStreaming();
 			return true;
 		}
@@ -238,11 +242,9 @@ void EmployeeForm::handleFormAction(const QString& action, QString id) {
 
 			qint64 startWorkingTimestamp = user.getStartWorkingDate();
 
-			// Chuyển đổi qint64 thành QDateTime, sau đó lấy QDate
 			QDateTime workingDateTime = QDateTime::fromSecsSinceEpoch(startWorkingTimestamp);
 			QDate workingDate = workingDateTime.date();
 
-			// Kiểm tra tính hợp lệ và đặt giá trị cho QDateEdit
 			if (workingDate.isValid()) {
 				ui.workingDateEdit->setDate(workingDate);
 			}
@@ -393,5 +395,17 @@ void EmployeeForm::btnCancelClicked() {
 	}
 	else {
 		this->close();
+	}
+}
+
+void EmployeeForm::changeImageDevice(bool isDevice) {
+	if (isDevice) {
+		QPixmap pixmap("D:\\IrisTech\\Project\\IriTrackerStandard\\icons\\has-device.jpg");
+		ui.rightIrisImgLabel->setPixmap(pixmap.scaled(ui.rightIrisImgLabel->size(), Qt::KeepAspectRatio));
+		ui.leftIrisImgLabel->setPixmap(QPixmap("../icons/has-device.jpg"));
+	}
+	else {
+		ui.rightIrisImgLabel->setPixmap(QPixmap("../icons/no-device.jpg"));
+		ui.leftIrisImgLabel->setPixmap(QPixmap("../icons/no-device.jpg"));
 	}
 }

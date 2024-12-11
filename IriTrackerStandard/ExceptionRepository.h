@@ -11,6 +11,7 @@ public:
     virtual bool deleteItem(int id) = 0;
     virtual QList<Exception> selectAll() = 0;
     virtual Exception selectById(int id) = 0;
+    virtual bool selectByName(const QString& name) = 0;
 };
 
 #endif // EXCEPTIONREPOSITORY_H

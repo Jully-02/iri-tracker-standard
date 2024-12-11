@@ -5,6 +5,7 @@
 #include <QList>
 #include "AttendanceEvent.h"
 #include <QPushButton>
+#include <QThread>
 
 class IriTrackerStandard : public QMainWindow
 {
@@ -13,6 +14,15 @@ class IriTrackerStandard : public QMainWindow
 public:
     IriTrackerStandard(QWidget *parent = nullptr);
     ~IriTrackerStandard();
+
+    void changeImageDevice(bool isDevice);
+
+    void onImageProcessed(unsigned char* imageData,
+        int imageLen,
+        int imageWidth,
+        int imageHeight);
+
+    void onPathTemplate();
 
 private:
     void btnLoginClicked();
@@ -49,24 +59,45 @@ private:
 
 
     // Function of Tools
-    //void btnBackupClicked();
+    void btnBackupClicked();
     void btnChangeDBClicked();
-    //void btnChangePasswordClicked();
+    void btnChangePasswordClicked();
     //void btnSettingClicked();
-    //void btnRestoreClicked();
+    void btnRestoreClicked();
+
+    void btnAssignmentExceptionClicked();
 
     void onLoadEvent();
 
     void handleViewFormCombobox();
     void btnToolClicked();
+
+    void checkInOutSuccess(QString userId);
+
+    // Function of Bulletin Board
+    void btnBullentinClicked();
+    
+    void btnBullentinBoardAddClicked();
+    void btnBullentinBoardEditClicked();
+    void btnBullentinBoardDeleteClicked();
+
 private slots:
     void onUserItemClicked(const QModelIndex& index);
+
 
 signals:
     void departmentFormOpened(const QString& action, int id = -1, const QString& name = QString(), const QString& description = QString());
     void employeeFormOpened(const QString& action, QString id = "");
     void attendanceEventFormOpened(const QString& action, const QString& userId, int id = -1);
     void attendanceEventDeleteFormOpened(const QString& userId, int id = -1);
+
+    void exceptionFormOpened(const QString& action, int exceptionId = -1);
+
+    void bulletinBoardFormOpened(const QString& action, int bulletinBoardId = -1);
+
+    void employeeBulletinsOpened(const QString& userId);
+
+    void screenIndexOpened(int index);
 private:
     Ui::IriTrackerStandardClass ui;
 
@@ -82,4 +113,6 @@ private:
     QPushButton* checkButton;
     QPushButton* backButtonS;
     QGridLayout* mainLayout;
+
+    QThread* threadStream;
 };

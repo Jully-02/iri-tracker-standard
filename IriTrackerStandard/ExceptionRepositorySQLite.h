@@ -12,11 +12,12 @@ public:
     ExceptionRepositorySQLite() = default;
     ~ExceptionRepositorySQLite() = default;
 
-    virtual bool insert(const Exception& exception) override;
-    virtual bool update(const Exception& exception) override;
-    virtual bool deleteItem(int id) override;
-    virtual QList<Exception> selectAll() override;
-    virtual Exception selectById(int id) override;
+    bool insert(const Exception& exception) override;
+    bool update(const Exception& exception) override;
+    bool deleteItem(int id) override;
+    QList<Exception> selectAll() override;
+    Exception selectById(int id) override;
+    bool selectByName(const QString& name) override;
 };
 
 #endif // EXCEPTIONREPOSITORYSQLITE_H
