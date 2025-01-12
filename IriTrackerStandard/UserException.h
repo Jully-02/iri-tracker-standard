@@ -37,13 +37,13 @@ public:
     void setExceptionId(const QString& exceptionId);
 
 private:
-    QString m_userExceptionId; // ID của ngoại lệ người dùng
-    qint64 m_startDate;     // Ngày bắt đầu
-    qint64 m_endDate;       // Ngày kết thúc
-    bool m_isAllDate;          // Cờ cho biết có phải là tất cả các ngày không
-    int m_dayOfWeek;           // Ngày trong tuần
-    QString m_userId;          // ID của người dùng
-    QString m_exceptionId;     // ID của ngoại lệ
+    QString m_userExceptionId;  
+    qint64 m_startDate;     
+    qint64 m_endDate;      
+    bool m_isAllDate;          
+    int m_dayOfWeek;          
+    QString m_userId;          
+    QString m_exceptionId;     
 };
 
 #endif // USEREXCEPTION_H

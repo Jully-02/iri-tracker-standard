@@ -115,7 +115,6 @@ QList<User> UserRepositorySQLite::selectAll(bool condition) {
 
 }
 
-// Các phương thức đặc thù cho User
 User UserRepositorySQLite::selectById(QString userId) {
 	QSqlQuery query;
 	User user;
@@ -170,9 +169,9 @@ QList<QVariantList> UserRepositorySQLite::selectByDepartmentId(int departmentId)
 
 	while (queryUsers.next()) {
 		QVariantList user;
-		user.append(queryUsers.value(0)); // user_id
-		user.append(queryUsers.value(1)); // first_name
-		user.append(queryUsers.value(2)); // last_name
+		user.append(queryUsers.value(0)); 
+		user.append(queryUsers.value(1));
+		user.append(queryUsers.value(2)); 
 
 		users.append(user);
 	}
@@ -247,7 +246,6 @@ bool UserRepositorySQLite::changePasswordAdmin(const QString& oldPassword, const
 QList<QPair<QString, QPair<QByteArray, QByteArray>>> UserRepositorySQLite::selectAllEyes() {
 	QList<QPair<QString, QPair<QByteArray, QByteArray>>> userEyes;
 
-	// Truy vấn tất cả user_id, eye_right và eye_left
 	QSqlQuery query("SELECT user_id, eye_right, eye_left FROM user WHERE (eye_right IS NOT NULL OR eye_left IS NOT NULL) AND is_active = true");
 
 	if (!query.exec()) {
@@ -255,15 +253,12 @@ QList<QPair<QString, QPair<QByteArray, QByteArray>>> UserRepositorySQLite::selec
 		return userEyes;
 	}
 
-	// Lặp qua kết quả và lấy thông tin
 	while (query.next()) {
-		QString userId = query.value(0).toString();  // user_id
-		QByteArray eyeRight = query.value(1).toByteArray();  // eye_right
-		QByteArray eyeLeft = query.value(2).toByteArray();  // eye_left
+		QString userId = query.value(0).toString(); 
+		QByteArray eyeRight = query.value(1).toByteArray();  
+		QByteArray eyeLeft = query.value(2).toByteArray();  
 
-		// Kiểm tra nếu cả eyeRight và eyeLeft đều không rỗng
 		if (!eyeRight.isEmpty() || !eyeLeft.isEmpty()) {
-			// Thêm vào danh sách kết quả dưới dạng QPair
 			userEyes.append(qMakePair(userId, qMakePair(eyeRight, eyeLeft)));
 		}
 	}

@@ -253,7 +253,7 @@ void IriTrackerStandard::loadDepartmentsAndUsers() {
 			if (parentIndex.isValid()) {
 				QString selectedUser = current.data().toString();
 				ui.nameInOutEdit->setText(selectedUser);
-				// Tách lấy userId từ chuỗi selectedUser
+				// Extract userId from selectedUser string
 				int startPos = selectedUser.lastIndexOf('(');
 				int endPos = selectedUser.lastIndexOf(')');
 				QString userId;
@@ -354,21 +354,21 @@ void IriTrackerStandard::checkInOutSuccess(QString userId) {
 
 	if (success) {
 		ui.checkInOutStackedWidget->setCurrentIndex(2);
-		// Cập nhật trạng thái nút và trường password
+		// Update button state and password field
 		ui.passwordInOutEdit->setText("");
 		bool isOrphan = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->checkForOrphanInEvents(userId);
 
 		ui.btnCheckInOut->setText(isOrphan ? "Check In" : "Check Out");
 
-		// Lấy thông tin người dùng
+		// Get user information
 		User user = DatabaseHelper::getDatabaseInstance()->getUserRepository()->selectById(userId);
 
-		// Tính toán thời gian làm việc
+		// Calculate working time
 		double todayWorkHours = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->calculateTotalHours(userId, "Today");
 		double weekWorkHours = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->calculateTotalHours(userId, "This Week");
 		double monthWorkHours = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->calculateTotalHours(userId, "This Month");
 
-		// Hiển thị thông tin
+		// Display information
 		//QString welcomeMessage = (checkType == "Check In") ? "Welcome" : "Goodbye";
 		QString welcomeMessage = isOrphan ? "Goodbye" : "Welcome";
 
@@ -386,7 +386,7 @@ void IriTrackerStandard::checkInOutSuccess(QString userId) {
 		ui.thisMonthLabel_4->setText("     This month: " + QString::number(monthWorkHours, 'f', 2) + " hours");
 
 		QSettings settings("config.ini", QSettings::IniFormat);
-		// Đọc giá trị
+		// Read value
 		QString language = settings.value("General/language", "en").toString();
 		qDebug() << "LANGUAGE: " << language;
 		if (!isOrphan) {
@@ -486,19 +486,19 @@ void IriTrackerStandard::btnDepartmentClicked() {
 	ui.tableDepartment->verticalHeader()->setVisible(false);
 	ui.tableDepartment->setColumnHidden(0, true);
 
-	// Lấy danh sách các phòng ban từ lớp Department
+	// Get the list of departments from the Department class
 	QList<Department> departments = DatabaseHelper::getDatabaseInstance()->getDepartmentRepository()->selectAll(true);
 
 	for (const Department& dept : departments) {
 		int row = ui.tableDepartment->rowCount();
 		ui.tableDepartment->insertRow(row);
 
-		// Thêm dữ liệu vào bảng
+		// Add data to the table
 		ui.tableDepartment->setItem(row, 0, new QTableWidgetItem(QString::number(dept.getDepartmentId())));
 		ui.tableDepartment->setItem(row, 1, new QTableWidgetItem(dept.getName()));
 		ui.tableDepartment->setItem(row, 2, new QTableWidgetItem(dept.getDesc()));
 
-		// Tô màu cho hàng
+		// Color the row
 		QColor rowColor = (row % 2 == 0) ? QColor("#e3e9f1") : QColor("#dbdbd8");
 		for (int col = 0; col < ui.tableDepartment->columnCount(); ++col) {
 			QTableWidgetItem* item = ui.tableDepartment->item(row, col);
@@ -510,7 +510,7 @@ void IriTrackerStandard::btnDepartmentClicked() {
 
 	ui.tableDepartment->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-	// Kết nối sự kiện khi click vào ô
+	// Connect the event when clicking on the cell
 	connect(ui.tableDepartment, &QTableWidget::cellClicked, this, [this](int row, int column) {
 		ui.tableDepartment->selectRow(row);
 		ui.tableDepartment->setCurrentItem(ui.tableDepartment->item(row, column));
@@ -522,38 +522,38 @@ void IriTrackerStandard::btnEmployeeClicked() {
 	emit screenIndexOpened(3);
 	initializeBackButton();
 
-	// Reset lại bảng
+	// Reset the table
 	ui.tableEmployee->setRowCount(0);
-	ui.tableEmployee->verticalHeader()->setVisible(false);  // Không ẩn cột id
+	ui.tableEmployee->verticalHeader()->setVisible(false);  // Do not hide the id column
 
-	// Lấy danh sách người dùng
+	// Get list of users
 	QList<User> users = DatabaseHelper::getDatabaseInstance()->getUserRepository()->selectAll();
 
-	// Lấy danh sách phòng ban
-	QList<Department> departments = DatabaseHelper::getDatabaseInstance()->getDepartmentRepository()->selectAll(false); // Truy vấn tất cả phòng ban đang hoạt động
+	// Get the list of departments
+	QList<Department> departments = DatabaseHelper::getDatabaseInstance()->getDepartmentRepository()->selectAll(false); // Query all active departments
 
-	// Tạo một bảng ánh xạ departmentId với departmentName
+	// Create a table mapping departmentId to departmentName
 	QMap<int, QString> departmentMap;
 	for (const Department& dep : departments) {
 		departmentMap.insert(dep.getDepartmentId(), dep.getName());
 	}
 
-	// Duyệt qua danh sách người dùng và thêm vào bảng
+	// Browse the user list and add to the table
 	for (const User& user : users) {
-		QString userId = user.getUserId();  // Lấy userId trực tiếp từ đối tượng User
+		QString userId = user.getUserId();  // Get userId directly from the User object
 		QString firstName = user.getFirstName();
 		QString lastName = user.getLastName();
 		QString dateOfBirth = user.getDateOfBirth();
 		qint64 startWorkingTimestamp = user.getStartWorkingDate();
 
-		// Chuyển đổi qint64 thành QDateTime, sau đó lấy QDate
+		// Convert qint64 to QDateTime, then get QDate
 		QDateTime workingDateTime = QDateTime::fromSecsSinceEpoch(startWorkingTimestamp);
 		QDate workingDate = workingDateTime.date();
 		int departmentId = user.getDepartmentId();
 		int isActive = user.getIsActive();
 
-		// Lấy tên phòng ban từ bảng ánh xạ
-		QString departmentName = departmentMap.value(departmentId, "N/A"); // Nếu không tìm thấy, dùng "N/A"
+		// Get the department name from the mapping table
+		QString departmentName = departmentMap.value(departmentId, "N/A"); // If not found, use "N/A"
 		QString type = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->getLastAttendanceType(userId);
 		int row = ui.tableEmployee->rowCount();
 		ui.tableEmployee->insertRow(row);
@@ -566,7 +566,7 @@ void IriTrackerStandard::btnEmployeeClicked() {
 		ui.tableEmployee->setItem(row, 5, new QTableWidgetItem(departmentName));
 		ui.tableEmployee->setItem(row, 6, new QTableWidgetItem(isActive == 1 ? "Active" : "Disable"));
 
-		// Đặt màu nền cho hàng
+		// Set background color for row
 		QColor rowColor = (row % 2 == 0) ? QColor("#e3e9f1") : QColor("#dbdbd8");
 		for (int col = 0; col < ui.tableEmployee->columnCount(); ++col) {
 			QTableWidgetItem* item = ui.tableEmployee->item(row, col);
@@ -578,7 +578,7 @@ void IriTrackerStandard::btnEmployeeClicked() {
 
 	ui.tableEmployee->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-	// Kết nối sự kiện khi click vào ô
+	// Connect the event when clicking on the cell
 	connect(ui.tableEmployee, &QTableWidget::cellClicked, this, [this](int row, int column) {
 		ui.tableEmployee->selectRow(row);
 		ui.tableEmployee->setCurrentItem(ui.tableEmployee->item(row, column));
@@ -611,7 +611,7 @@ void IriTrackerStandard::btnDepartmentEditClicked() {
 	int currentRow = ui.tableDepartment->currentRow();
 
 	if (currentRow < 0) {
-		qDebug() << "Vui lòng chọn một hàng để chỉnh sửa!";
+		qDebug() << "Please select a row to edit!";
 		return;
 	}
 
@@ -672,7 +672,7 @@ void IriTrackerStandard::btnEmployeeEditClicked() {
 	int currentRow = ui.tableEmployee->currentRow();
 
 	if (currentRow < 0) {
-		qDebug() << "Vui lòng chọn một hàng để chỉnh sửa!";
+		qDebug() << "Please select a row to edit!";
 		return;
 	}
 
@@ -716,7 +716,7 @@ void IriTrackerStandard::btnEmployeeDeleteClicked() {
 }
 
 void IriTrackerStandard::btnEventClicked() {
-	// Các dòng mã hiện tại trong btnEventClicked
+	// Current lines of code in btnEventClicked
 	ui.stackedWidget->setCurrentIndex(6);
 	initializeBackButton();
 	QList<Department> departmentsList = DatabaseHelper::getDatabaseInstance()->getDepartmentRepository()->selectAll(false);
@@ -736,7 +736,7 @@ void IriTrackerStandard::btnEventClicked() {
 			QString userDisplay = QString("%1 (%2)").arg(fullname).arg(userId);
 
 			QStandardItem* userItem = new QStandardItem(userDisplay);
-			userItem->setData(userId, Qt::UserRole);  // Lưu userId vào item data
+			userItem->setData(userId, Qt::UserRole);  // Save userId into item data
 			departmentItem->appendRow(userItem);
 
 			totalEmployees++;
@@ -772,13 +772,13 @@ void IriTrackerStandard::btnEventClicked() {
 		loadDepartmentsAndUsers();
 		});
 
-	// Bắt sự kiện khi người dùng click vào một item trong treeView
+	// Catch an event when the user clicks on an item in treeView
 	connect(ui.treeViewAttendanceEvent, &QTreeView::clicked, this, &IriTrackerStandard::onUserItemClicked);
 }
 
 void IriTrackerStandard::onUserItemClicked(const QModelIndex& index) {
-	selectedEventUserId = index.data(Qt::UserRole).toString();  // Lấy userId từ item data
-	// Gọi hàm để lấy danh sách sự kiện điểm danh của user
+	selectedEventUserId = index.data(Qt::UserRole).toString();  // Get userId from item data
+	// Call the function to get the list of user attendance events
 	onLoadEvent();
 }
 
@@ -795,28 +795,28 @@ void IriTrackerStandard::onLoadEvent() {
 
 	QList<AttendanceEvent> attendanceEvents = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->selectAttendanceEventByUserId(selectedEventUserId, timeFilter);
 
-	// Xóa dữ liệu hiện tại trong bảng
+	// Delete current data in the table
 	ui.attendanceEventsTable->setRowCount(0);
 	ui.attendanceEventsTable->verticalHeader()->setVisible(false);
 	ui.attendanceEventsTable->setColumnHidden(0, true);
 
-	// Duyệt qua danh sách và thêm dữ liệu vào bảng
+	// Browse through the list and add data to the table
 	for (const AttendanceEvent& event : attendanceEvents) {
 		int row = ui.attendanceEventsTable->rowCount();
 		ui.attendanceEventsTable->insertRow(row);
 
-		// Chuyển đổi qint64 (Unix timestamp) thành chuỗi định dạng ngày và giờ
+		// Convert qint64 (Unix timestamp) to a date and time format string
 		qint64 timestamp = event.getDate();
 		QDateTime dateTime = QDateTime::fromSecsSinceEpoch(timestamp);
-		QString date = dateTime.date().toString("MM/dd/yyyy"); // Định dạng ngày
-		QString time = dateTime.time().toString("hh:mm:ss AP"); // Định dạng thời gian
+		QString date = dateTime.date().toString("MM/dd/yyyy"); 
+		QString time = dateTime.time().toString("hh:mm:ss AP"); 
 		ui.attendanceEventsTable->setItem(row, 0, new QTableWidgetItem(QString::number(event.getAttendanceEventId())));
 		ui.attendanceEventsTable->setItem(row, 1, new QTableWidgetItem(event.getType()));
 		ui.attendanceEventsTable->setItem(row, 2, new QTableWidgetItem(date));
 		ui.attendanceEventsTable->setItem(row, 3, new QTableWidgetItem(time));
-		ui.attendanceEventsTable->setItem(row, 4, new QTableWidgetItem("")); // Để trống cho cột Exception
+		ui.attendanceEventsTable->setItem(row, 4, new QTableWidgetItem("")); // Leave the Exception column blank
 
-		// Tô màu cho hàng (giống như trong tableDepartment)
+		
 		QColor rowColor = (row % 2 == 0) ? QColor("#e3e9f1") : QColor("#dbdbd8");
 		for (int col = 0; col < ui.attendanceEventsTable->columnCount(); ++col) {
 			QTableWidgetItem* item = ui.attendanceEventsTable->item(row, col);
@@ -844,7 +844,7 @@ void IriTrackerStandard::btnEditEventClicked() {
 	int currentRow = ui.attendanceEventsTable->currentRow();
 
 	if (currentRow < 0) {
-		qDebug() << "Vui lòng chọn một hàng để chỉnh sửa!";
+		qDebug() << "Please select a row to edit!";
 		return;
 	}
 	int eventId = ui.attendanceEventsTable->item(currentRow, 0)->text().toInt();
@@ -861,18 +861,17 @@ void IriTrackerStandard::btnEditEventClicked() {
 }
 
 void IriTrackerStandard::btnCheckoutEventClicked() {
-	// Lấy thời gian hiện tại
 	QDateTime currentDateTime = QDateTime::currentDateTime();
 
-	// Định dạng thời gian hiện tại theo kiểu "MM/dd/yyyy hh:mm:ss AP"
+	//Format the current time as "MM/dd/yyyy hh:mm:ss AP"
 	QString formattedTime = currentDateTime.toString("MM/dd/yyyy hh:mm:ss AP");
 	qDebug() << "Current Time (formatted):" << formattedTime;
 
-	// Chuyển đổi QDateTime thành qint64 (timestamp)
+	// Convert QDateTime to qint64 (timestamp)
 	qint64 timestamp = currentDateTime.toSecsSinceEpoch();
 	qDebug() << "Current Time (qint64):" << timestamp;
 
-	// Mở hộp thoại xác nhận
+	// Open confirmation dialog
 	QMessageBoxCustom checkoutDialog;
 	checkoutDialog.setQuestionLabel(tr("Do you want to check out this employee?"));
 	checkoutDialog.setWindowTitleCustom(tr("Check out employee"));
@@ -903,7 +902,7 @@ void IriTrackerStandard::btnDeleteEventClicked() {
 	int currentRow = ui.attendanceEventsTable->currentRow();
 
 	if (currentRow < 0) {
-		qDebug() << "Vui lòng chọn một hàng để chỉnh sửa!";
+		qDebug() << "Please select a row to edit!";
 		return;
 	}
 	int eventId = ui.attendanceEventsTable->item(currentRow, 0)->text().toInt();
@@ -940,14 +939,12 @@ void IriTrackerStandard::btnExceptionClicked() {
 
 		qint64 seconds = exp.getPaidHours();
 
-		// Thêm dữ liệu vào bảng
 		ui.tableException->setItem(row, 0, new QTableWidgetItem((QString::number(exp.getExceptionId()))));
 		ui.tableException->setItem(row, 1, new QTableWidgetItem(exp.getName()));
 		ui.tableException->setItem(row, 2, new QTableWidgetItem(QTime(seconds / 3600, (seconds % 3600) / 60).toString("HH:mm")));
 		ui.tableException->setItem(row, 3, new QTableWidgetItem(QString::number(exp.getPaidCoefficient(), 'f', 2)));
 		ui.tableException->setItem(row, 4, new QTableWidgetItem(QString::number(exp.getWorkCoefficient(), 'f', 2)));
 
-		// Tô màu cho hàng
 		QColor rowColor = (row % 2 == 0) ? QColor("#e3e9f1") : QColor("#dbdbd8");
 		for (int col = 0; col < ui.tableException->columnCount(); ++col) {
 			QTableWidgetItem* item = ui.tableException->item(row, col);
@@ -959,7 +956,7 @@ void IriTrackerStandard::btnExceptionClicked() {
 
 	ui.tableException->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-	// Kết nối sự kiện khi click vào ô
+	// Connect the event when clicking on the cell
 	connect(ui.tableException, &QTableWidget::cellClicked, this, [this](int row, int column) {
 		ui.tableException->selectRow(row);
 		ui.tableException->setCurrentItem(ui.tableException->item(row, column));
@@ -980,7 +977,7 @@ void IriTrackerStandard::btnEditExceptionClicked() {
 	int currentRow = ui.tableException->currentRow();
 
 	if (currentRow < 0) {
-		qDebug() << "Vui lòng chọn một hàng để chỉnh sửa!";
+		qDebug() << "Please select a row to edit!";
 		return;
 	}
 	int exceptionId = ui.tableException->item(currentRow, 0)->text().toInt();
@@ -1042,7 +1039,7 @@ void IriTrackerStandard::btnBackupClicked() {
 	msgBox.setWindowTitleCustom(tr("Backup Database Warning"));
 
 	if (msgBox.exec() == QDialog::Accepted) {
-		// Mở hộp thoại để chọn đường dẫn lưu file
+		// Open a dialog box to select the path to save the file
 		qDebug() << DatabaseHelper::getDatabase().driverName();
 		QString backupPath = QFileDialog::getSaveFileName(this,
 			"Backup Database IriTracker",
@@ -1050,10 +1047,10 @@ void IriTrackerStandard::btnBackupClicked() {
 			"Database Files (*.db *.sqlite *.sql);;All Files (*)");
 
 		if (!backupPath.isEmpty()) {
-			// Đường dẫn database gốc
+			// Original database path
 			QString dbPath = DatabaseHelper::getDatabaseName();
 
-			// Gọi hàm backup
+			// Call the backup function
 			DatabaseHelper dbHelper;
 			if (dbHelper.backupDatabase(dbPath, backupPath)) {
 				QMessageBox::information(this, tr("Backup Success"), tr("Database has been backed up successfully!"));
@@ -1079,18 +1076,18 @@ void IriTrackerStandard::btnRestoreClicked() {
 	msgBox.setQuestionLabel(tr("This will use the backup database to overwite all the existing IriTracker data. \nAre you sure you want to do this ? "));
 	msgBox.setWindowTitleCustom(tr("Restore Database Warning"));
 	if (msgBox.exec() == QDialog::Accepted) {
-		// Mở hộp thoại để chọn file backup để restore
+		// Open a dialog box to select the backup file to restore
 		QString backupPath = QFileDialog::getOpenFileName(this,
 			"Restore Database IriTracker",
 			DatabaseHelper::getDatabase().driverName() == "QSQLITE" ? QDir::homePath() + "/iri-tracker-standard.db" : QDir::homePath() + "/iri-tracker-standard.sql",
 			"Database Files (*.db *.sqlite *.sql);;All Files (*)");
 
 		if (!backupPath.isEmpty()) {
-			// Đường dẫn database gốc
+			// Original database path
 			QString dbPath = DatabaseHelper::getDatabaseName();
 			qDebug() << backupPath;
 
-			// Gọi hàm restore
+			// Call restore function
 			bool isCheck = false;
 			if (DatabaseHelper::getCurrentDatabaseType() == DatabaseType::SQLite) {
 				isCheck = DatabaseHelper::restoreSQLiteFromFile(dbPath, backupPath);
@@ -1137,7 +1134,6 @@ void IriTrackerStandard::btnBullentinClicked() {
 		int row = ui.tableDepartment->rowCount();
 		ui.tableBullentinBoard->insertRow(row);
 
-		// Thêm dữ liệu vào bảng
 		ui.tableBullentinBoard->setItem(row, 0, new QTableWidgetItem(QString::number(bulletinBoard.getBulletinBoardId())));
 		ui.tableBullentinBoard->setItem(row, 1, new QTableWidgetItem(bulletinBoard.getTitle()));
 		ui.tableBullentinBoard->setItem(row, 2, new QTableWidgetItem(bulletinBoard.getToEmployee()));
@@ -1151,9 +1147,9 @@ void IriTrackerStandard::btnBullentinClicked() {
 		ui.tableBullentinBoard->setItem(row, 4, new QTableWidgetItem(endDate.toString("MM/dd/yyyy")));
 
 		QCheckBox* checkBox = new QCheckBox();
-		checkBox->setChecked(bulletinBoard.getIsActive() == 1); // Nếu là 1 thì check, ngược lại bỏ check
+		checkBox->setChecked(bulletinBoard.getIsActive() == 1); // If it is 1 then check, otherwise uncheck
 
-		// Tạo một widget để chứa checkbox và căn giữa nó trong ô
+		// Create a widget to contain the checkbox and center it in the cell
 		QWidget* checkBoxWidget = new QWidget();
 		QHBoxLayout* layout = new QHBoxLayout(checkBoxWidget);
 		layout->addWidget(checkBox);
@@ -1163,7 +1159,6 @@ void IriTrackerStandard::btnBullentinClicked() {
 
 		ui.tableBullentinBoard->setCellWidget(row, 5, checkBoxWidget);
 
-		// Tô màu cho hàng
 		QColor rowColor = (row % 2 == 0) ? QColor("#e3e9f1") : QColor("#dbdbd8");
 		for (int col = 0; col < ui.tableBullentinBoard->columnCount(); ++col) {
 			QTableWidgetItem* item = ui.tableBullentinBoard->item(row, col);
@@ -1175,7 +1170,7 @@ void IriTrackerStandard::btnBullentinClicked() {
 
 	ui.tableBullentinBoard->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-	// Kết nối sự kiện khi click vào ô
+	// Connect the event when clicking on the cell
 	connect(ui.tableBullentinBoard, &QTableWidget::cellClicked, this, [this](int row, int column) {
 		ui.tableBullentinBoard->selectRow(row);
 		ui.tableBullentinBoard->setCurrentItem(ui.tableBullentinBoard->item(row, column));
@@ -1198,7 +1193,7 @@ void IriTrackerStandard::btnBullentinBoardEditClicked() {
 	int currentRow = ui.tableBullentinBoard->currentRow();
 
 	if (currentRow < 0) {
-		qDebug() << "Vui lòng chọn một hàng để chỉnh sửa!";
+		qDebug() << "Please select a row to edit!";
 		return;
 	}
 
@@ -1233,14 +1228,14 @@ void IriTrackerStandard::changeImageDevice(bool isDevice) {
 
 void IriTrackerStandard::processStreaming() {
 	if (ui.stackedWidget->currentIndex() == 5) {
-		// Kết nối tín hiệu từ IriTracker đến updateFrame trong UI thread
+		// Connect the signal from IriTracker to updateFrame in the UI thread
 		connect(iriTracker, &IriTracker::imageProcessedForInOut, this, &IriTrackerStandard::onImageProcessed);
 		connect(iriTracker, &IriTracker::resultTemplateForInOut, this, &IriTrackerStandard::onPathTemplate);
 
-		// Di chuyển IriTracker vào thread để xử lý capture
+		// Move IriTracker into the thread to handle capture
 		iriTracker->moveToThread(threadStream);
 
-		// Kết nối captureThread đã được bắt đầu để gọi run trong IriTracker
+		// The captureThread connection has been started to call run in IriTracker
 		connect(threadStream, &QThread::started, iriTracker, [=]() {
 			while (true)
 			{
@@ -1251,7 +1246,7 @@ void IriTrackerStandard::processStreaming() {
 			}
 			});
 
-		// Bắt đầu thread
+		// Start thread
 		threadStream->start();
 	}
 }
@@ -1260,22 +1255,22 @@ void IriTrackerStandard::onImageProcessed(unsigned char* imageData,
 	int imageLen,
 	int imageWidth,
 	int imageHeight) {
-	// Kiểm tra dữ liệu hình ảnh
+	// Check image data
 	if (imageData == nullptr || imageLen <= 0) {
 		qDebug() << "Dữ liệu hình ảnh không hợp lệ!";
 		return;
 	}
 
-	// Tạo QImage từ dữ liệu raw
+	// Create QImage from raw data
 	QImage img(imageData, imageWidth, imageHeight, QImage::Format_Grayscale8);
 
-	// Kiểm tra xem ảnh đã tạo thành công chưa
+	// Check if the image was created successfully
 	if (img.isNull()) {
 		qDebug() << "Không thể tạo QImage từ dữ liệu hình ảnh!";
 		return;
 	}
 
-	// Chuyển đổi ảnh thành QPixmap và hiển thị trên QLabel
+	// Convert image to QPixmap and display on QLabel
 	QPixmap pixmap = QPixmap::fromImage(img);
 	ui.deviceLabel_4->setPixmap(pixmap.scaled(ui.deviceLabel_4->size(), Qt::KeepAspectRatio));
 }
@@ -1307,7 +1302,7 @@ void IriTrackerStandard::btnSettingClicked() {
 
 void IriTrackerStandard::loadLanguage(const QString& language)
 {
-	// Nạp file dịch tương ứng
+	// Load the corresponding translation file
 	if (language == "en") {
 		if (translator.load("../translations/translations_en.qm")) {
 			qDebug() << "English language loaded successfully.";
@@ -1326,10 +1321,10 @@ void IriTrackerStandard::loadLanguage(const QString& language)
 
 	}
 
-	// Cài đặt translator mới
+	// Install new translator
 	qApp->installTranslator(&translator);
 
-	// Cập nhật lại giao diện
+	// Update the interface again
 	ui.retranslateUi(this);
 	SingletonManager::getInstance().getEmployeeForm()->getUi().retranslateUi(SingletonManager::getInstance().getEmployeeForm());
 }

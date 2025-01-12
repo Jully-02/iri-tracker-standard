@@ -53,32 +53,32 @@ void ChangePassword::btnOkClicked() {
 }
 
 void ChangePassword::checkInputFields() {
-    // Kiểm tra độ dài của các trường
+    // Check the length of fields
     bool enableButton = ui.oldPasswordEdit->text().length() >= 4 &&
         ui.newPasswordEdit->text().length() >= 4 &&
         ui.retypeEdit->text().length() >= 4;
 
-    // Cập nhật trạng thái nút btnOK
+    // Update btnOK button status
     ui.btnOK->setEnabled(enableButton);
 
-    // Lấy giá trị từ các trường nhập liệu
+    // Get values ​​from input fields
     QString oldPassword = ui.oldPasswordEdit->text();
     QString newPassword = ui.newPasswordEdit->text();
     QString retypePassword = ui.retypeEdit->text();
 
-    // Kiểm tra nếu newPassword giống oldPassword
+    // Check if newPassword is the same as oldPassword
     if (newPassword == oldPassword) {
         ui.errorLabel->setText("    New password and old password are the same");
         ui.errorLabel->setStyleSheet("background-color: red; color: white;");
         ui.btnOK->setEnabled(false);
     }
-    // Kiểm tra nếu retypePassword không giống newPassword
+    // Check if retypePassword is not the same as newPassword
     else if (retypePassword != newPassword) {
         ui.errorLabel->setText("    The retype password is not the same as the new password");
         ui.errorLabel->setStyleSheet("background-color: red; color: white;");
         ui.btnOK->setEnabled(false);
     }
-    // Nếu không có lỗi, ẩn errorLabel
+    // If there are no errors, hide errorLabel
     else {
         ui.errorLabel->clear();
         ui.errorLabel->setStyleSheet(""); 

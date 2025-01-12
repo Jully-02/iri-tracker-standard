@@ -122,37 +122,37 @@ bool DatabaseHelper::backupSQLite(const QString& dbPath, const QString& backupPa
 
 
 bool DatabaseHelper::backupMySQL(const QString& backupPath) {
-    // Kiểm tra thông tin kết nối
+    // Check connection information
     qDebug() << "Backup Path: " << backupPath;
     if (m_hostName.isEmpty() || m_userName.isEmpty() || databaseName.isEmpty()) {
         qDebug() << "Missing MySQL connection details. Cannot perform backup.";
         return false;
     }
 
-    // Xây dựng lệnh mysqldump
+    // Build the mysqldump command
     QStringList arguments;
-    arguments << "--column-statistics=0" // Tắt column statistics
+    arguments << "--column-statistics=0" // Turn off column statistics
         << "-h" << m_hostName
         << "-u" << m_userName
-        << "--password=" + m_password // Mật khẩu trống
-        << databaseName;  // Tên cơ sở dữ liệu
+        << "--password=" + m_password 
+        << databaseName;
 
-// Thực thi lệnh mysqldump bằng QProcess
+    // Execute the mysqldump command using QProcess
     QProcess process;
     process.start("mysqldump", arguments);
 
-    // Chờ cho lệnh thực thi xong
+    // Wait for the command to finish executing
     process.waitForFinished();
 
-    // Kiểm tra nếu lệnh thực thi thành công
+    // Check if the command executed successfully
     if (process.exitCode() == 0) {
-        // Lấy đầu ra của lệnh (dữ liệu sao lưu)
+        // Get command output (backup data)
         QByteArray output = process.readAllStandardOutput();
 
-        // Mở tệp để ghi dữ liệu sao lưu
+        // Open file to write backup data
         QFile file(backupPath);
         if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            file.write(output);  // Ghi dữ liệu sao lưu vào tệp
+            file.write(output);  // Write backup data to file
             file.close();
             qDebug() << "MySQL backup successful. File saved at:" << backupPath;
             return true;
@@ -163,7 +163,7 @@ bool DatabaseHelper::backupMySQL(const QString& backupPath) {
         }
     }
     else {
-        // Nếu lệnh không thành công, đọc lỗi từ QProcess
+        // If command fails, read error from QProcess
         qDebug() << "MySQL backup failed. Error:" << process.readAllStandardError();
         return false;
     }
@@ -273,28 +273,28 @@ void DatabaseHelper::reconnectDefaultDatabase() {
 }
 
 void DatabaseHelper::reconnectMySQL() {
-    // Kiểm tra nếu thông tin cần thiết chưa được thiết lập
+    // Check if required information has not been set
     if (m_hostName.isEmpty() || m_userName.isEmpty() || databaseName.isEmpty()) {
         qDebug() << m_hostName << " " << m_userName << " " << m_password << " " << databaseName;
         qDebug() << "Missing connection details for MySQL. Please check your configuration.";
         return;
     }
 
-    // Xóa kết nối cũ (nếu có)
+    // Delete old connection (if any)
     if (db.isOpen()) {
         db.close();
         QString connectionName = db.connectionName();
         QSqlDatabase::removeDatabase(connectionName);
     }
 
-    // Thiết lập kết nối MySQL mới
+    // Establish a new MySQL connection
     db = QSqlDatabase::addDatabase("QMYSQL");
     db.setHostName(m_hostName);
     db.setDatabaseName(databaseName);
     db.setUserName(m_userName);
     db.setPassword(m_password);
 
-    // Kết nối lại cơ sở dữ liệu
+    // Reconnect the database
     if (db.open()) {
         qDebug() << "Reconnected to the MySQL database successfully!";
         dbInstance = new MySQLDatabase();
@@ -410,18 +410,18 @@ void DatabaseHelper::createTable()
 
 
 bool DatabaseHelper::restoreSQLiteFromFile(const QString& dbPath, const QString& backupFilePath) {
-    // Kiểm tra file backup có tồn tại không
+    // Check if the backup file exists
     if (!QFile::exists(backupFilePath)) {
         qDebug() << "Backup file does not exist!";
         return false;
     }
 
-    // Đóng kết nối nếu database đang mở
+    // Close the connection if the database is open
     if (db.isOpen()) {
         db.close();
     }
     closeDatabase();
-    // Kiểm tra nếu file cơ sở dữ liệu chính đã tồn tại, xóa nó trước khi sao chép
+    // Check if the main database file already exists, delete it before copying
     if (QFile::exists(dbPath)) {
         if (!QFile::remove(dbPath)) {
             qDebug() << "Failed to remove the old database file!";
@@ -429,7 +429,7 @@ bool DatabaseHelper::restoreSQLiteFromFile(const QString& dbPath, const QString&
         }
     }
 
-    // Sao chép file backup sang vị trí database
+    // Copy backup file to database location
     if (QFile::copy(backupFilePath, dbPath)) {
         qDebug() << "Database restored successfully by replacing the old database file!";
         return true;
@@ -441,56 +441,56 @@ bool DatabaseHelper::restoreSQLiteFromFile(const QString& dbPath, const QString&
 }
 
 bool DatabaseHelper::restoreMySQLFromFile(const QString& backupPath) {
-    // Kiểm tra thông tin kết nối
+    // Check connection information
     qDebug() << "Restore Path: " << backupPath;
     if (m_hostName.isEmpty() || m_userName.isEmpty() || databaseName.isEmpty()) {
         qDebug() << "Missing MySQL connection details. Cannot perform restore.";
         return false;
     }
 
-    // Kiểm tra xem tệp sao lưu có tồn tại không
+    // Check if the backup file exists
     QFile file(backupPath);
     if (!file.exists()) {
         qDebug() << "Backup file does not exist.";
         return false;
     }
 
-    // Xây dựng lệnh mysql để khôi phục
+    // Build mysql command to restore
     QStringList arguments;
     arguments << "-h" << m_hostName
         << "-u" << m_userName
-        << "--password=" + m_password // Mật khẩu trống
-        << databaseName;  // Tên cơ sở dữ liệu
+        << "--password=" + m_password 
+        << databaseName;  
 
-// Mở tệp sao lưu để đọc dữ liệu
+    // Open the backup file to read data
     QFile backupFile(backupPath);
     if (!backupFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Failed to open backup file for reading.";
         return false;
     }
 
-    // Đọc nội dung tệp sao lưu
+    // Read backup file content
     QByteArray backupData = backupFile.readAll();
     backupFile.close();
 
-    // Thực thi lệnh mysql để khôi phục cơ sở dữ liệu từ tệp sao lưu
+    // Execute mysql command to restore database from backup file
     QProcess process;
     process.start("mysql", arguments);
 
-    // Gửi dữ liệu sao lưu vào đầu vào của lệnh mysql
+    // Send backup data to input of mysql command
     process.write(backupData);
-    process.closeWriteChannel(); // Đóng kênh ghi
+    process.closeWriteChannel(); // Close the recording channel
 
-    // Chờ cho lệnh thực thi xong
+   // Wait for the command to finish executing
     process.waitForFinished();
 
-    // Kiểm tra nếu lệnh thực thi thành công
+    // Check if the command executed successfully
     if (process.exitCode() == 0) {
         qDebug() << "MySQL restore successful.";
         return true;
     }
     else {
-        // Nếu có lỗi khi thực thi lệnh, đọc lỗi từ QProcess
+        // If there is an error while executing the command, read the error from QProcess
         qDebug() << "MySQL restore failed. Error:" << process.readAllStandardError();
         return false;
     }

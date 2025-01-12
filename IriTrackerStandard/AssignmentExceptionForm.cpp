@@ -42,13 +42,13 @@ void AssignmentExceptionForm::loadException() {
 
 
 		qint64 seconds = exception.getPaidHours();
-		// Thêm dữ liệu vào bảng
+		// Add data to table
 		ui.tableExceptions->setItem(row, 0, new QTableWidgetItem((QString::number(exception.getExceptionId()))));
 		ui.tableExceptions->setItem(row, 1, new QTableWidgetItem(exception.getName()));
 		ui.tableExceptions->setItem(row, 2, new QTableWidgetItem(QTime(seconds / 3600, (seconds % 3600) / 60).toString("HH:mm")));
 		ui.tableExceptions->setItem(row, 3, new QTableWidgetItem(QString::number(exception.getWorkCoefficient(), 'f', 2)));
 
-		// Tô màu cho hàng
+		// Draw color for table
 		QColor rowColor = (row % 2 == 0) ? QColor("#e3e9f1") : QColor("#dbdbd8");
 		for (int col = 0; col < ui.tableExceptions->columnCount(); ++col) {
 			QTableWidgetItem* item = ui.tableExceptions->item(row, col);
@@ -60,7 +60,7 @@ void AssignmentExceptionForm::loadException() {
 
 	ui.tableExceptions->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-	// Kết nối sự kiện khi click vào ô
+	// Connect the event when clicking on the cell
 	connect(ui.tableExceptions, &QTableWidget::cellClicked, this, [this](int row, int column) {
 		ui.tableExceptions->selectRow(row);
 		ui.tableExceptions->setCurrentItem(ui.tableExceptions->item(row, column));

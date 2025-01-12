@@ -170,9 +170,9 @@
 
         while (queryUsers.next()) {
             QVariantList user;
-            user.append(queryUsers.value(0)); // user_id
-            user.append(queryUsers.value(1)); // first_name
-            user.append(queryUsers.value(2)); // last_name
+            user.append(queryUsers.value(0));
+            user.append(queryUsers.value(1)); 
+            user.append(queryUsers.value(2));
             users.append(user);
         }
 
@@ -248,7 +248,6 @@
     QList<QPair<QString, QPair<QByteArray, QByteArray>>> UserRepositoryMySQL::selectAllEyes() {
         QList<QPair<QString, QPair<QByteArray, QByteArray>>> userEyes;
 
-        // Truy vấn tất cả user_id, eye_right và eye_left
         QSqlQuery query("SELECT user_id, eye_right, eye_left FROM user WHERE (eye_right IS NOT NULL OR eye_left IS NOT NULL) AND is_active = true");
 
         if (!query.exec()) {
@@ -257,13 +256,11 @@
         }
 
         while (query.next()) {
-            QString userId = query.value(0).toString();  // user_id
-            QByteArray eyeRight = query.value(1).toByteArray();  // eye_right
-            QByteArray eyeLeft = query.value(2).toByteArray();  // eye_left
+            QString userId = query.value(0).toString(); 
+            QByteArray eyeRight = query.value(1).toByteArray();  
+            QByteArray eyeLeft = query.value(2).toByteArray();  
 
-            // Kiểm tra nếu cả eyeRight và eyeLeft đều không rỗng
             if (!eyeRight.isEmpty() && !eyeLeft.isEmpty()) {
-                // Thêm vào danh sách kết quả dưới dạng QPair
                 userEyes.append(qMakePair(userId, qMakePair(eyeRight, eyeLeft)));
             }
         }

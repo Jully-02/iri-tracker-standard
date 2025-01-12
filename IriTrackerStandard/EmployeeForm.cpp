@@ -83,12 +83,12 @@ Ui::EmployeeFormClass EmployeeForm::getUi() {
 
 
 void EmployeeForm::processStreaming() {
-	// Tạo thread mới cho quá trình capture
+	// Create a new thread for the capture process
 	if (threadStream->isRunning()) {
 		threadStream->quit();
 	}
 
-	// Kết nối tín hiệu từ IriTracker đến updateFrame trong UI thread
+	// Connect the signal from IriTracker to updateFrame in the UI thread
 	connect(iriTracker, &IriTracker::imageProcessed, this, &EmployeeForm::onImageProcessed);
 	connect(iriTracker, &IriTracker::imageResult, this, &EmployeeForm::onImageProcessed);
 	connect(iriTracker, &IriTracker::resultTemplate, this, &EmployeeForm::onPathTemplate);
@@ -96,19 +96,19 @@ void EmployeeForm::processStreaming() {
 	// dis
 	disconnect(threadStream, &QThread::started, nullptr, nullptr);
 
-	// Di chuyển IriTracker vào thread để xử lý capture
+	// Move IriTracker into the thread to handle capture
 	iriTracker->moveToThread(threadStream);
 
-	// Kết nối captureThread đã được bắt đầu để gọi run trong IriTracker
+	// The captureThread connection has been started to call run in IriTracker
 	if (!threadStream->isRunning()) {
-		// Kết nối captureThread đã được bắt đầu để gọi run trong IriTracker
+		// The captureThread connection has been started to call run in IriTracker
 		connect(threadStream, &QThread::started, iriTracker, [=]() {
 			iriTracker->run(false, true, true);
 			});
 	}
 
 
-	// Bắt đầu thread
+	// Start thread
 	threadStream->start();
 
 	QMediaPlayer* player = new QMediaPlayer();
@@ -232,14 +232,14 @@ void EmployeeForm::checkInputs() {
 	QString password = ui.passwordEdit->text();
 	QString confirmPassword = ui.confirmPasswordEdit->text();
 
-	// Kiểm tra các trường bắt buộc
+	// Check required fields
 	bool valid = !id.isEmpty() && !firstName.isEmpty() && !lastName.isEmpty();
 
-	// Kiểm tra dữ liệu eyeLeft và eyeRight
+	// Check eyeLeft and eyeRight data
 	bool eyeDataAvailable = !eyeLeft.isEmpty() || !eyeRight.isEmpty();
 
 	if (!eyeDataAvailable) {
-		// Nếu không có dữ liệu eyeLeft và eyeRight, kiểm tra mật khẩu
+		// If eyeLeft and eyeRight data are not available, check the password
 		valid = allowPassword && !password.isEmpty() && password.length() >= 4 && (password == confirmPassword);
 	}
 
@@ -365,7 +365,7 @@ void EmployeeForm::handleFormAction(const QString& action, QString id) {
 			}
 		}
 		else {
-			qDebug() << "Không thể truy vấn thông tin người dùng: Không tìm thấy user với ID:" << userId;
+			qDebug() << "Unable to query user information: No user found with ID:" << userId;
 		}
 	}
 	else if (action == "Add") {
@@ -400,7 +400,7 @@ void EmployeeForm::handleFormAction(const QString& action, QString id) {
 		for (const Department& department : departments) {
 			ui.departmentCombobox->addItem(department.getName(), department.getDepartmentId());
 		}
-		// Thiết lập ngày sinh và ngày bắt đầu làm việc mặc định
+		// Set default date of birth and start date
 		QDate birthDate(1965, 1, 1);
 		ui.dateOfBirthEdit->setDate(birthDate);
 
@@ -445,7 +445,7 @@ void EmployeeForm::btnOkClicked() {
 			imageFile.close();
 		}
 		else {
-			qDebug() << "Không thể mở file ảnh!";
+			qDebug() << "Cannot open image file!";
 		}
 	}
 	else if (currentAction == "Edit") {
@@ -479,20 +479,20 @@ void EmployeeForm::btnOkClicked() {
 	user.setRoleId(2);
 	if (currentAction == "Add") {
 		if (!DatabaseHelper::getDatabaseInstance()->getUserRepository()->insert(user)) {
-			qDebug() << "Lỗi khi thêm người dùng.";
+			qDebug() << "Error adding user.";
 		}
 		else {
-			qDebug() << "Thêm nhân viên thành công!";
+			qDebug() << "Added staff successfully!";
 			emit employeeChanged();
 			this->close();
 		}
 	}
 	else if (currentAction == "Edit") {
 		if (!DatabaseHelper::getDatabaseInstance()->getUserRepository()->update(user)) {
-			qDebug() << "Lỗi khi cập nhật người dùng.";
+			qDebug() << "Error updating user.";
 		}
 		else {
-			qDebug() << "Cập nhật nhân viên thành công!";
+			qDebug() << "Employee update successful!";
 			emit employeeChanged();
 			this->close();
 		}

@@ -67,25 +67,25 @@ ChangeDatabase::~ChangeDatabase()
 {}
 
 void ChangeDatabase::btnBrowseFileClicked() {
-	// Mở hộp thoại chọn tệp
+	// Open the file selection dialog box
 	QString filePath;
 
 	if (ui.createNewRadio->isChecked()) {
-		// Mở dialog để chọn thư mục lưu tệp mới
+		// Open dialog to select folder to save new file
 		QString directory = QFileDialog::getExistingDirectory(
 			this,                           // Parent widget
 			tr("Select Directory"),        // Title of the dialog
 			QString()                      // Default directory
 		);
 
-		// Kiểm tra nếu người dùng đã chọn thư mục
+		// Check if the user has selected a directory
 		if (!directory.isEmpty()) {
-			// Tạo đường dẫn đầy đủ với tên tệp mặc định
+			// Create full path with default filename
 			filePath = QDir(directory).filePath("iri-tracker-standard.db");
 		}
 	}
 	else if (ui.exisitngDBRadio->isChecked()){
-		// Mở dialog để chọn tệp hiện có
+		// Open dialog to select existing file
 		filePath = QFileDialog::getOpenFileName(
 			this,                                   // Parent widget
 			tr("Select Database File"),            // Title of the dialog
@@ -94,7 +94,7 @@ void ChangeDatabase::btnBrowseFileClicked() {
 		);
 	}
 
-	// Nếu đường dẫn không rỗng, gắn vào pathDBLineEdit
+	// If path is not empty, append pathDBLineEdit
 	if (!filePath.isEmpty()) {
 		ui.pathDBLineEdit->setText(filePath);
 	}

@@ -85,16 +85,16 @@ void AttendanceEventForm::onDateOrTimeChanged() {
     qint64 checkinDateCompare = checkinDateC.toSecsSinceEpoch();
 
 
-    // Reset nhãn thông báo lỗi
-    ui.valueHoursLabel->setText(""); // Xóa thông báo lỗi trước khi kiểm tra
+    // Reset error message labels
+    ui.valueHoursLabel->setText(""); 
     ui.errorLabel->setText("");
     ui.errorLabel->setStyleSheet("background-color: transparent;");
 
     bool isErrStartWorkingIn = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->isEventBeforeStartWorkingDate(userIdEvent, checkinDateCompare);
     bool isErrStartWorkingOut = DatabaseHelper::getDatabaseInstance()->getAttendanceEventRepository()->isEventBeforeStartWorkingDate(userIdEvent, checkoutDateCompare);
 
-    if (ui.inOutRadio->isChecked()) { // Nếu inOutRadio được chọn
-        // Kiểm tra nếu ngày "In" và ngày "Out" không trùng nhau
+    if (ui.inOutRadio->isChecked()) {
+        // Check if the "In" date and "Out" date do not overlap
         ui.errorLabel->setText("");
         ui.errorLabel->setStyleSheet("background-color: transparent;");
         if (checkinDate != checkoutDate) {
@@ -103,99 +103,99 @@ void AttendanceEventForm::onDateOrTimeChanged() {
             return;
         }
 
-        // Kiểm tra nếu thời gian "Out" trước thời gian "In"
+        // Check if "Out" time is before "In" time
         if (checkoutTime < checkinTime) {
             ui.valueHoursLabel->setText("The \"IN\" event must be followed by \"OUT\" event.");
             ui.valueHoursLabel->setStyleSheet("color: red;");
             return;
         }
 
-        // Lấy thời gian hiện tại
+        // Get the current time
         QTime currentTime = QTime::currentTime();
         QDate currentDate = QDate::currentDate();
 
-        // Kiểm tra thời gian "In"
+        // Check time "In"
         if (checkinDate < currentDate || (checkinDate == currentDate && checkinTime < currentTime)) {
-            // "In" là thời gian trong quá khứ
+            // "In" is time in the past
         }
         else {
             ui.valueHoursLabel->setText("Cannot add event in a future time.");
-            ui.valueHoursLabel->setStyleSheet("color: red;"); // Đổi màu chữ thành màu đỏ
+            ui.valueHoursLabel->setStyleSheet("color: red;"); 
             return;
         }
 
-        // Kiểm tra thời gian "Out"
+        // Check time "Out"
         if (checkoutDate < currentDate || (checkoutDate == currentDate && checkoutTime < currentTime)) {
-            // "Out" là thời gian trong quá khứ
+            // "Out" is time in the past
         }
         else {
             ui.valueHoursLabel->setText("Cannot add event in a future time.");
-            ui.valueHoursLabel->setStyleSheet("color: red;"); // Đổi màu chữ thành màu đỏ
+            ui.valueHoursLabel->setStyleSheet("color: red;"); 
             return;
         }
 
         if (isErrStartWorkingIn) {
             ui.valueHoursLabel->setText(" Event time must be later than the start of working date.");
-            ui.valueHoursLabel->setStyleSheet("color: red;"); // Đổi màu chữ thành màu đỏ
+            ui.valueHoursLabel->setStyleSheet("color: red;"); 
             return;
         }
         
         if (isErrStartWorkingOut) {
             ui.valueHoursLabel->setText(" Event time must be later than the start of working date.");
-            ui.valueHoursLabel->setStyleSheet("color: red;"); // Đổi màu chữ thành màu đỏ
+            ui.valueHoursLabel->setStyleSheet("color: red;");
             return;
         }
-        // Nếu không có lỗi, tính toán giá trị giờ
+        // If there are no errors, calculate the hour value
         int secondsDifference = checkinTime.secsTo(checkoutTime);
-        double hoursDecimal = secondsDifference / 3600.0; // Chia cho 3600 để chuyển đổi sang giờ
+        double hoursDecimal = secondsDifference / 3600.0; // Divide by 3600 to convert to hours
 
         // Cập nhật nhãn với giá trị hours
-        ui.valueHoursLabel->setText(QString("%1").arg(hoursDecimal, 0, 'f', 2)); // 2 chữ số thập phân
-        ui.valueHoursLabel->setStyleSheet("color: black;"); // Đổi màu chữ thành xanh nếu không có lỗi
+        ui.valueHoursLabel->setText(QString("%1").arg(hoursDecimal, 0, 'f', 2)); 
+        ui.valueHoursLabel->setStyleSheet("color: black;"); 
     }
-    else { // Nếu là inRadio hoặc outRadio
-     // Lấy thời gian hiện tại
+    else { // If inRadio or outRadio
         QTime currentTime = QTime::currentTime();
         QDate currentDate = QDate::currentDate();
         ui.valueHoursLabel->setText("");
-        // Nếu là inRadio
+
+        // inRadio
         if (ui.inRadio->isChecked()) {
             if (checkinDate > currentDate || (checkinDate == currentDate && checkinTime > currentTime)) {
                 ui.valueHoursLabel->setText("Cannot add event in a future time.");
-                ui.valueHoursLabel->setStyleSheet("color: red;"); // Đổi màu chữ thành màu đỏ
+                ui.valueHoursLabel->setStyleSheet("color: red;"); 
                 return;
             }
 
             if (checkinTimestamp > currentTimestamp) {
                 ui.valueHoursLabel->setText(" Cannot add event in a future time.");
-                ui.valueHoursLabel->setStyleSheet("color: red;"); // Đổi màu chữ thành màu đỏ
+                ui.valueHoursLabel->setStyleSheet("color: red;"); 
                 return;
             }
 
             if (isErrStartWorkingIn) {
                 ui.valueHoursLabel->setText(" Event time must be later than the start of working date.");
-                ui.valueHoursLabel->setStyleSheet("color: red;"); // Đổi màu chữ thành màu đỏ
+                ui.valueHoursLabel->setStyleSheet("color: red;"); 
                 return;
             }
         }
 
-        // Nếu là outRadio
+        // outRadio
         if (ui.outRadio->isChecked()) {
             if (checkoutDate > currentDate || (checkoutDate == currentDate && checkoutTime > currentTime)) {
                 ui.valueHoursLabel->setText("Cannot add event in a future time.");
-                ui.valueHoursLabel->setStyleSheet("color: red;"); // Đổi màu chữ thành màu đỏ
+                ui.valueHoursLabel->setStyleSheet("color: red;"); 
                 return;
             }
 
             if (checkinTimestamp > currentTimestamp) {
                 ui.valueHoursLabel->setText(" Cannot add event in a future time.");
-                ui.valueHoursLabel->setStyleSheet("color: red;"); // Đổi màu chữ thành màu đỏ
+                ui.valueHoursLabel->setStyleSheet("color: red;"); 
                 return;
             }
 
             if (isErrStartWorkingOut) {
                 ui.valueHoursLabel->setText(" Event time must be later than the start of working date.");
-                ui.valueHoursLabel->setStyleSheet("color: red;"); // Đổi màu chữ thành màu đỏ
+                ui.valueHoursLabel->setStyleSheet("color: red;");
                 return;
             }
 
@@ -224,25 +224,22 @@ void AttendanceEventForm::handleFormAction(const QString& action, const QString&
         checkinTimestampDB = inEvent.getDate();
         checkoutTimestampDB = outEvent.getDate();
 
-        // Kiểm tra xem inEvent và outEvent có giá trị hợp lệ không
+        // Check if inEvent and outEvent have valid values
         if (inEvent.getAttendanceEventId() != 0) {
-            // Chuyển đổi timestamp từ inEvent thành QDate và QTime
             QDateTime inDateTime = QDateTime::fromSecsSinceEpoch(inEvent.getDate());
             QDate inDate = inDateTime.date();
             QTime inTime = inDateTime.time();
 
-            // Đổ dữ liệu vào các trường checkin
+           
             ui.checkinDateEdit->setDate(inDate);
             ui.checkinTimeEdit->setTime(inTime);
         }
 
         if (outEvent.getAttendanceEventId() != 0) {
-            // Chuyển đổi timestamp từ outEvent thành QDate và QTime
             QDateTime outDateTime = QDateTime::fromSecsSinceEpoch(outEvent.getDate());
             QDate outDate = outDateTime.date();
             QTime outTime = outDateTime.time();
 
-            // Đổ dữ liệu vào các trường checkout
             ui.checkoutDateEdit->setDate(outDate);
             ui.checkoutTimeEdit->setTime(outTime);
         }
@@ -257,11 +254,11 @@ void AttendanceEventForm::handleFormAction(const QString& action, const QString&
             ui.outRadio->setDisabled(true);
             ui.inOutRadio->setChecked(true);
             int secondsDifference = checkinTime.secsTo(checkoutTime);
-            double hoursDecimal = secondsDifference / 3600.0; // Chia cho 3600 để chuyển đổi sang giờ
+            double hoursDecimal = secondsDifference / 3600.0; 
 
-            // Cập nhật nhãn với giá trị hours
-            ui.valueHoursLabel->setText(QString("%1").arg(hoursDecimal, 0, 'f', 2)); // 2 chữ số thập phân
-            ui.valueHoursLabel->setStyleSheet("color: black;"); // Đổi màu chữ thành xanh nếu không có lỗi
+            // Update the label with the value hours
+            ui.valueHoursLabel->setText(QString("%1").arg(hoursDecimal, 0, 'f', 2)); 
+            ui.valueHoursLabel->setStyleSheet("color: black;"); 
         }
         else if (inEvent.getAttendanceEventId() != 0 && outEvent.getAttendanceEventId() == 0) {
             ui.outRadio->setDisabled(true);
@@ -345,14 +342,14 @@ bool AttendanceEventForm::handleErrorOutRadio(qint64 checkoutTimestamp, qint64 c
 }
 
 bool AttendanceEventForm::handleErrorInOutRadio(qint64 checkinTimestamp, qint64 checkoutTimestamp, qint64 currentTimestamp) {
-    // Kiểm tra thời gian "In"
+    // Check time "In"
     if (checkinTimestamp >= currentTimestamp) {
         ui.errorLabel->setText(" Cannot add event in a future time.");
         ui.errorLabel->setStyleSheet("background-color: darkred; color: white;");
         return true;
     }
 
-    // Kiểm tra thời gian "Out"
+    // Check time "Out"
     if (checkoutTimestamp >= currentTimestamp) {
         ui.errorLabel->setText(" Cannot add event in a future time.");
         ui.errorLabel->setStyleSheet("background-color: darkred; color: white;");
@@ -394,18 +391,16 @@ void AttendanceEventForm::btnOkClicked() {
     QDate checkoutDate = ui.checkoutDateEdit->date();
     QTime checkoutTime = ui.checkoutTimeEdit->time();
 
-    // Reset nhãn thông báo lỗi
     ui.valueHoursLabel->setText("");
-    ui.errorLabel->setText(""); // Xóa thông báo lỗi trước khi kiểm tra
+    ui.errorLabel->setText(""); 
 
-    // Chuyển đổi ngày và giờ thành QDateTime và sau đó chuyển đổi sang Unix timestamp
     QDateTime checkinDateTime(checkinDate, checkinTime, Qt::LocalTime);
     QDateTime checkoutDateTime(checkoutDate, checkoutTime, Qt::LocalTime);
 
     qint64 checkinTimestamp = checkinDateTime.toSecsSinceEpoch();
     qint64 checkoutTimestamp = checkoutDateTime.toSecsSinceEpoch();
 
-    bool hasError = false; // Biến theo dõi lỗi
+    bool hasError = false; 
 
     AttendanceEvent inEvent;
     inEvent.setAttendanceEventId(attendanceEventId);
@@ -419,8 +414,8 @@ void AttendanceEventForm::btnOkClicked() {
     outEvent.setDate(checkoutTimestamp);
     outEvent.setUserId(userIdEvent);
 
-    if (ui.inOutRadio->isChecked()) { // Nếu inOutRadio được chọn
-        // Kiểm tra nếu ngày "In" và ngày "Out" không trùng nhau
+    if (ui.inOutRadio->isChecked()) { // If inOutRadio is selected
+        // Check if the "In" date and "Out" date do not overlap
         ui.errorLabel->setText("");
         if (checkinDate != checkoutDate) {
             ui.errorLabel->setText(" The \"IN\" event and the \"OUT\" event must be on the same date.");
@@ -428,26 +423,26 @@ void AttendanceEventForm::btnOkClicked() {
             hasError = true;
         }
 
-        // Kiểm tra nếu thời gian "Out" trước thời gian "In"
+        // Check if "Out" time is before "In" time
         if (checkoutTime < checkinTime) {
             ui.errorLabel->setText(" The \"IN\" event must be followed by \"OUT\" event.");
             ui.errorLabel->setStyleSheet("background-color: darkred; color: white;");
             hasError = true;
         }
 
-        // Lấy thời gian hiện tại
+        // Get the current time
         qint64 currentTimestamp = QDateTime::currentDateTime().toSecsSinceEpoch();
 
         hasError = handleErrorInOutRadio(checkinTimestamp, checkoutTimestamp, currentTimestamp);
 
-        // Nếu không có lỗi, tính toán giá trị giờ
+        // If there are no errors, calculate the hour value
         if (!hasError) {
             int secondsDifference = checkinTime.secsTo(checkoutTime);
-            double hoursDecimal = secondsDifference / 3600.0; // Chia cho 3600 để chuyển đổi sang giờ
+            double hoursDecimal = secondsDifference / 3600.0; // Divide by 3600 to convert to hours
 
-            // Cập nhật nhãn với giá trị hours
-            ui.valueHoursLabel->setText(QString("%1").arg(hoursDecimal, 0, 'f', 2)); // 2 chữ số thập phân
-            ui.valueHoursLabel->setStyleSheet("color: black;"); // Đổi màu chữ thành xanh nếu không có lỗi
+            // Update the label with the value hours
+            ui.valueHoursLabel->setText(QString("%1").arg(hoursDecimal, 0, 'f', 2)); 
+            ui.valueHoursLabel->setStyleSheet("color: black;");
 
             bool inSuccess, outSuccess;
 
@@ -475,11 +470,11 @@ void AttendanceEventForm::btnOkClicked() {
             }
         }
     }
-    else { // Nếu là inRadio hoặc outRadio
+    else { // If inRadio or outRadio
 
         qint64 currentTimestamp = QDateTime::currentDateTime().toSecsSinceEpoch();
 
-        // Nếu là inRadio
+        // inRadio
         if (ui.inRadio->isChecked()) {
             hasError = handleErrorInRadio(checkinTimestamp, currentTimestamp);
             if (!hasError) {
@@ -509,7 +504,7 @@ void AttendanceEventForm::btnOkClicked() {
             }
         }
 
-        // Nếu là outRadio
+        // outRadio
         if (ui.outRadio->isChecked()) {
             hasError = handleErrorOutRadio(checkoutTimestamp, currentTimestamp);
             if (!hasError) {

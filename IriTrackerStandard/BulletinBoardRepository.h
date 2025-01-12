@@ -9,7 +9,7 @@ public:
 
     virtual BulletinBoard insert(const BulletinBoard& bullentinBoard) = 0;
     virtual bool update(const BulletinBoard& bullentinBoard) = 0;  
-    virtual bool deleteItem(int id) = 0;  // Phương thức thuần ảo
+    virtual bool deleteItem(int id) = 0;  
     virtual QList<BulletinBoard> selectAll() = 0;  
     virtual BulletinBoard selectById(int id) = 0; 
     virtual BulletinBoard existByName(const QString& name) = 0;

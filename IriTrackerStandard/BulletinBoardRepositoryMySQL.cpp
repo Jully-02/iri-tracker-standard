@@ -32,7 +32,7 @@ BulletinBoard BulletinBoardRepositoryMySQL::insert(const BulletinBoard& bulletin
 	BulletinBoard existingBulletinBoard = existByName(bulletinBoard.getTitle());
 
 	if (existingBulletinBoard.getBulletinBoardId() != 0) {
-		return BulletinBoard(); // Trả về đối tượng rỗng nếu đã tồn tại
+		return BulletinBoard(); // Returns an empty object if it already exists
 	}
 
 	QSqlQuery query;
@@ -49,13 +49,13 @@ BulletinBoard BulletinBoardRepositoryMySQL::insert(const BulletinBoard& bulletin
 
 	if (!query.exec()) {
 		qDebug() << "Error inserting bulletinBoard:" << query.lastError().text();
-		return BulletinBoard(); // Trả về đối tượng rỗng nếu có lỗi
+		return BulletinBoard(); // Returns an empty object if there is an error
 	}
 
-	// Sau khi insert thành công, lấy bulletin_board_id vừa được sinh ra
+	// After inserting successfully, get the newly generated bulletin_board_id
 	int bulletinBoardId = query.lastInsertId().toInt();
 
-	// Tạo và trả về đối tượng BulletinBoard với thông tin đã được lưu và ID mới
+	// Create and return a BulletinBoard object with the saved information and new ID
 	return BulletinBoard(
 		bulletinBoardId,
 		bulletinBoard.getTitle(),
@@ -65,7 +65,7 @@ BulletinBoard BulletinBoardRepositoryMySQL::insert(const BulletinBoard& bulletin
 		bulletinBoard.getEndDate(),
 		bulletinBoard.getIsActive(),
 		bulletinBoard.getIsHighPriority(),
-		QDateTime::currentDateTime(), // Thời gian tạo mới
+		QDateTime::currentDateTime(), 
 		QDateTime()
 	);
 }
@@ -99,7 +99,7 @@ BulletinBoard BulletinBoardRepositoryMySQL::selectById(int id) {
 
 	if (!query.exec()) {
 		qDebug() << "Error executing query:" << query.lastError().text();
-		return BulletinBoard(); // Trả về một đối tượng rỗng nếu có lỗi
+		return BulletinBoard(); // Returns an empty object if there is an error
 	}
 
 	BulletinBoard bulletinBoard;
@@ -138,30 +138,27 @@ QList<BulletinBoard> BulletinBoardRepositoryMySQL::selectAll() {
 	QList<BulletinBoard> bulletinBoards;
 	QSqlQuery query;
 
-	// Truy vấn SQL đầy đủ
 	query.prepare("SELECT bulletin_board_id, title, to_employee, content, start_date, end_date, "
 		"is_high_priority, is_active, created_at, updated_at FROM bulletin_board");
 
-	// Thực thi truy vấn và kiểm tra lỗi
 	if (!query.exec()) {
 		qDebug() << "Error selecting bulletinBoards:" << query.lastError().text();
-		return bulletinBoards; // Trả về danh sách rỗng nếu có lỗi
+		return bulletinBoards; 
 	}
 
-	// Xử lý từng bản ghi trong kết quả truy vấn
 	while (query.next()) {
 		int bulletinBoardId = query.value("bulletin_board_id").toInt();
 		QString title = query.value("title").toString();
 		QString toEmployee = query.value("to_employee").toString();
-		QString content = query.value("content").toString(); // Đảm bảo cột 'content' tồn tại trong SQL
-		qint64 startDate = query.value("start_date").toLongLong(); // Chuyển đổi chính xác sang qint64
-		qint64 endDate = query.value("end_date").toLongLong();     // Chuyển đổi chính xác sang qint64
+		QString content = query.value("content").toString();
+		qint64 startDate = query.value("start_date").toLongLong(); 
+		qint64 endDate = query.value("end_date").toLongLong();   
 		bool isHighPriority = query.value("is_high_priority").toBool();
 		bool isActive = query.value("is_active").toBool();
 		QDateTime createdAt = query.value("created_at").toDateTime();
 		QDateTime updatedAt = query.value("updated_at").toDateTime();
 
-		// Tạo đối tượng BulletinBoard và thêm vào danh sách
+		// Returns an empty object if there is an error
 		bulletinBoards.append(BulletinBoard(
 			bulletinBoardId, title, toEmployee, content,
 			startDate, endDate, isActive, isHighPriority,
@@ -169,14 +166,13 @@ QList<BulletinBoard> BulletinBoardRepositoryMySQL::selectAll() {
 		));
 	}
 
-	return bulletinBoards; // Trả về danh sách kết quả
+	return bulletinBoards; // Returns a list of results
 }
 
 QList<BulletinBoard> BulletinBoardRepositoryMySQL::selectBulletinsForUser(QString userId) {
 	QList<BulletinBoard> bulletins;
 	QSqlQuery query;
 
-	// Chuẩn bị câu truy vấn SQL cho MySQL
 	query.prepare(R"(
         SELECT b.bulletin_board_id, b.title, b.to_employee, b.content, b.start_date, b.end_date, 
                b.is_active, b.is_high_priority, b.created_at, b.updated_at
@@ -187,16 +183,13 @@ QList<BulletinBoard> BulletinBoardRepositoryMySQL::selectBulletinsForUser(QStrin
         AND b.is_active = 1
     )");
 
-	// Gán giá trị cho userId vào câu truy vấn
 	query.bindValue(":user_id", userId);
 
-	// Thực thi câu truy vấn
 	if (!query.exec()) {
 		qDebug() << "Error selecting bulletins for user:" << query.lastError().text();
 		return bulletins;
 	}
 
-	// Lặp qua các kết quả và thêm vào danh sách
 	while (query.next()) {
 		int bulletinBoardId = query.value("bulletin_board_id").toInt();
 		QString title = query.value("title").toString();
@@ -209,7 +202,6 @@ QList<BulletinBoard> BulletinBoardRepositoryMySQL::selectBulletinsForUser(QStrin
 		QDateTime createdAt = query.value("created_at").toDateTime();
 		QDateTime updatedAt = query.value("updated_at").toDateTime();
 
-		// Tạo đối tượng BulletinBoard và thêm vào danh sách
 		bulletins.append(BulletinBoard(
 			bulletinBoardId, title, toEmployee, content,
 			startDate, endDate, isActive, isHighPriority,

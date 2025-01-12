@@ -39,7 +39,6 @@ int main(int argc, char* argv[])
 
     QObject::connect(threadScanDevice, &QThread::started, iriTracker, &IriTracker::get_device);
 
-    // Bắt đầu thread
     threadScanDevice->start();
 
     qDebug() << QSqlDatabase::drivers();

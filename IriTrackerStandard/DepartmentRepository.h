@@ -7,11 +7,11 @@ class DepartmentRepository {
 public:
     virtual ~DepartmentRepository() {}
 
-    virtual bool insert(const Department& department) = 0;  // Phương thức thuần ảo
-    virtual bool update(const Department& department) = 0;  // Phương thức thuần ảo
-    virtual bool deleteItem(int id) = 0;  // Phương thức thuần ảo
-    virtual QList<Department> selectAll(bool condition = false) = 0;  // Phương thức thuần ảo
-    virtual Department selectById(int id) = 0;  // Phương thức thuần ảo
+    virtual bool insert(const Department& department) = 0;  
+    virtual bool update(const Department& department) = 0;  
+    virtual bool deleteItem(int id) = 0;  
+    virtual QList<Department> selectAll(bool condition = false) = 0;  
+    virtual Department selectById(int id) = 0;  
     virtual Department existByName(const QString& name) = 0;
 };
 

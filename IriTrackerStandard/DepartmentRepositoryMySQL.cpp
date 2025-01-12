@@ -73,7 +73,7 @@ Department DepartmentRepositoryMySQL::existByName(const QString& name) {
 
         if (!query.exec()) {
             qDebug() << "Error executing query:" << query.lastError().text();
-            return Department(); // Trả về một đối tượng rỗng nếu có lỗi
+            return Department(); // Returns an empty object if there is an error
         }
 
         Department department;

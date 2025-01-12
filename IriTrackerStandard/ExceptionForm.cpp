@@ -43,11 +43,11 @@ void ExceptionForm::handleFormAction(const QString& action, int id) {
 		ui.paidCoeffSpinBox->setValue(exception.getPaidCoefficient());
 		ui.workCoeffSpinBox->setValue(exception.getWorkCoefficient());
 
-		// Chuyển đổi từ qint64 sang QTime để đặt giờ
+		// Convert from qint64 to QTime to set the time
 		QTime time = QTime::fromMSecsSinceStartOfDay(static_cast<int>(exception.getPaidHours() * 1000));
 		ui.paidHourTime->setTime(time);
 
-		// Thiết lập trạng thái overtime nếu cần
+		// Set overtime status if necessary
 		ui.isOverTimeCheckBox->setChecked(exception.getIsOvertime() != 0);
 	}
 	else if (action == "Add") {
@@ -65,12 +65,12 @@ void ExceptionForm::btnOkClicked() {
 	exception.setPaidCoefficient(ui.paidCoeffSpinBox->value());
 	exception.setWorkCoefficient(ui.workCoeffSpinBox->value());
 
-	// Chuyển đổi từ QTime sang qint64 để lưu số giờ
+	// Convert from QTime to qint64 to save hours
 	QTime time = ui.paidHourTime->time();
-	qint64 paidHours = static_cast<qint64>(time.msecsSinceStartOfDay() / 1000); // Chuyển từ milliseconds sang seconds
+	qint64 paidHours = static_cast<qint64>(time.msecsSinceStartOfDay() / 1000); // Convert from milliseconds to seconds
 	exception.setPaidHours(paidHours);
 
-	// Lấy trạng thái overtime
+	// Get overtime status
 	exception.setIsOvertime(ui.isOverTimeCheckBox->isChecked() ? 1 : 0);
 
 	bool success = false;
@@ -84,16 +84,16 @@ void ExceptionForm::btnOkClicked() {
 
 	if (success) {
 		if (currentAction == "Add") {
-			qDebug() << "Thêm exception thành công!";
+			qDebug() << "Exception added successfully!";
 		}
 		else if (currentAction == "Edit") {
-			qDebug() << "Cập nhật exception thành công!";
+			qDebug() << "Exception updated successfully!";
 		}
 		emit exceptionChanged();
 		this->close();
 	}
 	else {
-		qDebug() << "Lỗi khi lưu exception!";
+		qDebug() << "Error saving exception!";
 	}
 }
 

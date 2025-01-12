@@ -7,7 +7,6 @@
 #include "UserBulletinBoardRepositoryMySQL.h"
 
 MySQLDatabase::MySQLDatabase() {
-    // Khởi tạo các repository cụ thể cho MySQL
     userRepository = new UserRepositoryMySQL();
     departmentRepository = new DepartmentRepositoryMySQL();
     attendanceEventRepository = new AttendanceEventRepositoryMySQL();

@@ -45,25 +45,25 @@ QList<UserBulletinBoard> UserBulletinBoardRepositoryMySQL::selectByUserId(QStrin
     QList<UserBulletinBoard> user_bulletin_boards;
     QSqlQuery query;
 
-    // Câu lệnh SQL chỉ lấy id, user_id, bulletin_board_id
+
     query.prepare("SELECT id, user_id, bulletin_board_id FROM user_bulletin_board WHERE user_id = :user_id");
 
-    // Bind giá trị userId vào câu truy vấn
+
     query.bindValue(":user_id", userId);
 
-    // Thực thi câu truy vấn
+
     if (!query.exec()) {
         qDebug() << "Error selecting user_bulletin_boards:" << query.lastError().text();
         return user_bulletin_boards;
     }
 
-    // Duyệt qua kết quả và thêm vào danh sách
+
     while (query.next()) {
         int id = query.value("id").toInt();
         QString userId = query.value("user_id").toString();
         int bulletinBoardId = query.value("bulletin_board_id").toInt();
 
-        // Thêm bản ghi vào danh sách kết quả
+
         user_bulletin_boards.append(UserBulletinBoard(id, userId, bulletinBoardId));
     }
 
@@ -74,25 +74,23 @@ QList<UserBulletinBoard> UserBulletinBoardRepositoryMySQL::selectByBulletinBoard
     QList<UserBulletinBoard> user_bulletin_boards;
     QSqlQuery query;
 
-    // Câu lệnh SQL chỉ lấy id, user_id, bulletin_board_id
+
     query.prepare("SELECT id, user_id, bulletin_board_id FROM user_bulletin_board WHERE bulletin_board_id = :bulletin_board_id");
 
-    // Bind giá trị userId vào câu truy vấn
+
     query.bindValue(":bulletin_board_id", bulletinBoardId);
 
-    // Thực thi câu truy vấn
     if (!query.exec()) {
         qDebug() << "Error selecting user_bulletin_boards:" << query.lastError().text();
         return user_bulletin_boards;
     }
 
-    // Duyệt qua kết quả và thêm vào danh sách
+
     while (query.next()) {
         int id = query.value("id").toInt();
         QString userId = query.value("user_id").toString();
         int bulletinBoardId = query.value("bulletin_board_id").toInt();
 
-        // Thêm bản ghi vào danh sách kết quả
         user_bulletin_boards.append(UserBulletinBoard(id, userId, bulletinBoardId));
     }
 

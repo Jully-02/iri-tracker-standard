@@ -40,7 +40,6 @@
         QSqlQuery query;
         AttendanceEvent event;
 
-        // Chuẩn bị câu truy vấn để lấy sự kiện theo eventId
         query.prepare("SELECT `user_id`, `type`, `date` FROM `attendance_event` WHERE `attendance_event_id` = :eventId");
         query.bindValue(":eventId", id);
 
@@ -141,7 +140,7 @@
     bool AttendanceEventRepositoryMySQL::checkForDuplicateEvents(const QString& userId, qint64 newInTime, qint64 newOutTime) {
         QSqlQuery query;
 
-        // Kiểm tra sự kiện 'IN'
+        // Check for 'IN' event
         query.prepare("SELECT COUNT(*) FROM attendance_event WHERE user_id = :userId AND type = 'In' AND date = :newInTime");
         query.bindValue(":userId", userId);
         query.bindValue(":newInTime", newInTime);
@@ -153,7 +152,7 @@
 
         bool duplicateInEvent = query.next() && query.value(0).toInt() > 0;
 
-        // Kiểm tra sự kiện 'OUT'
+        // Check for event 'OUT'
         query.prepare("SELECT COUNT(*) FROM attendance_event WHERE user_id = :userId AND type = 'Out' AND date = :newOutTime");
         query.bindValue(":userId", userId);
         query.bindValue(":newOutTime", newOutTime);
@@ -165,17 +164,17 @@
 
         bool duplicateOutEvent = query.next() && query.value(0).toInt() > 0;
 
-        // Trả về true nếu cả sự kiện 'IN' và 'OUT' đều trùng
+        // Returns true if both 'IN' and 'OUT' events match
         return duplicateInEvent && duplicateOutEvent;
     }
     bool AttendanceEventRepositoryMySQL::checkForOrphanInEventsHasTime(const QString& userId, qint64 checkoutTime) {
         QSqlQuery query;
-        // Nếu có checkoutTime, kiểm tra số lượng IN và OUT
+        // If there is checkoutTime, check the IN and OUT counts
         if (checkForOrphanInEvents(userId)) {
             return true; // Không có IN lẻ
         }
         else {
-            // Có IN lẻ, lấy thời gian IN mới nhất để so sánh với checkoutTime
+            // If there is an odd IN, get the latest IN time to compare with checkoutTime
             query.prepare("SELECT date FROM attendance_event WHERE user_id = :userId AND type = 'In' ORDER BY date DESC LIMIT 1");
             query.bindValue(":userId", userId);
             if (!query.exec()) {
@@ -186,7 +185,7 @@
             if (query.next()) {
                 qint64 lastInTime = query.value(0).toLongLong();
                 if (checkoutTime < lastInTime) {
-                    return true;  // Checkout trước IN lẻ
+                    return true; // Checkout before IN odd
                 }
             }
             return false;
@@ -197,7 +196,7 @@
     bool AttendanceEventRepositoryMySQL::checkForOrphanInEvents(const QString& userId) {
         QSqlQuery query;
 
-        // Truy vấn số lượng sự kiện IN và OUT của người dùng
+        // Query the number of user IN and OUT events
         query.prepare("SELECT COUNT(*) FROM attendance_event WHERE user_id = :userId AND type = 'In'");
         query.bindValue(":userId", userId);
         query.exec();
@@ -210,34 +209,33 @@
         query.next();
         int outCount = query.value(0).toInt();
 
-        // Nếu không có checkoutTime, chỉ cần kiểm tra số lượng IN và OUT
+        // If there is no checkoutTime, just check the IN and OUT counts
         if (inCount == outCount) {
-            return true; // Không có IN lẻ
+            return true; // No odd IN
         }
         else {
             qDebug() << "End";
             qDebug() << "Error: There is an orphan IN event without a corresponding OUT event.";
-            return false; // Có IN lẻ
+            return false; // Has odd IN
         }
 
     }
 
     bool AttendanceEventRepositoryMySQL::isEventBeforeStartWorkingDate(const QString& userId, qint64 checkinTime, qint64 checkoutTime) {
-        // Lấy thông tin người dùng từ DB
         UserRepositoryMySQL userRepoMySQL;
         User user = userRepoMySQL.selectById(userId);
 
-        // Lấy ngày bắt đầu làm việc
+        // Get the start date of work
         qint64 startWorkingDate = user.getStartWorkingDate();
 
-        // Nếu có truyền vào checkinTime hoặc checkoutTime, kiểm tra chúng
+        // If checkinTime or checkoutTime is passed, check them
         if ((checkinTime != -1 && checkinTime < startWorkingDate) ||
             (checkoutTime != -1 && checkoutTime < startWorkingDate)) {
             qDebug() << "Check-in or check-out time is before the start working date for user:" << userId;
-            return true;  // Nếu có thời gian trước ngày bắt đầu làm việc, trả về true
+            return true;  // If there is time before the work start date, return true
         }
 
-        // Nếu không có giá trị nào trước ngày bắt đầu làm việc, trả về false
+        // If there is no value before the start date, return false
         return false;
     }
 
@@ -248,26 +246,26 @@
 
         if (!query.exec()) {
             qDebug() << "Error checking for existing events:" << query.lastError().text();
-            return false; // Nếu xảy ra lỗi trong truy vấn, giả định không có sự kiện nào trước đó
+            return false; // If an error occurs in the query, assume there were no previous events
         }
 
-        // Duyệt qua tất cả các sự kiện của người dùng để kiểm tra
+        // Browse all user events for inspection
         while (query.next()) {
             qint64 eventTime = query.value(0).toLongLong();
             if (checkinTime < eventTime) {
                 qDebug() << "Check-in time is before an existing event at:" << QDateTime::fromSecsSinceEpoch(eventTime);
-                return true; // Nếu checkinTime trước bất kỳ event nào, trả về true để báo lỗi
+                return true; // If checkinTime is before any event, return true to report an error
             }
         }
 
-        return false; // Nếu không có thời gian nào nhỏ hơn, trả về false
+        return false; // If there is no smaller time, return false
     }
 
     std::pair<AttendanceEvent, AttendanceEvent> AttendanceEventRepositoryMySQL::getInOutPairByUserIdAndEventId(const QString& userId, int attendanceEventId) {
         QSqlQuery query;
         AttendanceEvent inEvent, outEvent;
 
-        // Truy vấn để lấy sự kiện với attendanceEventId đầu vào
+        // Query to get events with attendanceEventId as input
         query.prepare("SELECT type, date FROM attendance_event WHERE attendance_event_id = :attendanceEventId AND user_id = :userId");
         query.bindValue(":attendanceEventId", attendanceEventId);
         query.bindValue(":userId", userId);
@@ -277,19 +275,19 @@
             return { inEvent, outEvent };
         }
 
-        // Nếu tìm thấy sự kiện với ID đầu vào
+        // If event with input ID is found
         if (query.next()) {
             QString eventType = query.value("type").toString();
             qint64 eventDate = query.value("date").toLongLong();
 
-            // Thiết lập sự kiện `inEvent` hoặc `outEvent` ban đầu
+            // Set the initial `inEvent` or `outEvent` event
             if (eventType == "In") {
                 inEvent.setAttendanceEventId(attendanceEventId);
                 inEvent.setUserId(userId);
                 inEvent.setType("In");
                 inEvent.setDate(eventDate);
 
-                // Tìm kiếm sự kiện `Out` tương ứng
+                // Search for the corresponding `Out` event
                 query.prepare("SELECT attendance_event_id, date FROM attendance_event WHERE user_id = :userId AND type = 'Out' AND date > :eventDate ORDER BY date ASC LIMIT 1");
                 query.bindValue(":userId", userId);
                 query.bindValue(":eventDate", eventDate);
@@ -307,7 +305,7 @@
                 outEvent.setType("Out");
                 outEvent.setDate(eventDate);
 
-                // Tìm kiếm sự kiện `In` tương ứng
+                // Search for the corresponding `Print` event
                 query.prepare("SELECT attendance_event_id, date FROM attendance_event WHERE user_id = :userId AND type = 'In' AND date < :eventDate ORDER BY date DESC LIMIT 1");
                 query.bindValue(":userId", userId);
                 query.bindValue(":eventDate", eventDate);
@@ -331,7 +329,7 @@
         qDebug() << "Attendance Event ID: " << attendanceEventId;
         QSqlQuery query;
 
-        // Truy vấn để lấy sự kiện với attendanceEventId đầu vào
+        // Query to get events with attendanceEventId as input
         query.prepare("SELECT type, date FROM attendance_event WHERE attendance_event_id = :attendanceEventId AND user_id = :userId");
         query.bindValue(":attendanceEventId", attendanceEventId);
         query.bindValue(":userId", userId);
@@ -347,7 +345,7 @@
         qDebug() << "Event Type:" << eventType;
         qDebug() << "Event Date:" << eventDate;
 
-        // Xóa sự kiện `attendanceEventId` đầu vào
+        // Remove input `attendanceEventId` event
         query.prepare("DELETE FROM attendance_event WHERE attendance_event_id = :attendanceEventId AND user_id = :userId");
         query.bindValue(":attendanceEventId", attendanceEventId);
         query.bindValue(":userId", userId);
@@ -357,7 +355,7 @@
             return false;
         }
 
-        // Nếu là sự kiện `In`, tìm sự kiện `Out` tương ứng
+        // If it is an `In` event, find the corresponding `Out` event
         if (eventType == "In") {
             query.clear();
             query.prepare("SELECT attendance_event_id FROM attendance_event WHERE user_id = :userId AND type = 'Out' AND date > :eventDate ORDER BY date ASC LIMIT 1");
@@ -376,7 +374,7 @@
                 }
             }
         }
-        // Nếu là sự kiện `Out`, tìm sự kiện `In` tương ứng
+        // If it is an `Out` event, find the corresponding `In` event
         else if (eventType == "Out") {
             query.clear();
             query.prepare("SELECT attendance_event_id FROM attendance_event WHERE user_id = :userId AND type = 'In' AND date < :eventDate ORDER BY date DESC LIMIT 1");
@@ -408,51 +406,50 @@
         QDate currentDate = QDate::currentDate();
 
         if (timeFilter == "This week" || timeFilter == "Tuần này") {
-            QDate startOfWeek = currentDate.addDays(-(currentDate.dayOfWeek() - 1)); // Thứ 2 tuần này
+            QDate startOfWeek = currentDate.addDays(-(currentDate.dayOfWeek() - 1)); // Monday this week
             startDateTime = QDateTime(startOfWeek, QTime(0, 0, 0));
             endDateTime = QDateTime(startOfWeek.addDays(6), QTime(23, 59, 59));
             queryString += " AND date >= :startDate AND date <= :endDate";
         }
         else if (timeFilter == "Last week" || timeFilter == "Tuần trước") {
-            QDate startOfLastWeek = currentDate.addDays(-(currentDate.dayOfWeek() + 6)); // Thứ 2 tuần trước
+            QDate startOfLastWeek = currentDate.addDays(-(currentDate.dayOfWeek() + 6)); // Last Monday
             startDateTime = QDateTime(startOfLastWeek, QTime(0, 0, 0));
             endDateTime = QDateTime(startOfLastWeek.addDays(6), QTime(23, 59, 59));
             queryString += " AND date >= :startDate AND date <= :endDate";
         }
         else if (timeFilter == "This month" || timeFilter == "Tháng này") {
-            QDate startOfMonth(currentDate.year(), currentDate.month(), 1); // Ngày đầu tháng
+            QDate startOfMonth(currentDate.year(), currentDate.month(), 1); // First day of the month
             startDateTime = QDateTime(startOfMonth, QTime(0, 0, 0));
             endDateTime = QDateTime(startOfMonth.addMonths(1).addDays(-1), QTime(23, 59, 59));
             queryString += " AND date >= :startDate AND date <= :endDate";
         }
         else if (timeFilter == "Last month" || timeFilter == "Tháng trước") {
             QDate startOfLastMonth = currentDate.addMonths(-1);
-            startOfLastMonth.setDate(startOfLastMonth.year(), startOfLastMonth.month(), 1); // Ngày đầu tháng trước
+            startOfLastMonth.setDate(startOfLastMonth.year(), startOfLastMonth.month(), 1); // First day of last month
             startDateTime = QDateTime(startOfLastMonth, QTime(0, 0, 0));
             endDateTime = QDateTime(startOfLastMonth.addMonths(1).addDays(-1), QTime(23, 59, 59));
             queryString += " AND date >= :startDate AND date <= :endDate";
         }
         else if (timeFilter == "This year" || timeFilter == "Năm nay") {
-            QDate startOfYear(currentDate.year(), 1, 1); // Ngày đầu năm
+            QDate startOfYear(currentDate.year(), 1, 1); // New year's day
             startDateTime = QDateTime(startOfYear, QTime(0, 0, 0));
             endDateTime = QDateTime(QDate(currentDate.year(), 12, 31), QTime(23, 59, 59));
             queryString += " AND date >= :startDate AND date <= :endDate";
         }
 
-        // Thực hiện chuẩn bị câu truy vấn
         query.prepare(queryString);
         query.bindValue(":userId", userId);
 
-        // Ràng buộc ngày bắt đầu và ngày kết thúc nếu không phải "All events"
+        // Bind start date and end date if not "All events"
         if (timeFilter != "All event") {
             query.bindValue(":startDate", startDateTime.toSecsSinceEpoch());
             query.bindValue(":endDate", endDateTime.toSecsSinceEpoch());
         }
 
-        // Thực thi câu truy vấn
+     
         if (!query.exec()) {
             qDebug() << "Error fetching attendance events:" << query.lastError().text();
-            return events; // trả về danh sách rỗng nếu có lỗi
+            return events; 
         }
 
         while (query.next()) {
@@ -487,17 +484,17 @@
             endDateTime = QDateTime(currentDate, QTime(23, 59, 59));
         }
         else if (timeFilter == "This Week") {
-            QDate startOfWeek = currentDate.addDays(-(currentDate.dayOfWeek() - 1)); // Thứ 2 tuần này
+            QDate startOfWeek = currentDate.addDays(-(currentDate.dayOfWeek() - 1)); // Monday this week
             startDateTime = QDateTime(startOfWeek, QTime(0, 0, 0));
             endDateTime = QDateTime(startOfWeek.addDays(6), QTime(23, 59, 59));
         }
         else if (timeFilter == "This Month") {
-            QDate startOfMonth(currentDate.year(), currentDate.month(), 1); // Ngày đầu tháng
+            QDate startOfMonth(currentDate.year(), currentDate.month(), 1); // First day of the month
             startDateTime = QDateTime(startOfMonth, QTime(0, 0, 0));
             endDateTime = QDateTime(startOfMonth.addMonths(1).addDays(-1), QTime(23, 59, 59));
         }
         else if (timeFilter == "All Events") {
-            startDateTime = QDateTime::fromSecsSinceEpoch(0); // Thời gian bắt đầu từ epoch
+            startDateTime = QDateTime::fromSecsSinceEpoch(0); // Time starts from epoch
             endDateTime = QDateTime::currentDateTime();
         }
 
@@ -514,7 +511,7 @@
             }
             else if (eventType == "Out" && hasInTime) {
                 if (eventDateTime >= startDateTime && eventDateTime <= endDateTime) {
-                    double duration = lastInTime.secsTo(eventDateTime) / 3600.0; // Chuyển từ giây sang giờ
+                    double duration = lastInTime.secsTo(eventDateTime) / 3600.0; // Convert from seconds to hours
                     totalHours += duration;
                 }
                 hasInTime = false;
@@ -528,22 +525,22 @@
         QString lastType;
         QSqlQuery query;
 
-        // Câu truy vấn lấy trạng thái mới nhất
+        // Query to get the latest status
         QString queryString = "SELECT type FROM attendance_event WHERE user_id = :userId ORDER BY date DESC LIMIT 1";
         query.prepare(queryString);
         query.bindValue(":userId", userId);
 
-        // Thực thi câu truy vấn
+     
         if (!query.exec()) {
             qDebug() << "Error fetching last attendance type:" << query.lastError().text();
-            return lastType; // Trả về chuỗi rỗng nếu có lỗi
+            return lastType; 
         }
 
-        // Lấy kết quả
+        // Get the results
         if (query.next()) {
             lastType = query.value("type").toString();
         }
 
-        return lastType; // Trả về giá trị "In" hoặc "Out" hoặc rỗng nếu không có bản ghi
+        return lastType; // Returns the value "In" or "Out" or empty if there is no record
     }
 

@@ -256,7 +256,7 @@ QPair<QString, bool> IriTracker::compare_templates_custom(bool checkDup)
 	qDebug() << "Size: " << eyes.size();
 	IriTracker* iriTracker = new IriTracker();
 	for (const QPair<QString, QPair<QByteArray, QByteArray>>& eye : eyes) {
-		// Lấy dữ liệu mắt phải và mắt trái
+		
 		QByteArray eyeRight = eye.second.first;
 		QByteArray eyeLeft = eye.second.second;
 

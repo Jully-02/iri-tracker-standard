@@ -38,16 +38,16 @@ void AttendanceEventDeleteForm::handleFormAction(const QString& userId, int id) 
     AttendanceEvent inEvent = eventPair.first;
     AttendanceEvent outEvent = eventPair.second;
 
-    // Kiểm tra xem inEvent và outEvent có giá trị hợp lệ không
+    // Check if inEvent and outEvent have valid values
     if (inEvent.getAttendanceEventId() != 0) {
-        // Chuyển đổi timestamp từ inEvent thành QDateTime
+        // Convert timestamp from inEvent to QDateTime
         QDateTime inDateTime = QDateTime::fromSecsSinceEpoch(inEvent.getDate());
 
-        // Định dạng chuỗi cho ngày và thời gian
+        // String format for date and time
         QString inDateStr = inDateTime.date().toString("MM/dd/yyyy");
         QString inTimeStr = inDateTime.time().toString("hh:mm:ss AP");
 
-        // Đổ dữ liệu vào các trường checkin
+        // Fill the checkin fields with data
         ui.checkinDateLabel->setText(inDateStr);
         ui.checkinTimeLabel->setText(inTimeStr);
     }
@@ -57,14 +57,11 @@ void AttendanceEventDeleteForm::handleFormAction(const QString& userId, int id) 
     }
 
     if (outEvent.getAttendanceEventId() != 0) {
-        // Chuyển đổi timestamp từ outEvent thành QDateTime
         QDateTime outDateTime = QDateTime::fromSecsSinceEpoch(outEvent.getDate());
 
-        // Định dạng chuỗi cho ngày và thời gian
         QString outDateStr = outDateTime.date().toString("MM/dd/yyyy");
         QString outTimeStr = outDateTime.time().toString("hh:mm:ss AP");
 
-        // Đổ dữ liệu vào các trường checkout
         ui.checkoutDateLabel->setText(outDateStr);
         ui.checkoutTimeLabel->setText(outTimeStr);
     }
