@@ -26,6 +26,17 @@ void reset_error_level(IddkResult result)
 	}
 }
 
+
+void reset_error_level_custom(IddkResult result)
+{
+	if (result == IDDK_OK)
+	{
+		error_level = -1;
+		if (g_deviceSleep) g_deviceSleep = false;
+		if (g_deviceDeepSleep) g_deviceDeepSleep = false;
+	}
+}
+
 /*************************************************************************
 /*  After each operation, user should clear any current captured images so
 /*  that other person cannot use your iris image.
@@ -2081,25 +2092,25 @@ IddkDataBuffer get_result_template_custom(int times)
 	{
 		printf("done.\n");
 		sprintf(resultTemplateFile, "%s/ResultTemplate_%d.tpl", g_binDir, times);
-		/*if(save_file(resultTemplateFile, pTemplate.data, pTemplate.dataSize))
+		if(save_file(resultTemplateFile, pTemplate.data, pTemplate.dataSize))
 		{
 			printf("\n\tSaved ./ResultTemplate_%d.tpl.\n", times);
-			return QString(resultTemplateFile);
 		}
 		else
 		{
 			printf("\n\tSaving ./ResultTemplate_%d.tpl failed.\n", times);
-		}*/
+		}
 	}
-	else if (iRet == IDDK_SE_NO_FRAME_AVAILABLE)
-	{
-		printf("\nNo iris image was captured. Start a capture first!\n");
-	}
+	//else if (iRet == IDDK_SE_NO_FRAME_AVAILABLE)
+	//{
+	//	qDebug() << "No iris image was captured. Start a capture first!";
+	//}
 	else
 	{
-		printf("failed. ");
+		qDebug() << "failed. ";
 		handle_error(iRet);
 	}
+
 	return pTemplate;
 }
 

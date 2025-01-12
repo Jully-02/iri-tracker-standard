@@ -9,7 +9,7 @@ ChangeDatabase::ChangeDatabase(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	this->setWindowTitle("Change Database");
+	this->setWindowTitle(tr("Change Database"));
 
 	QIcon logoIcon("../icons/logo.png");
 	this->setWindowIcon(logoIcon);

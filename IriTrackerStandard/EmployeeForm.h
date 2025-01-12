@@ -21,6 +21,8 @@ public:
 	~EmployeeForm();
 	void startIrisCapture();
 
+	Ui::EmployeeFormClass getUi();
+
 
 signals:
 	void employeeChanged();
@@ -45,6 +47,7 @@ private:
 
 	bool eventFilter(QObject* obj, QEvent* event);
 
+
 private:
 	Ui::EmployeeFormClass ui;
 	IriTracker* iriTracker;
@@ -55,4 +58,6 @@ private:
 	QByteArray eyeLeft = "";
 
 	QThread* threadStream;
+
+	bool device = false;
 };

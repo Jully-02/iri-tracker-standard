@@ -3,10 +3,10 @@
 
 // Constructors
 BulletinBoard::BulletinBoard()
-    : m_bulletinBoardId(0), m_isActive(-1), m_isHighPriority(-1), m_userId("") {}
+    : m_bulletinBoardId(0), m_isActive(-1), m_isHighPriority(-1) {}
 
-BulletinBoard::BulletinBoard(int bulletinBoardId, const QString& title, const QString& toEmployee, const QString& content, qint64 startDate, qint64 endDate, bool isActive, bool isHighPriority, const QDateTime& createdAt, const QDateTime& updatedAt, QString userId)
-    : m_bulletinBoardId(bulletinBoardId), m_title(title), m_toEmployee(toEmployee), m_content(content), m_startDate(startDate), m_endDate(endDate), m_isActive(isActive), m_isHighPriority(isHighPriority), m_createdAt(createdAt), m_updatedAt(updatedAt), m_userId(userId) {}
+BulletinBoard::BulletinBoard(int bulletinBoardId, const QString& title, const QString& toEmployee, const QString& content, qint64 startDate, qint64 endDate, bool isActive, bool isHighPriority, const QDateTime& createdAt, const QDateTime& updatedAt)
+    : m_bulletinBoardId(bulletinBoardId), m_title(title), m_toEmployee(toEmployee), m_content(content), m_startDate(startDate), m_endDate(endDate), m_isActive(isActive), m_isHighPriority(isHighPriority), m_createdAt(createdAt), m_updatedAt(updatedAt) {}
 
 // Getters and Setters
 int BulletinBoard::getBulletinBoardId() const { return m_bulletinBoardId; }
@@ -35,9 +35,6 @@ void BulletinBoard::setCreatedAt(const QDateTime& createdAt) { m_createdAt = cre
 
 QDateTime BulletinBoard::getUpdatedAt() const { return m_updatedAt; }
 void BulletinBoard::setUpdatedAt(const QDateTime& updatedAt) { m_updatedAt = updatedAt; }
-
-QString BulletinBoard::getUserId() const { return m_userId; }
-void BulletinBoard::setUserId(QString userId) { m_userId = userId; }
 
 QString BulletinBoard::getToEmployee() const { return m_toEmployee; }
 void BulletinBoard::setToEmployee(QString toEmployee) { m_toEmployee = toEmployee; }

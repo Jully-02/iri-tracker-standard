@@ -6,6 +6,8 @@
 #include "AttendanceEvent.h"
 #include <QPushButton>
 #include <QThread>
+#include <QTranslator>
+#include "SingletonManager.h"
 
 class IriTrackerStandard : public QMainWindow
 {
@@ -23,12 +25,17 @@ public:
         int imageHeight);
 
     void onPathTemplate();
+    void processStreaming();
 
 private:
+    void loadLanguage(const QString& language);
+    void changeLanguage(const QString& language);
+
     void btnLoginClicked();
     void btnLogoutClicked();
     void onLoginSuccessful();
     void onLogoutSuccessful();
+    void btnBackClicked();
 
     void btnDepartmentClicked();
     void btnEmployeeClicked();
@@ -81,6 +88,9 @@ private:
     void btnBullentinBoardEditClicked();
     void btnBullentinBoardDeleteClicked();
 
+
+    void btnSettingClicked();
+
 private slots:
     void onUserItemClicked(const QModelIndex& index);
 
@@ -114,5 +124,12 @@ private:
     QPushButton* backButtonS;
     QGridLayout* mainLayout;
 
+    QTranslator translator;
+
     QThread* threadStream;
+    bool device = false;
+
+    SingletonManager& manager = SingletonManager::getInstance();
+
+    IriTracker* iriTracker;
 };

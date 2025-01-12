@@ -14,7 +14,7 @@ Login::Login(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	this->setWindowTitle("Log In");
+	this->setWindowTitle(tr("Log In"));
 
 	QIcon logoIcon("../icons/logo.png");
 	this->setWindowIcon(logoIcon);

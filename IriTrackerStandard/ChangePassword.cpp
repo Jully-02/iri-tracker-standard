@@ -9,7 +9,7 @@ ChangePassword::ChangePassword(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	this->setWindowTitle("Change Password");
+	this->setWindowTitle(tr("Change Password"));
 
 	QIcon logoIcon("../icons/logo.png");
 	this->setWindowIcon(logoIcon);

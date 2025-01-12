@@ -254,6 +254,12 @@
     <ClCompile Include="EmployeeBulletins.cpp">
       <Filter>Controllers\Source Files\Forms</Filter>
     </ClCompile>
+    <ClCompile Include="Settings.cpp">
+      <Filter>Controllers\Source Files\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="SingletonManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="IriTrackerStandard.h">
@@ -310,6 +316,9 @@
     <QtMoc Include="EmployeeBulletins.h">
       <Filter>Controllers\Header Files\Forms</Filter>
     </QtMoc>
+    <QtMoc Include="Settings.h">
+      <Filter>Controllers\Header Files\Forms</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="IriTrackerStandard.ui">
@@ -357,9 +366,13 @@
     <QtUic Include="EmployeeBulletins.ui">
       <Filter>Views\Forms</Filter>
     </QtUic>
+    <QtUic Include="Settings.ui">
+      <Filter>Views\Forms</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="config.ini" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DatabaseHelper.h">
@@ -455,5 +468,6 @@
     <ClInclude Include="UserBulletinBoardRepositoryMySQL.h">
       <Filter>Repositories\MySQL\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SingletonManager.h" />
   </ItemGroup>
 </Project>

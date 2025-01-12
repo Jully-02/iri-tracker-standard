@@ -2,7 +2,7 @@
 
 BulletinBoard BulletinBoardRepositorySQLite::existByName(const QString& title) {
 	QSqlQuery query;
-	query.prepare("SELECT bulletin_board_id, title, to_employee, content, start_date, end_date, is_high_priority, is_active, user_id, created_at, updated_at FROM bulletin_board WHERE title = :title");
+	query.prepare("SELECT bulletin_board_id, title, to_employee, content, start_date, end_date, is_high_priority, is_active, created_at, updated_at FROM bulletin_board WHERE title = :title");
 	query.bindValue(":title", title);
 	BulletinBoard bulletinBoard;
 	if (!query.exec()) {
@@ -19,7 +19,6 @@ BulletinBoard BulletinBoardRepositorySQLite::existByName(const QString& title) {
 		bulletinBoard.setEndDate(query.value("end_date").toInt());
 		bulletinBoard.setIsHighPriority(query.value("is_high_priority").toInt());
 		bulletinBoard.setIsActive(query.value("is_active").toInt());
-		bulletinBoard.setUserId(query.value("user_id").toString());
 		bulletinBoard.setCreatedAt(query.value("created_at").toDateTime());
 		bulletinBoard.setUpdatedAt(query.value("updated_at").toDateTime());
 	}
@@ -37,8 +36,8 @@ BulletinBoard BulletinBoardRepositorySQLite::insert(const BulletinBoard& bulleti
 	}
 
 	QSqlQuery query;
-	query.prepare("INSERT INTO bulletin_board (title, to_employee, content, start_date, end_date, is_high_priority, is_active, user_id, created_at) "
-		"VALUES (:title, :to_employee, :content, :start_date, :end_date, :is_high_priority, :is_active, :user_id, :created_at)");
+	query.prepare("INSERT INTO bulletin_board (title, to_employee, content, start_date, end_date, is_high_priority, is_active, created_at) "
+		"VALUES (:title, :to_employee, :content, :start_date, :end_date, :is_high_priority, :is_active, :created_at)");
 	query.bindValue(":title", bulletinBoard.getTitle());
 	query.bindValue(":to_employee", bulletinBoard.getToEmployee());
 	query.bindValue(":content", bulletinBoard.getContent());
@@ -46,7 +45,6 @@ BulletinBoard BulletinBoardRepositorySQLite::insert(const BulletinBoard& bulleti
 	query.bindValue(":end_date", bulletinBoard.getEndDate());
 	query.bindValue(":is_high_priority", bulletinBoard.getIsHighPriority());
 	query.bindValue(":is_active", bulletinBoard.getIsActive());
-	query.bindValue(":user_id", bulletinBoard.getUserId());
 	query.bindValue(":created_at", QDateTime::currentDateTime());
 
 	if (!query.exec()) {
@@ -68,8 +66,7 @@ BulletinBoard BulletinBoardRepositorySQLite::insert(const BulletinBoard& bulleti
 		bulletinBoard.getIsActive(),
 		bulletinBoard.getIsHighPriority(),
 		QDateTime::currentDateTime(), // Thời gian tạo mới
-		QDateTime(), // Giả sử thời gian cập nhật ban đầu là rỗng
-		bulletinBoard.getUserId()
+		QDateTime() // Giả sử thời gian cập nhật ban đầu là rỗng
 	);
 }
 
@@ -77,7 +74,7 @@ BulletinBoard BulletinBoardRepositorySQLite::insert(const BulletinBoard& bulleti
 bool BulletinBoardRepositorySQLite::update(const BulletinBoard& bulletinBoard) {
 
 	QSqlQuery query;
-	query.prepare("UPDATE bulletin_board SET title = :title, to_employee = :to_employee, content = :content, start_date = :start_date, end_date = :end_date, is_high_priority = :is_high_priority, is_active = :is_active, user_id = :user_id, updated_at = :updated_at WHERE bulletin_board_id = :id");
+	query.prepare("UPDATE bulletin_board SET title = :title, to_employee = :to_employee, content = :content, start_date = :start_date, end_date = :end_date, is_high_priority = :is_high_priority, is_active = :is_active, updated_at = :updated_at WHERE bulletin_board_id = :id");
 	query.bindValue(":id", bulletinBoard.getBulletinBoardId());
 	query.bindValue(":title", bulletinBoard.getTitle());
 	query.bindValue(":to_employee", bulletinBoard.getToEmployee());
@@ -86,7 +83,6 @@ bool BulletinBoardRepositorySQLite::update(const BulletinBoard& bulletinBoard) {
 	query.bindValue(":end_date", bulletinBoard.getEndDate());
 	query.bindValue(":is_high_priority", bulletinBoard.getIsHighPriority());
 	query.bindValue(":is_active", bulletinBoard.getIsActive());
-	query.bindValue(":user_id", bulletinBoard.getUserId());
 	query.bindValue(":updated_at", QDateTime::currentDateTime());
 
 	if (!query.exec()) {
@@ -98,7 +94,7 @@ bool BulletinBoardRepositorySQLite::update(const BulletinBoard& bulletinBoard) {
 
 BulletinBoard BulletinBoardRepositorySQLite::selectById(int id) {
 	QSqlQuery query;
-	query.prepare("SELECT bulletin_board_id, title, to_employee, content, start_date, end_date, is_high_priority, is_active, user_id, created_at, updated_at FROM bulletin_board WHERE bulletin_board_id = :id");
+	query.prepare("SELECT bulletin_board_id, title, to_employee, content, start_date, end_date, is_high_priority, is_active, created_at, updated_at FROM bulletin_board WHERE bulletin_board_id = :id");
 	query.bindValue(":id", id);
 
 	if (!query.exec()) {
@@ -116,7 +112,6 @@ BulletinBoard BulletinBoardRepositorySQLite::selectById(int id) {
 		bulletinBoard.setEndDate(query.value("end_date").toInt());
 		bulletinBoard.setIsHighPriority(query.value("is_high_priority").toInt());
 		bulletinBoard.setIsActive(query.value("is_active").toInt());
-		bulletinBoard.setUserId(query.value("user_id").toString());
 		bulletinBoard.setCreatedAt(query.value("created_at").toDateTime());
 		bulletinBoard.setUpdatedAt(query.value("updated_at").toDateTime());
 	}
@@ -145,7 +140,7 @@ QList<BulletinBoard> BulletinBoardRepositorySQLite::selectAll() {
 
 	// Truy vấn SQL đầy đủ
 	query.prepare("SELECT bulletin_board_id, title, to_employee, content, start_date, end_date, "
-		"is_high_priority, is_active, user_id, created_at, updated_at FROM bulletin_board");
+		"is_high_priority, is_active, created_at, updated_at FROM bulletin_board");
 
 	// Thực thi truy vấn và kiểm tra lỗi
 	if (!query.exec()) {
@@ -163,7 +158,6 @@ QList<BulletinBoard> BulletinBoardRepositorySQLite::selectAll() {
 		qint64 endDate = query.value("end_date").toLongLong();     // Chuyển đổi chính xác sang qint64
 		bool isHighPriority = query.value("is_high_priority").toBool();
 		bool isActive = query.value("is_active").toBool();
-		QString userId = query.value("user_id").toString();
 		QDateTime createdAt = query.value("created_at").toDateTime();
 		QDateTime updatedAt = query.value("updated_at").toDateTime();
 
@@ -171,7 +165,7 @@ QList<BulletinBoard> BulletinBoardRepositorySQLite::selectAll() {
 		bulletinBoards.append(BulletinBoard(
 			bulletinBoardId, title, toEmployee, content,
 			startDate, endDate, isActive, isHighPriority,
-			createdAt, updatedAt, userId
+			createdAt, updatedAt
 		));
 	}
 
@@ -189,7 +183,7 @@ QList<BulletinBoard> BulletinBoardRepositorySQLite::selectBulletinsForUser(QStri
 
 	query.prepare(R"(
 		SELECT b.bulletin_board_id, b.title, b.to_employee, b.content, b.start_date, b.end_date, 
-			   b.is_active, b.is_high_priority, b.user_id, b.created_at, b.updated_at
+			   b.is_active, b.is_high_priority, b.created_at, b.updated_at
 		FROM bulletin_board b
 		JOIN user_bulletin_board ubb ON b.bulletin_board_id = ubb.bulletin_board_id
 		WHERE ubb.user_id = :user_id
@@ -217,7 +211,6 @@ QList<BulletinBoard> BulletinBoardRepositorySQLite::selectBulletinsForUser(QStri
 		qint64 endDate = query.value("end_date").toLongLong();
 		bool isActive = query.value("is_active").toBool();
 		bool isHighPriority = query.value("is_high_priority").toBool();
-		QString userId = query.value("user_id").toString();
 		QDateTime createdAt = query.value("created_at").toDateTime();
 		QDateTime updatedAt = query.value("updated_at").toDateTime();
 
@@ -225,7 +218,7 @@ QList<BulletinBoard> BulletinBoardRepositorySQLite::selectBulletinsForUser(QStri
 		bulletins.append(BulletinBoard(
 			bulletinBoardId, title, toEmployee, content,
 			startDate, endDate, isActive, isHighPriority,
-			createdAt, updatedAt, userId
+			createdAt, updatedAt
 		));
 	}
 

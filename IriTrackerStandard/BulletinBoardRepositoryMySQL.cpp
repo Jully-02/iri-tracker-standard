@@ -2,7 +2,7 @@
 
 BulletinBoard BulletinBoardRepositoryMySQL::existByName(const QString& title) {
 	QSqlQuery query;
-	query.prepare("SELECT bulletinBoard_id, title, to_employee, content, start_date, end_date, is_high_priority, is_active, user_id, created_at, updated_at FROM bulletinBoard WHERE title = :title");
+	query.prepare("SELECT bulletin_board_id, title, to_employee, content, start_date, end_date, is_high_priority, is_active, created_at, updated_at FROM bulletin_board WHERE title = :title");
 	query.bindValue(":title", title);
 	BulletinBoard bulletinBoard;
 	if (!query.exec()) {
@@ -11,7 +11,7 @@ BulletinBoard BulletinBoardRepositoryMySQL::existByName(const QString& title) {
 	}
 
 	if (query.next()) {
-		bulletinBoard.setBulletinBoardId(query.value("bulletinBoard_id").toInt());
+		bulletinBoard.setBulletinBoardId(query.value("bulletin_board_id").toInt());
 		bulletinBoard.setTitle(query.value("title").toString());
 		bulletinBoard.setToEmployee(query.value("to_employee").toString());
 		bulletinBoard.setContent(query.value("content").toString());
@@ -19,7 +19,6 @@ BulletinBoard BulletinBoardRepositoryMySQL::existByName(const QString& title) {
 		bulletinBoard.setEndDate(query.value("end_date").toInt());
 		bulletinBoard.setIsHighPriority(query.value("is_high_priority").toInt());
 		bulletinBoard.setIsActive(query.value("is_active").toInt());
-		bulletinBoard.setUserId(query.value("user_id").toString());
 		bulletinBoard.setCreatedAt(query.value("created_at").toDateTime());
 		bulletinBoard.setUpdatedAt(query.value("updated_at").toDateTime());
 	}
@@ -37,8 +36,8 @@ BulletinBoard BulletinBoardRepositoryMySQL::insert(const BulletinBoard& bulletin
 	}
 
 	QSqlQuery query;
-	query.prepare("INSERT INTO bulletin_board (title, to_employee, content, start_date, end_date, is_high_priority, is_active, user_id, created_at) "
-		"VALUES (:title, :to_employee, :content, :start_date, :end_date, :is_high_priority, :is_active, :user_id, :created_at)");
+	query.prepare("INSERT INTO bulletin_board (title, to_employee, content, start_date, end_date, is_high_priority, is_active, created_at) "
+		"VALUES (:title, :to_employee, :content, :start_date, :end_date, :is_high_priority, :is_active, :created_at)");
 	query.bindValue(":title", bulletinBoard.getTitle());
 	query.bindValue(":to_employee", bulletinBoard.getToEmployee());
 	query.bindValue(":content", bulletinBoard.getContent());
@@ -46,7 +45,6 @@ BulletinBoard BulletinBoardRepositoryMySQL::insert(const BulletinBoard& bulletin
 	query.bindValue(":end_date", bulletinBoard.getEndDate());
 	query.bindValue(":is_high_priority", bulletinBoard.getIsHighPriority());
 	query.bindValue(":is_active", bulletinBoard.getIsActive());
-	query.bindValue(":user_id", bulletinBoard.getUserId());
 	query.bindValue(":created_at", QDateTime::currentDateTime());
 
 	if (!query.exec()) {
@@ -68,15 +66,15 @@ BulletinBoard BulletinBoardRepositoryMySQL::insert(const BulletinBoard& bulletin
 		bulletinBoard.getIsActive(),
 		bulletinBoard.getIsHighPriority(),
 		QDateTime::currentDateTime(), // Thời gian tạo mới
-		QDateTime(), // Giả sử thời gian cập nhật ban đầu là rỗng
-		bulletinBoard.getUserId()
+		QDateTime()
 	);
 }
+
 
 bool BulletinBoardRepositoryMySQL::update(const BulletinBoard& bulletinBoard) {
 
 	QSqlQuery query;
-	query.prepare("UPDATE bulletinBoard SET title = :title, to_employee = :to_employee, content = :content, start_date = :start_date, end_date = :end_date, is_high_priority = :is_high_priority, is_active = :is_active, user_id = :user_id, updated_at = :updated_at WHERE bulletinBoard_id = :id");
+	query.prepare("UPDATE bulletin_board SET title = :title, to_employee = :to_employee, content = :content, start_date = :start_date, end_date = :end_date, is_high_priority = :is_high_priority, is_active = :is_active, updated_at = :updated_at WHERE bulletin_board_id = :id");
 	query.bindValue(":id", bulletinBoard.getBulletinBoardId());
 	query.bindValue(":title", bulletinBoard.getTitle());
 	query.bindValue(":to_employee", bulletinBoard.getToEmployee());
@@ -85,7 +83,6 @@ bool BulletinBoardRepositoryMySQL::update(const BulletinBoard& bulletinBoard) {
 	query.bindValue(":end_date", bulletinBoard.getEndDate());
 	query.bindValue(":is_high_priority", bulletinBoard.getIsHighPriority());
 	query.bindValue(":is_active", bulletinBoard.getIsActive());
-	query.bindValue(":user_id", bulletinBoard.getUserId());
 	query.bindValue(":updated_at", QDateTime::currentDateTime());
 
 	if (!query.exec()) {
@@ -97,7 +94,7 @@ bool BulletinBoardRepositoryMySQL::update(const BulletinBoard& bulletinBoard) {
 
 BulletinBoard BulletinBoardRepositoryMySQL::selectById(int id) {
 	QSqlQuery query;
-	query.prepare("SELECT bulletinBoard_id, title, to_employee, content, start_date, end_date, is_high_priority, is_active, user_id, created_at, updated_at FROM bulletinBoard WHERE bulletinBoard_id = :id");
+	query.prepare("SELECT bulletin_board_id, title, to_employee, content, start_date, end_date, is_high_priority, is_active, created_at, updated_at FROM bulletin_board WHERE bulletin_board_id = :id");
 	query.bindValue(":id", id);
 
 	if (!query.exec()) {
@@ -109,13 +106,12 @@ BulletinBoard BulletinBoardRepositoryMySQL::selectById(int id) {
 	if (query.next()) {
 		bulletinBoard.setBulletinBoardId(id);
 		bulletinBoard.setTitle(query.value("title").toString());
-		bulletinBoard.setTitle(query.value("to_employee").toString());
+		bulletinBoard.setToEmployee(query.value("to_employee").toString());
 		bulletinBoard.setContent(query.value("content").toString());
 		bulletinBoard.setStartDate(query.value("start_date").toInt());
 		bulletinBoard.setEndDate(query.value("end_date").toInt());
 		bulletinBoard.setIsHighPriority(query.value("is_high_priority").toInt());
 		bulletinBoard.setIsActive(query.value("is_active").toInt());
-		bulletinBoard.setUserId(query.value("user_id").toString());
 		bulletinBoard.setCreatedAt(query.value("created_at").toDateTime());
 		bulletinBoard.setUpdatedAt(query.value("updated_at").toDateTime());
 	}
@@ -128,7 +124,7 @@ BulletinBoard BulletinBoardRepositoryMySQL::selectById(int id) {
 
 bool BulletinBoardRepositoryMySQL::deleteItem(int id) {
 	QSqlQuery query;
-	query.prepare("DELETE FROM bulletinBoard WHERE bulletinBoard_id = :id");
+	query.prepare("DELETE FROM bulletinBoard WHERE bulletin_board_id = :id");
 	query.bindValue(":id", id);
 
 	if (!query.exec()) {
@@ -142,31 +138,38 @@ QList<BulletinBoard> BulletinBoardRepositoryMySQL::selectAll() {
 	QList<BulletinBoard> bulletinBoards;
 	QSqlQuery query;
 
-	query.prepare("SELECT bulletinBoard_id, title, to_employee, start_date, end_date, is_high_priority, is_active, user_id, created_at, updated_at FROM bulletinBoard");
+	// Truy vấn SQL đầy đủ
+	query.prepare("SELECT bulletin_board_id, title, to_employee, content, start_date, end_date, "
+		"is_high_priority, is_active, created_at, updated_at FROM bulletin_board");
 
-
+	// Thực thi truy vấn và kiểm tra lỗi
 	if (!query.exec()) {
 		qDebug() << "Error selecting bulletinBoards:" << query.lastError().text();
-		return bulletinBoards;
+		return bulletinBoards; // Trả về danh sách rỗng nếu có lỗi
 	}
 
+	// Xử lý từng bản ghi trong kết quả truy vấn
 	while (query.next()) {
-		int bulletinBoardId = query.value("bulletinBoard_id").toInt();
+		int bulletinBoardId = query.value("bulletin_board_id").toInt();
 		QString title = query.value("title").toString();
 		QString toEmployee = query.value("to_employee").toString();
-		QString content = query.value("content").toString();
-		qint64 startDate = query.value("start_date").toInt();
-		qint64 endDate = query.value("end_date").toInt();
-		int isHighPriority = query.value("is_high_priority").toInt();
-		int isActive = query.value("is_active").toInt();
-		QString userId = query.value("user_id").toString();
+		QString content = query.value("content").toString(); // Đảm bảo cột 'content' tồn tại trong SQL
+		qint64 startDate = query.value("start_date").toLongLong(); // Chuyển đổi chính xác sang qint64
+		qint64 endDate = query.value("end_date").toLongLong();     // Chuyển đổi chính xác sang qint64
+		bool isHighPriority = query.value("is_high_priority").toBool();
+		bool isActive = query.value("is_active").toBool();
 		QDateTime createdAt = query.value("created_at").toDateTime();
 		QDateTime updatedAt = query.value("updated_at").toDateTime();
 
-		bulletinBoards.append(BulletinBoard(bulletinBoardId, title, toEmployee, content, startDate, endDate, isHighPriority, isActive, createdAt, updatedAt, userId));
+		// Tạo đối tượng BulletinBoard và thêm vào danh sách
+		bulletinBoards.append(BulletinBoard(
+			bulletinBoardId, title, toEmployee, content,
+			startDate, endDate, isActive, isHighPriority,
+			createdAt, updatedAt
+		));
 	}
 
-	return bulletinBoards;
+	return bulletinBoards; // Trả về danh sách kết quả
 }
 
 QList<BulletinBoard> BulletinBoardRepositoryMySQL::selectBulletinsForUser(QString userId) {
@@ -176,7 +179,7 @@ QList<BulletinBoard> BulletinBoardRepositoryMySQL::selectBulletinsForUser(QStrin
 	// Chuẩn bị câu truy vấn SQL cho MySQL
 	query.prepare(R"(
         SELECT b.bulletin_board_id, b.title, b.to_employee, b.content, b.start_date, b.end_date, 
-               b.is_active, b.is_high_priority, b.user_id, b.created_at, b.updated_at
+               b.is_active, b.is_high_priority, b.created_at, b.updated_at
         FROM bulletin_board b
         JOIN user_bulletin_board ubb ON b.bulletin_board_id = ubb.bulletin_board_id
         WHERE ubb.user_id = :user_id
@@ -203,7 +206,6 @@ QList<BulletinBoard> BulletinBoardRepositoryMySQL::selectBulletinsForUser(QStrin
 		qint64 endDate = query.value("end_date").toLongLong();
 		bool isActive = query.value("is_active").toBool();
 		bool isHighPriority = query.value("is_high_priority").toBool();
-		QString userId = query.value("user_id").toString();
 		QDateTime createdAt = query.value("created_at").toDateTime();
 		QDateTime updatedAt = query.value("updated_at").toDateTime();
 
@@ -211,7 +213,7 @@ QList<BulletinBoard> BulletinBoardRepositoryMySQL::selectBulletinsForUser(QStrin
 		bulletins.append(BulletinBoard(
 			bulletinBoardId, title, toEmployee, content,
 			startDate, endDate, isActive, isHighPriority,
-			createdAt, updatedAt, userId
+			createdAt, updatedAt
 		));
 	}
 

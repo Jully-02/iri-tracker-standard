@@ -14,13 +14,24 @@
 #include <QDebug>
 #include <QThread>
 #include "EmployeeForm.h"
+#include "SingletonManager.h"
+#include <QSettings>
 
 int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
+
+    QSettings settings("config.ini", QSettings::IniFormat);
+
+    QString language = settings.value("General/language", "en").toString();
+    QString dbType = settings.value("Database/type", "SQLite").toString();
+
+    SingletonManager& manager = SingletonManager::getInstance();
+
     QThread* threadScanDevice = new QThread();
-    IriTracker* iriTracker = new IriTracker();
-    EmployeeForm* employeeForm = new EmployeeForm();
+    IriTracker* iriTracker = manager.getIriTracker();
+    EmployeeForm* employeeForm = manager.getEmployeeForm();
+
     iriTracker->moveToThread(threadScanDevice);
 
     QObject::connect(iriTracker, &IriTracker::onOpenDevice,

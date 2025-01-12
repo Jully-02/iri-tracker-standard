@@ -14,14 +14,20 @@
 #include "IriTracker.h"
 #include <QThread>
 #include "DatabaseHelper.h"
+#include "SingletonManager.h"
+#include <QMediaPlayer>
+#include <QSettings>
 
 EmployeeForm::EmployeeForm(QWidget* parent)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
 
-	iriTracker = new IriTracker();
+	iriTracker = SingletonManager::getInstance().getIriTrackerForm();
 	threadStream = new QThread();
+	
+	QIcon logoIcon("../icons/logo.png");
+	this->setWindowIcon(logoIcon);
 
 	QLinearGradient gradient(0, 0, 0, this->height());
 	gradient.setColorAt(0.0, Qt::white);
@@ -51,19 +57,30 @@ EmployeeForm::EmployeeForm(QWidget* parent)
 
 	connect(ui.passwordCheckbox, &QCheckBox::stateChanged, this, &EmployeeForm::updatePasswordFields);
 
-	connect(iriTracker, &IriTracker::onOpenDevice, this, &EmployeeForm::changeImageDevice, Qt::QueuedConnection);
 
 	ui.rightIrisImgLabel->installEventFilter(this);
 	ui.leftIrisImgLabel->installEventFilter(this);
 
-	connect(iriTracker, &IriTracker::imageProcessed,
+	SingletonManager& manager = SingletonManager::getInstance();
+
+	connect(manager.getIriTracker(), &IriTracker::imageProcessed,
 		this, &EmployeeForm::onImageProcessed);
+
 }
 
 EmployeeForm::~EmployeeForm()
 {
-	
+	SingletonManager& manager = SingletonManager::getInstance();
+	auto employeeForm = manager.getEmployeeForm();
+	if (employeeForm) {
+		employeeForm->deleteLater();
+	}
 }
+
+Ui::EmployeeFormClass EmployeeForm::getUi() {
+	return ui;
+}
+
 
 void EmployeeForm::processStreaming() {
 	// Tạo thread mới cho quá trình capture
@@ -76,32 +93,50 @@ void EmployeeForm::processStreaming() {
 	connect(iriTracker, &IriTracker::imageResult, this, &EmployeeForm::onImageProcessed);
 	connect(iriTracker, &IriTracker::resultTemplate, this, &EmployeeForm::onPathTemplate);
 
+	// dis
+	disconnect(threadStream, &QThread::started, nullptr, nullptr);
+
 	// Di chuyển IriTracker vào thread để xử lý capture
 	iriTracker->moveToThread(threadStream);
 
 	// Kết nối captureThread đã được bắt đầu để gọi run trong IriTracker
-	connect(threadStream, &QThread::started, iriTracker, [=]() {
-		iriTracker->run(false, true, true);
-		});
+	if (!threadStream->isRunning()) {
+		// Kết nối captureThread đã được bắt đầu để gọi run trong IriTracker
+		connect(threadStream, &QThread::started, iriTracker, [=]() {
+			iriTracker->run(false, true, true);
+			});
+	}
 
 
 	// Bắt đầu thread
 	threadStream->start();
+
+	QMediaPlayer* player = new QMediaPlayer();
+	QSettings settings("config.ini", QSettings::IniFormat);
+	QString language = settings.value("General/language", "en").toString();
+	if (language == "en") {
+		player->setMedia(QUrl::fromLocalFile("D:\\IrisTech\\Project\\IriTrackerStandard\\sounds\\move_eye_heather.wav"));
+	}
+	else {
+		player->setMedia(QUrl::fromLocalFile("D:\\IrisTech\\Project\\IriTrackerStandard\\sounds\\move_eye_heather_vi.wav"));
+	}
+	player->setVolume(100);
+	player->play();
 }
 
 
 void EmployeeForm::onPathTemplate(unsigned char* data, int size) {
-	if (threadStream && threadStream->isRunning()) {
-		threadStream->quit();
-	}
-	if (eyeSide == EyeSide::Right) {
-		qDebug() << "Eye Right: " << FunctionPublic::templateConvertToByte(data, size);
-		eyeRight = FunctionPublic::templateConvertToByte(data,size);
-	}
-	else if (eyeSide == EyeSide::Left) {
-		qDebug() << "Eye Left: " << FunctionPublic::templateConvertToByte(data, size);
-		eyeLeft = FunctionPublic::templateConvertToByte(data, size);
-	}
+
+		if (eyeSide == EyeSide::Right && eyeRight.isEmpty()) {
+			eyeRight = FunctionPublic::templateConvertToByte(data, size);
+			qDebug() << "Eye Right: " << eyeRight;
+			return;
+		}
+		else if (eyeSide == EyeSide::Left && eyeLeft.isEmpty()) {
+			eyeLeft = FunctionPublic::templateConvertToByte(data, size);
+			qDebug() << "Eye Left: " << eyeLeft;
+			return;
+		}
 }
 
 
@@ -124,9 +159,15 @@ void EmployeeForm::onImageProcessed(unsigned char* imageData,
 	QPixmap pixmap = QPixmap::fromImage(img);
 	if (eyeSide == EyeSide::Right) {
 		ui.rightIrisImgLabel->setPixmap(pixmap.scaled(ui.rightIrisImgLabel->size(), Qt::KeepAspectRatio));
+		if (threadStream->isRunning()) {
+			threadStream->quit();
+		}
 	}
 	else if (eyeSide == EyeSide::Left) {
 		ui.leftIrisImgLabel->setPixmap(pixmap.scaled(ui.rightIrisImgLabel->size(), Qt::KeepAspectRatio));
+		if (threadStream->isRunning()) {
+			threadStream->quit();
+		}
 	}
 }
 
@@ -139,8 +180,17 @@ bool EmployeeForm::eventFilter(QObject* obj, QEvent* event) {
 			qDebug() << "Eye Right Clicked";
 			eyeRight = "";
 			eyeSide = EyeSide::Right;
-			/*QPixmap pixmap("D:\\IrisTech\\Project\\IriTrackerStandard\\icons\\has-device.jpg");
-			ui.leftIrisImgLabel->setPixmap(pixmap.scaled(ui.leftIrisImgLabel->size(), Qt::KeepAspectRatio));*/
+			if (eyeLeft.isEmpty()) {
+				QPixmap iriPixmap;
+				if (device) {
+					iriPixmap.load("D://IrisTech//Project//IriTrackerStandard//icons//has-device.jpg");
+					ui.leftIrisImgLabel->setPixmap(iriPixmap);
+				}
+				else {
+					iriPixmap.load("D://IrisTech//Project//IriTrackerStandard//icons//no-iris.jpg");
+					ui.leftIrisImgLabel->setPixmap(iriPixmap);
+				}
+			}
 			processStreaming();
 			return true;
 		}
@@ -148,8 +198,17 @@ bool EmployeeForm::eventFilter(QObject* obj, QEvent* event) {
 			qDebug() << "Eye Left Clicked";
 			eyeLeft = "";
 			eyeSide = EyeSide::Left;
-			/*QPixmap pixmap("D:\\IrisTech\\Project\\IriTrackerStandard\\icons\\has-device.jpg");
-			ui.rightIrisImgLabel->setPixmap(pixmap.scaled(ui.rightIrisImgLabel->size(), Qt::KeepAspectRatio));*/
+			if (eyeRight.isEmpty()) {
+				QPixmap iriPixmap;
+				if (device) {
+					iriPixmap.load("D://IrisTech//Project//IriTrackerStandard//icons//has-device.jpg");
+					ui.rightIrisImgLabel->setPixmap(iriPixmap);
+				}
+				else {
+					iriPixmap.load("D://IrisTech//Project//IriTrackerStandard//icons//no-iris.jpg");
+					ui.rightIrisImgLabel->setPixmap(iriPixmap);
+				}
+			}
 			processStreaming();
 			return true;
 		}
@@ -173,13 +232,15 @@ void EmployeeForm::checkInputs() {
 	QString password = ui.passwordEdit->text();
 	QString confirmPassword = ui.confirmPasswordEdit->text();
 
+	// Kiểm tra các trường bắt buộc
 	bool valid = !id.isEmpty() && !firstName.isEmpty() && !lastName.isEmpty();
 
-	if (eyeLeft.isEmpty() || eyeRight.isEmpty()) {
+	// Kiểm tra dữ liệu eyeLeft và eyeRight
+	bool eyeDataAvailable = !eyeLeft.isEmpty() || !eyeRight.isEmpty();
+
+	if (!eyeDataAvailable) {
+		// Nếu không có dữ liệu eyeLeft và eyeRight, kiểm tra mật khẩu
 		valid = allowPassword && !password.isEmpty() && password.length() >= 4 && (password == confirmPassword);
-	}
-	else {
-		valid = true;
 	}
 
 	ui.btnOk->setEnabled(valid);
@@ -194,23 +255,50 @@ void EmployeeForm::btnBrowseClicked() {
 		ui.pathLabel->hide();
 
 		QPixmap pixmap(fileName);
-		ui.avatarLabel->setPixmap(pixmap.scaled(ui.avatarLabel->size(), Qt::KeepAspectRatio)); 
+		ui.avatarLabel->setPixmap(pixmap.scaled(ui.avatarLabel->size(), Qt::KeepAspectRatio));
 	}
 }
 
 void EmployeeForm::btnClearPhotoClicked() {
 	ui.pathLabel->clear();
-	ui.avatarLabel->clear(); 
+	ui.avatarLabel->clear();
+	QPixmap avatarPixmap;
+	avatarPixmap.load("D://IrisTech//Project//IriTrackerStandard//icons//no-image.png");
+	ui.avatarLabel->setPixmap(avatarPixmap);
 }
 
 void EmployeeForm::handleFormAction(const QString& action, QString id) {
 	currentAction = action;
 	userId = id;
+	if (device) {
+		QString imagePath = "../icons/has-device.jpg";
+		QPixmap pixmap(imagePath);
+		if (pixmap.isNull()) {
+			qDebug() << "Failed to load has-device.jpg!";
+		}
+		else {
+			ui.rightIrisImgLabel->setPixmap(pixmap.scaled(ui.rightIrisImgLabel->size(), Qt::KeepAspectRatio));
+			ui.leftIrisImgLabel->setPixmap(pixmap.scaled(ui.leftIrisImgLabel->size(), Qt::KeepAspectRatio));
+		}
+	}
+	else {
+		QString imagePath = "../icons/no-device.jpg";
+		QPixmap noDevicePixmap(imagePath);
+		if (noDevicePixmap.isNull()) {
+			qDebug() << "Failed to load no-device.jpg!";
+		}
+		else {
+			ui.rightIrisImgLabel->setPixmap(noDevicePixmap);
+			ui.leftIrisImgLabel->setPixmap(noDevicePixmap);
+		}
+	}
+	ui.errorLabel->clear();
+	ui.errorLabel->setStyleSheet("");
 	QList<Department> departments = DatabaseHelper::getDatabaseInstance()->getDepartmentRepository()->selectAll(false);
 	for (const Department& department : departments) {
 		ui.departmentCombobox->addItem(department.getName(), department.getDepartmentId());
 	}
-
+	ui.tabWidget->setCurrentIndex(0);
 	if (action == "Edit") {
 		User user = DatabaseHelper::getDatabaseInstance()->getUserRepository()->selectById(userId);
 
@@ -226,6 +314,13 @@ void EmployeeForm::handleFormAction(const QString& action, QString id) {
 			ui.passwordCheckbox->setChecked(user.getIsPassword());
 			eyeRight = user.getEyeRight();
 			eyeLeft = user.getEyeLeft();
+			if (!eyeRight.isEmpty()) {
+				ui.noticeRightLabel->setText(tr("( Registered )"));
+			}
+
+			if (!eyeLeft.isEmpty()) {
+				ui.noticeLeftLabel->setText(tr("( Registered )"));
+			}
 
 			if (user.getIsPassword()) {
 				ui.passwordEdit->setText("1234");
@@ -281,7 +376,30 @@ void EmployeeForm::handleFormAction(const QString& action, QString id) {
 		ui.confirmPasswordEdit->clear();
 		ui.passwordEdit->setDisabled(true);
 		ui.confirmPasswordEdit->setDisabled(true);
+		ui.departmentCombobox->clear();
+		ui.noticeRightLabel->setText(tr("(? Not register yet )"));
+		ui.noticeLeftLabel->setText(tr("(? Not register yet )"));
+		QPixmap avatarPixmap;
+		avatarPixmap.load("D:/IrisTech/Project/IriTrackerStandard/icons/no-image.png");
+		ui.avatarLabel->setPixmap(avatarPixmap);
 
+		if (device) {
+			QString imagePath = "../icons/has-device.jpg";
+			QPixmap pixmap(imagePath);
+			ui.rightIrisImgLabel->setPixmap(pixmap.scaled(ui.rightIrisImgLabel->size(), Qt::KeepAspectRatio));
+			ui.leftIrisImgLabel->setPixmap(pixmap.scaled(ui.leftIrisImgLabel->size(), Qt::KeepAspectRatio));
+		}
+		else {
+			QString imagePath = "../icons/no-device.jpg";
+			QPixmap pixmap(imagePath);
+			ui.rightIrisImgLabel->setPixmap(pixmap.scaled(ui.rightIrisImgLabel->size(), Qt::KeepAspectRatio));
+			ui.leftIrisImgLabel->setPixmap(pixmap.scaled(ui.leftIrisImgLabel->size(), Qt::KeepAspectRatio));
+		}
+
+		QList<Department> departments = DatabaseHelper::getDatabaseInstance()->getDepartmentRepository()->selectAll(false);
+		for (const Department& department : departments) {
+			ui.departmentCombobox->addItem(department.getName(), department.getDepartmentId());
+		}
 		// Thiết lập ngày sinh và ngày bắt đầu làm việc mặc định
 		QDate birthDate(1965, 1, 1);
 		ui.dateOfBirthEdit->setDate(birthDate);
@@ -384,28 +502,58 @@ void EmployeeForm::btnOkClicked() {
 
 
 void EmployeeForm::btnCancelClicked() {
-	if (currentAction == "Add") {
-		if (eyeRight != "") {
-			FunctionPublic::deleteFile(eyeRight);
-		}
-		if (eyeLeft != "") {
-			FunctionPublic::deleteFile(eyeLeft);
-		}
-		this->close();
+	if (threadStream->isRunning()) {
+		threadStream->quit();
+	}
+
+	iriTracker->isCancel = true;
+
+	disconnect(iriTracker, &IriTracker::imageProcessed, this, &EmployeeForm::onImageProcessed);
+	disconnect(iriTracker, &IriTracker::imageResult, this, &EmployeeForm::onImageProcessed);
+	disconnect(iriTracker, &IriTracker::resultTemplate, this, &EmployeeForm::onPathTemplate);
+
+	if (device) {
+		QString imagePath = "../icons/has-device.jpg";
+		QPixmap pixmap(imagePath);
+		ui.rightIrisImgLabel->setPixmap(pixmap.scaled(ui.rightIrisImgLabel->size(), Qt::KeepAspectRatio));
+		ui.leftIrisImgLabel->setPixmap(pixmap.scaled(ui.leftIrisImgLabel->size(), Qt::KeepAspectRatio));
 	}
 	else {
-		this->close();
+		QString imagePath = "../icons/no-device.jpg";
+		QPixmap pixmap(imagePath);
+		ui.rightIrisImgLabel->setPixmap(pixmap.scaled(ui.rightIrisImgLabel->size(), Qt::KeepAspectRatio));
+		ui.leftIrisImgLabel->setPixmap(pixmap.scaled(ui.leftIrisImgLabel->size(), Qt::KeepAspectRatio));
 	}
+	this->close();
 }
 
 void EmployeeForm::changeImageDevice(bool isDevice) {
-	if (isDevice) {
-		QPixmap pixmap("D:\\IrisTech\\Project\\IriTrackerStandard\\icons\\has-device.jpg");
-		ui.rightIrisImgLabel->setPixmap(pixmap.scaled(ui.rightIrisImgLabel->size(), Qt::KeepAspectRatio));
-		ui.leftIrisImgLabel->setPixmap(QPixmap("../icons/has-device.jpg"));
-	}
-	else {
-		ui.rightIrisImgLabel->setPixmap(QPixmap("../icons/no-device.jpg"));
-		ui.leftIrisImgLabel->setPixmap(QPixmap("../icons/no-device.jpg"));
+	if (isDevice != device) {
+		device = isDevice;
+		if (isDevice) {
+			QString imagePath = "../icons/has-device.jpg";
+			QPixmap pixmap(imagePath);
+			if (pixmap.isNull()) {
+				qDebug() << "Failed to load has-device.jpg!";
+			}
+			else {
+				ui.rightIrisImgLabel->setPixmap(pixmap.scaled(ui.rightIrisImgLabel->size(), Qt::KeepAspectRatio));
+				ui.leftIrisImgLabel->setPixmap(pixmap.scaled(ui.leftIrisImgLabel->size(), Qt::KeepAspectRatio));
+			}
+		}
+		else {
+			QString imagePath = "../icons/no-device.jpg";
+			QPixmap noDevicePixmap(imagePath);
+			if (noDevicePixmap.isNull()) {
+				qDebug() << "Failed to load no-device.jpg!";
+			}
+			else {
+				ui.rightIrisImgLabel->setPixmap(noDevicePixmap);
+				ui.leftIrisImgLabel->setPixmap(noDevicePixmap);
+			}
+		}
+
+		ui.rightIrisImgLabel->repaint();
+		ui.leftIrisImgLabel->repaint();
 	}
 }

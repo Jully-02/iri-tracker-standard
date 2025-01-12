@@ -249,7 +249,7 @@
         QList<QPair<QString, QPair<QByteArray, QByteArray>>> userEyes;
 
         // Truy vấn tất cả user_id, eye_right và eye_left
-        QSqlQuery query("SELECT user_id, eye_right, eye_left FROM user WHERE eye_right IS NOT NULL AND eye_left IS NOT NULL AND is_active = true");
+        QSqlQuery query("SELECT user_id, eye_right, eye_left FROM user WHERE (eye_right IS NOT NULL OR eye_left IS NOT NULL) AND is_active = true");
 
         if (!query.exec()) {
             qDebug() << "Error selecting eyes:" << query.lastError().text();

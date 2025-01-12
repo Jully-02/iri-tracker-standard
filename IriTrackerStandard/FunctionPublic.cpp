@@ -1,28 +1,10 @@
 #include "FunctionPublic.h"
+#include "SingletonManager.h"
 
-// Cài đặt hàm hashPassword
 QString FunctionPublic::hashPassword(const QString& password) {
-    QByteArray byteArray = password.toUtf8(); // Chuyển đổi QString thành QByteArray
-    QByteArray hashed = QCryptographicHash::hash(byteArray, QCryptographicHash::Sha256); // Mã hóa bằng SHA-256
-    return QString(hashed.toHex()); // Trả về chuỗi hex
-}
-
-bool FunctionPublic::deleteFile(const QString& filePath) {
-    QFile file(filePath);
-    if (file.exists()) {
-        if (file.remove()) {
-            qDebug() << "File deleted successfully:" << filePath;
-            return true;
-        }
-        else {
-            qDebug() << "Failed to delete file:" << filePath;
-            return false;
-        }
-    }
-    else {
-        qDebug() << "File does not exist:" << filePath;
-        return false;
-    }
+    QByteArray byteArray = password.toUtf8();
+    QByteArray hashed = QCryptographicHash::hash(byteArray, QCryptographicHash::Sha256); 
+    return QString(hashed.toHex()); 
 }
 
 QByteArray FunctionPublic::templateConvertToByte(const unsigned char* buffer, int size) {
@@ -39,4 +21,21 @@ std::pair<unsigned char*, int> FunctionPublic::convertByteArrayToUnsignedChar(co
 
     // Trả về một std::pair chứa buffer và kích thước của nó
     return std::make_pair(buffer, byteArray.size());
+}
+
+QByteArray FunctionPublic::readFileToByteArray(const QString& filePath) {
+    // Mở file với chế độ đọc nhị phân
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Không thể mở file" << filePath;
+        return QByteArray();  // Trả về QByteArray rỗng nếu không thể mở file
+    }
+
+    // Đọc nội dung file vào QByteArray
+    QByteArray byteArray = file.readAll();
+
+    // Đóng file sau khi đọc xong
+    file.close();
+
+    return byteArray;
 }

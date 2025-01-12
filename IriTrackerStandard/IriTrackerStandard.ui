@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
+    <width>782</width>
     <height>438</height>
    </rect>
   </property>
@@ -31,7 +31,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>701</width>
+      <width>781</width>
       <height>31</height>
      </rect>
     </property>
@@ -49,7 +49,7 @@
     <widget class="QPushButton" name="btnQuestion">
      <property name="geometry">
       <rect>
-       <x>660</x>
+       <x>740</x>
        <y>0</y>
        <width>41</width>
        <height>31</height>
@@ -84,7 +84,7 @@ QPushButton:hover {
     <widget class="QPushButton" name="btnInfo">
      <property name="geometry">
       <rect>
-       <x>620</x>
+       <x>700</x>
        <y>0</y>
        <width>41</width>
        <height>31</height>
@@ -119,9 +119,9 @@ QPushButton:hover {
     <widget class="QWidget" name="horizontalLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>10</x>
        <y>0</y>
-       <width>531</width>
+       <width>681</width>
        <height>32</height>
       </rect>
      </property>
@@ -129,6 +129,116 @@ QPushButton:hover {
       <property name="spacing">
        <number>0</number>
       </property>
+      <item>
+       <widget class="QPushButton" name="btnBack">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+	border-radius: none;
+	border: none;
+	text-align: center;
+}
+
+QPushButton:hover {
+        background-color: #D0D0D0;
+        border: 1px solid #A0A0A0;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}</string>
+        </property>
+        <property name="text">
+         <string>Back</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>../icons/back.png</normaloff>../icons/back.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnLogout">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+	border-radius: none;
+	border: none;
+	text-align: center;
+}
+
+QPushButton:hover {
+        background-color: #D0D0D0;
+        border: 1px solid #A0A0A0;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}</string>
+        </property>
+        <property name="text">
+         <string>Logout</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>../icons/logout.png</normaloff>../icons/logout.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QPushButton" name="btnLogin">
         <property name="sizePolicy">
@@ -151,7 +261,9 @@ QPushButton:hover {
         </property>
         <property name="font">
          <font>
-          <pointsize>10</pointsize>
+          <pointsize>9</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -204,7 +316,9 @@ QPushButton:hover {
         </property>
         <property name="font">
          <font>
-          <pointsize>10</pointsize>
+          <pointsize>9</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -260,7 +374,9 @@ QPushButton:hover {
         </property>
         <property name="font">
          <font>
-          <pointsize>10</pointsize>
+          <pointsize>9</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -313,7 +429,9 @@ QPushButton:hover {
         </property>
         <property name="font">
          <font>
-          <pointsize>10</pointsize>
+          <pointsize>9</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -352,7 +470,7 @@ QPushButton:hover {
      <rect>
       <x>0</x>
       <y>30</y>
-      <width>701</width>
+      <width>781</width>
       <height>391</height>
      </rect>
     </property>
@@ -375,7 +493,7 @@ QPushButton:hover {
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>230</x>
+        <x>290</x>
         <y>80</y>
         <width>201</width>
         <height>131</height>
@@ -391,7 +509,7 @@ QPushButton:hover {
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>180</x>
+        <x>240</x>
         <y>220</y>
         <width>321</width>
         <height>31</height>
@@ -417,7 +535,7 @@ QPushButton:hover {
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>100</x>
+        <x>160</x>
         <y>260</y>
         <width>471</width>
         <height>31</height>
@@ -446,9 +564,9 @@ QPushButton:hover {
      <widget class="QToolButton" name="btnDepartment">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>10</x>
         <y>90</y>
-        <width>151</width>
+        <width>191</width>
         <height>121</height>
        </rect>
       </property>
@@ -484,10 +602,10 @@ QPushButton:hover {
      <widget class="QLabel" name="labelAdministrator">
       <property name="geometry">
        <rect>
-        <x>260</x>
-        <y>30</y>
-        <width>181</width>
-        <height>31</height>
+        <x>270</x>
+        <y>10</y>
+        <width>261</width>
+        <height>41</height>
        </rect>
       </property>
       <property name="font">
@@ -504,13 +622,16 @@ QPushButton:hover {
       <property name="text">
        <string>Administrator</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
      <widget class="QToolButton" name="btnEmployee">
       <property name="geometry">
        <rect>
-        <x>190</x>
+        <x>200</x>
         <y>90</y>
-        <width>151</width>
+        <width>191</width>
         <height>121</height>
        </rect>
       </property>
@@ -546,9 +667,9 @@ QPushButton:hover {
      <widget class="QToolButton" name="btnEvent">
       <property name="geometry">
        <rect>
-        <x>360</x>
+        <x>390</x>
         <y>90</y>
-        <width>151</width>
+        <width>191</width>
         <height>121</height>
        </rect>
       </property>
@@ -584,9 +705,9 @@ QPushButton:hover {
      <widget class="QToolButton" name="btnException">
       <property name="geometry">
        <rect>
-        <x>530</x>
+        <x>580</x>
         <y>90</y>
-        <width>151</width>
+        <width>191</width>
         <height>121</height>
        </rect>
       </property>
@@ -624,7 +745,7 @@ QPushButton:hover {
        <rect>
         <x>100</x>
         <y>230</y>
-        <width>151</width>
+        <width>191</width>
         <height>121</height>
        </rect>
       </property>
@@ -660,9 +781,9 @@ QPushButton:hover {
      <widget class="QToolButton" name="btnBullentin">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>290</x>
         <y>230</y>
-        <width>151</width>
+        <width>191</width>
         <height>121</height>
        </rect>
       </property>
@@ -698,9 +819,9 @@ QPushButton:hover {
      <widget class="QToolButton" name="btnTool">
       <property name="geometry">
        <rect>
-        <x>440</x>
+        <x>480</x>
         <y>230</y>
-        <width>151</width>
+        <width>191</width>
         <height>121</height>
        </rect>
       </property>
@@ -738,10 +859,10 @@ QPushButton:hover {
      <widget class="QLabel" name="labelDepartment">
       <property name="geometry">
        <rect>
-        <x>260</x>
-        <y>20</y>
-        <width>181</width>
-        <height>31</height>
+        <x>270</x>
+        <y>10</y>
+        <width>271</width>
+        <height>41</height>
        </rect>
       </property>
       <property name="font">
@@ -758,13 +879,16 @@ QPushButton:hover {
       <property name="text">
        <string>Departments</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
      <widget class="QTableWidget" name="tableDepartment">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>70</y>
-        <width>681</width>
+        <width>761</width>
         <height>261</height>
        </rect>
       </property>
@@ -816,9 +940,9 @@ QTableWidget::item:selected {
      <widget class="QPushButton" name="btnDepartmentDelete">
       <property name="geometry">
        <rect>
-        <x>610</x>
+        <x>680</x>
         <y>340</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -857,9 +981,9 @@ QPushButton:hover {
      <widget class="QPushButton" name="btnDepartmentEdit">
       <property name="geometry">
        <rect>
-        <x>520</x>
+        <x>580</x>
         <y>340</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -898,9 +1022,9 @@ QPushButton:hover {
      <widget class="QPushButton" name="btnDepartmentAdd">
       <property name="geometry">
        <rect>
-        <x>430</x>
+        <x>480</x>
         <y>340</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -941,9 +1065,9 @@ QPushButton:hover {
      <widget class="QPushButton" name="btnEmployeeEdit">
       <property name="geometry">
        <rect>
-        <x>520</x>
+        <x>580</x>
         <y>340</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -984,7 +1108,7 @@ QPushButton:hover {
        <rect>
         <x>10</x>
         <y>70</y>
-        <width>681</width>
+        <width>761</width>
         <height>261</height>
        </rect>
       </property>
@@ -1081,9 +1205,9 @@ QHeaderView::section {
      <widget class="QPushButton" name="btnEmployeeDelete">
       <property name="geometry">
        <rect>
-        <x>610</x>
+        <x>680</x>
         <y>340</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -1128,9 +1252,9 @@ QPushButton:hover {
      <widget class="QPushButton" name="btnEmployeeAdd">
       <property name="geometry">
        <rect>
-        <x>430</x>
+        <x>480</x>
         <y>340</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -1169,10 +1293,10 @@ QPushButton:hover {
      <widget class="QLabel" name="labelEmployee">
       <property name="geometry">
        <rect>
-        <x>280</x>
-        <y>20</y>
-        <width>151</width>
-        <height>31</height>
+        <x>290</x>
+        <y>10</y>
+        <width>241</width>
+        <height>41</height>
        </rect>
       </property>
       <property name="font">
@@ -1189,13 +1313,16 @@ QPushButton:hover {
       <property name="text">
        <string>Employees</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
      <widget class="QPushButton" name="btnEmployeeView">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>340</y>
-        <width>211</width>
+        <width>251</width>
         <height>31</height>
        </rect>
       </property>
@@ -1236,9 +1363,9 @@ QPushButton:hover {
      <widget class="QPushButton" name="btnBullentinBoardDelete">
       <property name="geometry">
        <rect>
-        <x>610</x>
+        <x>680</x>
         <y>340</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -1279,7 +1406,7 @@ QPushButton:hover {
        <rect>
         <x>10</x>
         <y>70</y>
-        <width>681</width>
+        <width>761</width>
         <height>261</height>
        </rect>
       </property>
@@ -1361,9 +1488,9 @@ QHeaderView::section {
      <widget class="QPushButton" name="btnBullentinBoardEdit">
       <property name="geometry">
        <rect>
-        <x>520</x>
+        <x>580</x>
         <y>340</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -1402,10 +1529,10 @@ QPushButton:hover {
      <widget class="QLabel" name="labelBullentinBoard">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>20</y>
-        <width>201</width>
-        <height>31</height>
+        <x>240</x>
+        <y>10</y>
+        <width>331</width>
+        <height>41</height>
        </rect>
       </property>
       <property name="font">
@@ -1422,13 +1549,16 @@ QPushButton:hover {
       <property name="text">
        <string>Bullentin Board</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
      <widget class="QPushButton" name="btnBullentinBoardAdd">
       <property name="geometry">
        <rect>
-        <x>430</x>
+        <x>480</x>
         <y>340</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -1469,9 +1599,9 @@ QPushButton:hover {
      <widget class="QLabel" name="timeLabel">
       <property name="geometry">
        <rect>
-        <x>250</x>
+        <x>210</x>
         <y>10</y>
-        <width>381</width>
+        <width>561</width>
         <height>61</height>
        </rect>
       </property>
@@ -1496,9 +1626,9 @@ QPushButton:hover {
      <widget class="QLabel" name="dateLabel">
       <property name="geometry">
        <rect>
-        <x>230</x>
+        <x>210</x>
         <y>80</y>
-        <width>431</width>
+        <width>561</width>
         <height>41</height>
        </rect>
       </property>
@@ -1525,7 +1655,7 @@ QPushButton:hover {
        <rect>
         <x>10</x>
         <y>20</y>
-        <width>191</width>
+        <width>193</width>
         <height>367</height>
        </rect>
       </property>
@@ -1571,7 +1701,7 @@ QPushButton:hover {
        <rect>
         <x>210</x>
         <y>130</y>
-        <width>481</width>
+        <width>561</width>
         <height>261</height>
        </rect>
       </property>
@@ -1585,7 +1715,7 @@ QPushButton:hover {
        <widget class="QLabel" name="deviceLabel_4">
         <property name="geometry">
          <rect>
-          <x>100</x>
+          <x>160</x>
           <y>30</y>
           <width>261</width>
           <height>211</height>
@@ -1609,7 +1739,7 @@ QPushButton:hover {
        <widget class="QWidget" name="horizontalLayoutWidget_10">
         <property name="geometry">
          <rect>
-          <x>10</x>
+          <x>50</x>
           <y>40</y>
           <width>461</width>
           <height>41</height>
@@ -1617,10 +1747,28 @@ QPushButton:hover {
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <property name="spacing">
-          <number>27</number>
+          <number>20</number>
          </property>
          <item>
           <widget class="QLabel" name="nameLabel_4">
+           <property name="minimumSize">
+            <size>
+             <width>90</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>90</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="sizeIncrement">
+            <size>
+             <width>120</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <weight>75</weight>
@@ -1652,7 +1800,7 @@ QPushButton:hover {
        <widget class="QWidget" name="horizontalLayoutWidget_11">
         <property name="geometry">
          <rect>
-          <x>10</x>
+          <x>50</x>
           <y>90</y>
           <width>461</width>
           <height>41</height>
@@ -1660,10 +1808,28 @@ QPushButton:hover {
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_10">
          <property name="spacing">
-          <number>34</number>
+          <number>20</number>
          </property>
          <item>
           <widget class="QLabel" name="passwordLabel_4">
+           <property name="minimumSize">
+            <size>
+             <width>90</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>90</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="sizeIncrement">
+            <size>
+             <width>120</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <weight>75</weight>
@@ -1719,10 +1885,10 @@ QPushButton:hover {
        <widget class="QPushButton" name="btnCheckInOut">
         <property name="geometry">
          <rect>
-          <x>190</x>
+          <x>230</x>
           <y>150</y>
-          <width>101</width>
-          <height>31</height>
+          <width>100</width>
+          <height>35</height>
          </rect>
         </property>
         <property name="font">
@@ -1768,7 +1934,7 @@ QPushButton:disabled {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>481</width>
+          <width>561</width>
           <height>211</height>
          </rect>
         </property>
@@ -1796,7 +1962,7 @@ QPushButton:disabled {
        <widget class="QLabel" name="avatarInOutLabel">
         <property name="geometry">
          <rect>
-          <x>10</x>
+          <x>42</x>
           <y>20</y>
           <width>151</width>
           <height>151</height>
@@ -1844,7 +2010,7 @@ QPushButton:disabled {
        <widget class="QWidget" name="verticalLayoutWidget_7">
         <property name="geometry">
          <rect>
-          <x>168</x>
+          <x>220</x>
           <y>0</y>
           <width>301</width>
           <height>201</height>
@@ -2023,7 +2189,7 @@ QPushButton:disabled {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>481</width>
+          <width>561</width>
           <height>211</height>
          </rect>
         </property>
@@ -2052,9 +2218,9 @@ QPushButton:disabled {
      <widget class="QPushButton" name="btnCheckoutEvent">
       <property name="geometry">
        <rect>
-        <x>480</x>
+        <x>550</x>
         <y>360</y>
-        <width>111</width>
+        <width>124</width>
         <height>31</height>
        </rect>
       </property>
@@ -2093,7 +2259,7 @@ QPushButton:hover {
      <widget class="QComboBox" name="viewFormComboBox">
       <property name="geometry">
        <rect>
-        <x>590</x>
+        <x>680</x>
         <y>70</y>
         <width>91</width>
         <height>24</height>
@@ -2135,7 +2301,7 @@ QPushButton:hover {
        <rect>
         <x>20</x>
         <y>70</y>
-        <width>191</width>
+        <width>193</width>
         <height>317</height>
        </rect>
       </property>
@@ -2179,7 +2345,7 @@ QPushButton:hover {
      <widget class="QLabel" name="viewFormLabel">
       <property name="geometry">
        <rect>
-        <x>480</x>
+        <x>570</x>
         <y>70</y>
         <width>101</width>
         <height>21</height>
@@ -2207,7 +2373,7 @@ QPushButton:hover {
        <rect>
         <x>220</x>
         <y>100</y>
-        <width>461</width>
+        <width>551</width>
         <height>231</height>
        </rect>
       </property>
@@ -2289,10 +2455,10 @@ QTableWidget::item:selected {
      <widget class="QLabel" name="attendanceEventLabel">
       <property name="geometry">
        <rect>
-        <x>230</x>
-        <y>20</y>
-        <width>251</width>
-        <height>31</height>
+        <x>220</x>
+        <y>10</y>
+        <width>371</width>
+        <height>41</height>
        </rect>
       </property>
       <property name="font">
@@ -2309,13 +2475,16 @@ QTableWidget::item:selected {
       <property name="text">
        <string>Attendance Events</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
      <widget class="QPushButton" name="btnEditEvent">
       <property name="geometry">
        <rect>
-        <x>390</x>
+        <x>450</x>
         <y>360</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -2354,9 +2523,9 @@ QPushButton:hover {
      <widget class="QPushButton" name="btnDeleteEvent">
       <property name="geometry">
        <rect>
-        <x>600</x>
+        <x>680</x>
         <y>360</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -2395,9 +2564,9 @@ QPushButton:hover {
      <widget class="QPushButton" name="btnAddEvent">
       <property name="geometry">
        <rect>
-        <x>300</x>
+        <x>350</x>
         <y>360</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -2438,10 +2607,10 @@ QPushButton:hover {
      <widget class="QLabel" name="exceptionLabel">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>20</y>
-        <width>151</width>
-        <height>31</height>
+        <x>240</x>
+        <y>10</y>
+        <width>301</width>
+        <height>41</height>
        </rect>
       </property>
       <property name="font">
@@ -2458,13 +2627,16 @@ QPushButton:hover {
       <property name="text">
        <string>Exceptions</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
      <widget class="QTableWidget" name="tableException">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>60</y>
-        <width>681</width>
+        <width>761</width>
         <height>261</height>
        </rect>
       </property>
@@ -2541,9 +2713,9 @@ QHeaderView::section {
      <widget class="QPushButton" name="btnEditException">
       <property name="geometry">
        <rect>
-        <x>520</x>
+        <x>580</x>
         <y>340</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -2582,9 +2754,9 @@ QPushButton:hover {
      <widget class="QPushButton" name="btnDeleteException">
       <property name="geometry">
        <rect>
-        <x>610</x>
+        <x>680</x>
         <y>340</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -2623,9 +2795,9 @@ QPushButton:hover {
      <widget class="QPushButton" name="btnAddException">
       <property name="geometry">
        <rect>
-        <x>430</x>
+        <x>480</x>
         <y>340</y>
-        <width>80</width>
+        <width>95</width>
         <height>31</height>
        </rect>
       </property>
@@ -2666,7 +2838,7 @@ QPushButton:hover {
        <rect>
         <x>10</x>
         <y>340</y>
-        <width>211</width>
+        <width>271</width>
         <height>31</height>
        </rect>
       </property>
@@ -2707,10 +2879,10 @@ QPushButton:hover {
      <widget class="QLabel" name="toolsLabel">
       <property name="geometry">
        <rect>
-        <x>320</x>
-        <y>30</y>
-        <width>71</width>
-        <height>31</height>
+        <x>290</x>
+        <y>20</y>
+        <width>231</width>
+        <height>41</height>
        </rect>
       </property>
       <property name="font">
@@ -2727,13 +2899,16 @@ QPushButton:hover {
       <property name="text">
        <string>Tools</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
      <widget class="QToolButton" name="btnBackup">
       <property name="geometry">
        <rect>
-        <x>100</x>
+        <x>90</x>
         <y>90</y>
-        <width>151</width>
+        <width>201</width>
         <height>121</height>
        </rect>
       </property>
@@ -2770,9 +2945,9 @@ QPushButton:hover {
      <widget class="QToolButton" name="btnSetting">
       <property name="geometry">
        <rect>
-        <x>350</x>
-        <y>230</y>
-        <width>151</width>
+        <x>370</x>
+        <y>240</y>
+        <width>201</width>
         <height>121</height>
        </rect>
       </property>
@@ -2809,9 +2984,9 @@ QPushButton:hover {
      <widget class="QToolButton" name="btnRestore">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>290</x>
         <y>90</y>
-        <width>151</width>
+        <width>201</width>
         <height>121</height>
        </rect>
       </property>
@@ -2848,9 +3023,9 @@ QPushButton:hover {
      <widget class="QToolButton" name="btnChangeDB">
       <property name="geometry">
        <rect>
-        <x>440</x>
+        <x>490</x>
         <y>90</y>
-        <width>151</width>
+        <width>201</width>
         <height>121</height>
        </rect>
       </property>
@@ -2887,9 +3062,9 @@ QPushButton:hover {
      <widget class="QToolButton" name="btnChangePassword">
       <property name="geometry">
        <rect>
-        <x>180</x>
-        <y>230</y>
-        <width>151</width>
+        <x>170</x>
+        <y>240</y>
+        <width>201</width>
         <height>121</height>
        </rect>
       </property>

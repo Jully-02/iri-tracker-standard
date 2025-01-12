@@ -11,7 +11,7 @@ class BulletinBoard {
 public:
     // Constructors
     BulletinBoard();
-    BulletinBoard(int bulletinBoardId, const QString& title, const QString& toEmployee, const QString& content, qint64 startDate, qint64 endDate, bool isActive, bool isHighPriority, const QDateTime& createdAt, const QDateTime& updatedAt, QString userId);
+    BulletinBoard(int bulletinBoardId, const QString& title, const QString& toEmployee, const QString& content, qint64 startDate, qint64 endDate, bool isActive, bool isHighPriority, const QDateTime& createdAt, const QDateTime& updatedAt);
 
     // Getters and Setters
     int getBulletinBoardId() const;
@@ -41,9 +41,6 @@ public:
     QDateTime getUpdatedAt() const;
     void setUpdatedAt(const QDateTime& updatedAt);
 
-    QString getUserId() const;
-    void setUserId(QString userId);
-
     QString getToEmployee() const;
     void setToEmployee(QString toEmployee);
 
@@ -58,7 +55,6 @@ private:
     bool m_isHighPriority;
     QDateTime m_createdAt;
     QDateTime m_updatedAt;
-    QString m_userId;
 };
 
 #endif // BULLETINBOARD_H

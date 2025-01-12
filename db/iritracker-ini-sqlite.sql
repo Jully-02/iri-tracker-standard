@@ -16,11 +16,9 @@ CREATE TABLE IF NOT EXISTS "bulletin_board" (
 	"end_date"	INTEGER,
 	"is_active"	INTEGER,
 	"is_high_priority"	INTEGER,
-	"user_id"	TEXT NOT NULL,
 	"created_at"	TEXT,
 	"updated_at"	TEXT,
-	PRIMARY KEY("bulletin_board_id" AUTOINCREMENT),
-	FOREIGN KEY("user_id") REFERENCES "user"("user_id")
+	PRIMARY KEY("bulletin_board_id" AUTOINCREMENT)
 );
 CREATE TABLE IF NOT EXISTS "department" (
 	"department_id"	INTEGER NOT NULL UNIQUE,

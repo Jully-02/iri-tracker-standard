@@ -248,7 +248,7 @@ QList<QPair<QString, QPair<QByteArray, QByteArray>>> UserRepositorySQLite::selec
 	QList<QPair<QString, QPair<QByteArray, QByteArray>>> userEyes;
 
 	// Truy vấn tất cả user_id, eye_right và eye_left
-	QSqlQuery query("SELECT user_id, eye_right, eye_left FROM user WHERE eye_right IS NOT NULL OR eye_left IS NOT NULL AND is_active = true");
+	QSqlQuery query("SELECT user_id, eye_right, eye_left FROM user WHERE (eye_right IS NOT NULL OR eye_left IS NOT NULL) AND is_active = true");
 
 	if (!query.exec()) {
 		qDebug() << "Error selecting eyes:" << query.lastError().text();
@@ -262,7 +262,7 @@ QList<QPair<QString, QPair<QByteArray, QByteArray>>> UserRepositorySQLite::selec
 		QByteArray eyeLeft = query.value(2).toByteArray();  // eye_left
 
 		// Kiểm tra nếu cả eyeRight và eyeLeft đều không rỗng
-		if (!eyeRight.isEmpty() && !eyeLeft.isEmpty()) {
+		if (!eyeRight.isEmpty() || !eyeLeft.isEmpty()) {
 			// Thêm vào danh sách kết quả dưới dạng QPair
 			userEyes.append(qMakePair(userId, qMakePair(eyeRight, eyeLeft)));
 		}

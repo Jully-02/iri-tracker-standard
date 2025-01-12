@@ -8,7 +8,7 @@ EmployeeBulletins::EmployeeBulletins(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	this->setWindowTitle("Employee Bulletins");
+	this->setWindowTitle(tr("Employee Bulletins"));
 
 	QIcon logoIcon("../icons/logo.png");
 	this->setWindowIcon(logoIcon);

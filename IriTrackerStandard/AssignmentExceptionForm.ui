@@ -399,9 +399,9 @@ QGroupBox::title { subcontrol-origin: margin; left:5px; top: 10px; padding: 0 5p
    <widget class="QPushButton" name="applyButton">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>360</x>
       <y>440</y>
-      <width>101</width>
+      <width>129</width>
       <height>31</height>
      </rect>
     </property>

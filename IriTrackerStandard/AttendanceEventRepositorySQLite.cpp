@@ -407,32 +407,32 @@
         QDateTime startDateTime, endDateTime;
         QDate currentDate = QDate::currentDate();
 
-        if (timeFilter == "This week") {
+        if (timeFilter == "This week" || timeFilter == "Tuần này") {
             QDate startOfWeek = currentDate.addDays(-(currentDate.dayOfWeek() - 1)); // Thứ 2 tuần này
             startDateTime = QDateTime(startOfWeek, QTime(0, 0, 0));
             endDateTime = QDateTime(startOfWeek.addDays(6), QTime(23, 59, 59));
             queryString += " AND date >= :startDate AND date <= :endDate";
         }
-        else if (timeFilter == "Last week") {
+        else if (timeFilter == "Last week" || timeFilter == "Tuần trước") {
             QDate startOfLastWeek = currentDate.addDays(-(currentDate.dayOfWeek() + 6)); // Thứ 2 tuần trước
             startDateTime = QDateTime(startOfLastWeek, QTime(0, 0, 0));
             endDateTime = QDateTime(startOfLastWeek.addDays(6), QTime(23, 59, 59));
             queryString += " AND date >= :startDate AND date <= :endDate";
         }
-        else if (timeFilter == "This month") {
+        else if (timeFilter == "This month" || timeFilter == "Tháng này") {
             QDate startOfMonth(currentDate.year(), currentDate.month(), 1); // Ngày đầu tháng
             startDateTime = QDateTime(startOfMonth, QTime(0, 0, 0));
             endDateTime = QDateTime(startOfMonth.addMonths(1).addDays(-1), QTime(23, 59, 59));
             queryString += " AND date >= :startDate AND date <= :endDate";
         }
-        else if (timeFilter == "Last month") {
+        else if (timeFilter == "Last month" || timeFilter == "Tháng trước") {
             QDate startOfLastMonth = currentDate.addMonths(-1);
             startOfLastMonth.setDate(startOfLastMonth.year(), startOfLastMonth.month(), 1); // Ngày đầu tháng trước
             startDateTime = QDateTime(startOfLastMonth, QTime(0, 0, 0));
             endDateTime = QDateTime(startOfLastMonth.addMonths(1).addDays(-1), QTime(23, 59, 59));
             queryString += " AND date >= :startDate AND date <= :endDate";
         }
-        else if (timeFilter == "This year") {
+        else if (timeFilter == "This year" || timeFilter == "Năm này") {
             QDate startOfYear(currentDate.year(), 1, 1); // Ngày đầu năm
             startDateTime = QDateTime(startOfYear, QTime(0, 0, 0));
             endDateTime = QDateTime(QDate(currentDate.year(), 12, 31), QTime(23, 59, 59));

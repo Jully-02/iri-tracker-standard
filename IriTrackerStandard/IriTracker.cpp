@@ -9,11 +9,16 @@
 #include "IriLivenessBase.h"
 #include <QThread>
 #include "IriTrackerStandard.h"
+#include "DatabaseHelper.h"
+#include "FunctionPublic.h"
+#include "SingletonManager.h"
+#include <QMediaPlayer>
 
 IriTracker::IriTracker()
 {
 
 }
+
 
 void IriTracker::changedScreen(int index) {
 	qDebug() << "Screen Index: " << index;
@@ -34,6 +39,7 @@ void IriTracker::get_device() {
 	char buffer[256];
 
 	bool flagCheckOpen = false;
+	
 
 	/* We should get the current configuration before setting new one */
 	iRet = Iddk_GetSdkConfig(&config);
@@ -84,11 +90,12 @@ void IriTracker::get_device() {
 		printf("\nOpen device %s ... ", ppDeviceDescs[0]);
 		if (!flagCheckOpen) {
 			iRet = Iddk_OpenDevice(ppDeviceDescs[0], &g_hDevice);
-			flagCheckOpen = true;
+			
 		}
 		if (iRet == IDDK_OK)
 		{
 			printf("done.\n");
+			flagCheckOpen = true;
 			// check type of device is monocular or binocular
 			IddkDeviceInfo deviceInfo;
 			if (IDDK_OK == Iddk_GetDeviceInfo(g_hDevice, &deviceInfo))
@@ -97,6 +104,10 @@ void IriTracker::get_device() {
 			}
 			emit onOpenDevice(true);
 			continue;
+		}
+		else if (iRet == IDDK_DEVICE_ALREADY_OPEN && flagCheckOpen == false) {
+			Iddk_CloseDevice(g_hDevice);
+			goto RETSEC;
 		}
 		else
 		{
@@ -110,7 +121,10 @@ void IriTracker::get_device() {
 		{
 			handle_error(iRet);
 		}
-
+		g_hDevice = NULL;
+		ppDeviceDescs = NULL;
+		nDeviceCnt = 0;
+		flagCheckOpen = false;
 		reset_error_level(iRet);
 	}
 
@@ -207,6 +221,7 @@ void clear_capture_custom()
 	}
 	else
 	{
+		qDebug() << "Clear capture failed!";
 		printf("Clear capture failed \n");
 		handle_error(iRet);
 	}
@@ -235,63 +250,87 @@ bool process_matching_result_custom(float distance, char* enrollID)
 	return false;
 }
 
-bool IriTracker::compare_templates_custom(int dataSize, unsigned char* data)
+QPair<QString, bool> IriTracker::compare_templates_custom(bool checkDup)
 {
-	char templateFile[256];
-	float compareDis = 1000.0f;
-	float minDis = 3.0f;
-	int nComparisonResults = 0;
-	IddkComparisonResult* pComparisonResults = NULL;
-	IddkResult iRet = IDDK_OK;
-	int option = 0;
-	IddkCaptureStatus captureStatus = IDDK_IDLE;
-	char enrollID[255];
-	int i = 0;
-	IddkDataBuffer pEnrollTemplate;
-	char temp[256];
-	char minEnrollID[32];
-	/* Compare1N */
-	char sMaxDistance[100];
-	// default maxDistance = 0: return all distances
-	float fMaxDistance = 0;
-	nComparisonResults = 0;
-	pComparisonResults = NULL;
+	QList<QPair<QString, QPair<QByteArray, QByteArray>>> eyes = DatabaseHelper::getDatabaseInstance()->getUserRepository()->selectAllEyes();
+	qDebug() << "Size: " << eyes.size();
+	IriTracker* iriTracker = new IriTracker();
+	for (const QPair<QString, QPair<QByteArray, QByteArray>>& eye : eyes) {
+		// Lấy dữ liệu mắt phải và mắt trái
+		QByteArray eyeRight = eye.second.first;
+		QByteArray eyeLeft = eye.second.second;
 
-	/* Init */
-	pEnrollTemplate.data = data;
-	pEnrollTemplate.dataSize = dataSize;
+		std::pair<unsigned char*, int> eyeRightData = FunctionPublic::convertByteArrayToUnsignedChar(eyeRight);
+		std::pair<unsigned char*, int> eyeLeftData = FunctionPublic::convertByteArrayToUnsignedChar(eyeLeft);
 
-	printf("Compare the captured iris image with the specified template...");
-	iRet = Iddk_Compare11WithTemplate(g_hDevice, &pEnrollTemplate, &compareDis);
-	if (iRet == IDDK_OK)
-	{
-		printf("done.");
-		printf("\n\tCompare Distance = %f\n", compareDis);
+		char templateFile[256];
+		float compareDis = 1000.0f;
+		float minDis = 3.0f;
+		int nComparisonResults = 0;
+		IddkComparisonResult* pComparisonResults = NULL;
+		IddkResult iRet = IDDK_OK;
+		int option = 0;
+		IddkCaptureStatus captureStatus = IDDK_IDLE;
+		char enrollID[255];
+		int i = 0;
+		IddkDataBuffer pEnrollTemplate;
+		char temp[256];
+		char minEnrollID[32];
+		/* Compare1N */
+		char sMaxDistance[100];
+		// default maxDistance = 0: return all distances
+		float fMaxDistance = 0;
+		nComparisonResults = 0;
+		pComparisonResults = NULL;
 
-		bool isMatch = process_matching_result_custom(compareDis, NULL);
+		for (int i = 0; i < 2; i++) {
+			/* Init */
+			if (i == 0) {
+				pEnrollTemplate.data = eyeRightData.first;
+				pEnrollTemplate.dataSize = eyeRightData.second;
+			}
+			else {
+				pEnrollTemplate.data = eyeLeftData.first;
+				pEnrollTemplate.dataSize = eyeLeftData.second;
+			}
+			/*pEnrollTemplate.data = FunctionPublic::convertByteArrayToUnsignedChar(SingletonManager::ms).first;
+			pEnrollTemplate.dataSize = FunctionPublic::convertByteArrayToUnsignedChar(SingletonManager::ms).second;*/
 
-		if (isMatch) {
-			clear_capture_custom();
-			return true;
+			printf("Compare the captured iris image with the specified template...");
+			iRet = Iddk_Compare11WithTemplate(g_hDevice, &pEnrollTemplate, &compareDis);
+			if (iRet == IDDK_OK)
+			{
+				printf("done.");
+				printf("\n\tCompare Distance = %f\n", compareDis);
+
+				bool isMatch = process_matching_result_custom(compareDis, NULL);
+
+				if (isMatch) {
+					clear_capture_custom();
+					return QPair<QString, bool>(eye.first, true);
+				}
+			}
+			else if (iRet == IDDK_GAL_EMPTY)
+			{
+				printf("No match found. The gallery is empty !\n");
+			}
+			else if (iRet == IDDK_SE_NO_QUALIFIED_FRAME)
+			{
+				printf("Failed. No qualified image!\n");
+
+			}
+			else
+			{
+				printf("Failed.\n");
+				handle_error(iRet);
+			}
+			reset_error_level(iRet);
 		}
 	}
-	else if (iRet == IDDK_GAL_EMPTY)
-	{
-		printf("No match found. The gallery is empty !\n");
+	if (checkDup == false) {
+		clear_capture_custom();
 	}
-	else if (iRet == IDDK_SE_NO_QUALIFIED_FRAME)
-	{
-		printf("Failed. No qualified image!\n");
-
-	}
-	else
-	{
-		printf("Failed.\n");
-		handle_error(iRet);
-	}
-	reset_error_level(iRet);
-	clear_capture_custom();
-	return false;
+	return QPair<QString, bool>("", false);
 }
 
 void IriTracker::run(bool bDefaultParams, bool bMultiple, bool bProcessResult)
@@ -321,6 +360,8 @@ void IriTracker::run(bool bDefaultParams, bool bMultiple, bool bProcessResult)
 	IddkIrisQuality* pQualities;
 	int nQualityCount = 0;
 
+	bool flagBreak = false;
+
 
 	/* We have to init camera first */
 	printf("\nInit Camera: \n");
@@ -330,6 +371,7 @@ void IriTracker::run(bool bDefaultParams, bool bMultiple, bool bProcessResult)
 	{
 		printf("\nFailed to initialize camera\n");
 		handle_error(iRet);
+		goto RETSEC;
 		return;
 	}
 	printf("\n\tImage width: %d\n", imageWidth);
@@ -458,10 +500,20 @@ void IriTracker::run(bool bDefaultParams, bool bMultiple, bool bProcessResult)
 					printf(".");
 					/* We set up a counter to break the loop if user doesn't place the eyes in front of the camera */
 					i++;
-					if (i > 300)
+					if (i > 50)
 					{
+						i = 0;
 						bRun = false;
 						printf("\n\tOops! No eye detected for so long. The capture process aborted.\n");
+						if (bDefaultParams == false && isCancel) { 
+							flagBreak = true;
+							break;
+						}
+
+						if (bDefaultParams == true && isDisconnectInOut) {
+							flagBreak = true;
+							break;
+						}
 					}
 				}
 
@@ -473,6 +525,10 @@ void IriTracker::run(bool bDefaultParams, bool bMultiple, bool bProcessResult)
 				//handle_error(iRet);
 				bRun = false;
 			}
+		}
+
+		if (flagBreak) {
+			break;
 		}
 
 		/* Try to stop capturing*/
@@ -547,16 +603,20 @@ void IriTracker::run(bool bDefaultParams, bool bMultiple, bool bProcessResult)
 		if (bProcessResult && captureStatus == IDDK_COMPLETE)
 		{
 			qint64 timestamp = QDateTime::currentDateTime().toSecsSinceEpoch();
+			QMediaPlayer* player = new QMediaPlayer();
+			player->setMedia(QUrl::fromLocalFile("D:\\IrisTech\\Project\\IriTrackerStandard\\sounds\\capture.wav"));
+			player->setVolume(100);
+			player->play();
 			/* Get the result image */
 			IddkImage* result = get_result_image_custom(timestamp);
 			emit imageResult(result->imageData, result->imageDataLen, result->imageWidth, result->imageHeight);
-			//get_result_ISO_image(times);
+			
 
 			/* Get the result template */
 			IddkDataBuffer pathTemplate = get_result_template_custom(timestamp);
 			emit resultTemplate(pathTemplate.data, pathTemplate.dataSize);
-
-			return;
+			clear_capture_custom();
+			break;
 		}
 
 		/* iris_recognition calls, we break the loop */
@@ -593,4 +653,91 @@ RETSEC:
 	}
 
 	reset_error_level(iRet);
+}
+
+QPair<QString, bool> IriTracker::checkTemplates() {
+	QList<QPair<QString, QPair<QByteArray, QByteArray>>> eyes = DatabaseHelper::getDatabaseInstance()->getUserRepository()->selectAllEyes();
+
+
+	for (QPair<QString, QPair<QByteArray, QByteArray>> employeeIries : eyes) {
+		float compareDis = 1000.0f;
+		float minDis = 3.0f;
+		int nComparisonResults = 0;
+		IddkComparisonResult* pComparisonResults = NULL;
+		IddkResult iRet = IDDK_OK;
+		int option = 0;
+		IddkCaptureStatus captureStatus = IDDK_IDLE;
+		char enrollID[255];
+		int i = 0;
+		IddkDataBuffer pEnrollTemplate;
+		char templateFile[256];
+		char temp[256];
+		char minEnrollID[32];
+		/* Compare1N */
+		char sMaxDistance[100];
+		// default maxDistance = 0: return all distances
+		float fMaxDistance = 0;
+		nComparisonResults = 0;
+		pComparisonResults = NULL;
+
+		/* Remember that before doing any identification or verification,
+		we should check the quality of the current captured image */
+		bool isGrayZone = false;
+		int numAcceptableEyes = 0;
+		if (!check_image_quality_custom(false, isGrayZone, numAcceptableEyes))
+		{
+			continue;
+		}
+
+		for (int i = 0; i < 2; i++) {
+			QByteArray iri;
+			/* Init */
+			if (i == 0) {
+				iri = employeeIries.second.first; // IRI LEFT
+			}
+			else {
+				iri = employeeIries.second.second; // IRI RIGHT
+			}
+			pEnrollTemplate.dataSize = iri.size();
+			if (pEnrollTemplate.dataSize > 0) {
+				pEnrollTemplate.data = new unsigned char[pEnrollTemplate.dataSize];
+				memcpy(pEnrollTemplate.data, iri.constData(), pEnrollTemplate.dataSize);
+			}
+			else {
+				delete[] pEnrollTemplate.data;
+				pEnrollTemplate.data = nullptr;
+				pEnrollTemplate.dataSize = 0;
+			}
+
+
+			iRet = Iddk_Compare11WithTemplate(g_hDevice, &pEnrollTemplate, &compareDis);
+			if (iRet == IDDK_OK)
+			{
+				if (!process_matching_result_custom(compareDis, NULL)) {
+					continue;
+				}
+				qDebug() << "Done. Compare Distance = " << compareDis;
+
+				clear_capture_custom();
+				return QPair<QString, bool>(employeeIries.first, true);
+			}
+			else if (iRet == IDDK_GAL_EMPTY)
+			{
+				qDebug() << "No match found. The gallery is empty !";
+			}
+			else if (iRet == IDDK_SE_NO_QUALIFIED_FRAME)
+			{
+				qDebug() << "Failed. No qualified image";
+			}
+			else
+			{
+				qDebug() << "Failed";
+				handle_error(iRet);
+			}
+			reset_error_level(iRet);
+		}
+	}
+	qDebug() << "No match found";
+	clear_capture_custom();
+	return QPair<QString, bool>("", false);
 }

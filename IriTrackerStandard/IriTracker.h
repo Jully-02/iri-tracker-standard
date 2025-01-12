@@ -6,6 +6,7 @@
 #include <time.h>
 #include <QString>
 #include <QObject>
+#include <QEventLoop>
 
 class IriTracker : public QObject
 {
@@ -36,8 +37,13 @@ public:
     IriTracker();
     void run(bool bDefaultParams = false, bool bMultiple = true, bool bProcessResult = true);
     void get_device();
-    bool compare_templates_custom(int dataSize, unsigned char* data);
+    QPair<QString, bool> compare_templates_custom(bool checkDup = false);
     void changedScreen(int index);
+    QPair<QString, bool> checkTemplates();
+
+    bool isCancel = false;
+
+    bool isDisconnectInOut = false;
     
 private:
     int currentScreenIndex = 5;

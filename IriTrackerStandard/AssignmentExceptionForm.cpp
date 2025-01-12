@@ -8,7 +8,7 @@ AssignmentExceptionForm::AssignmentExceptionForm(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	this->setWindowTitle("Assignment Exception");
+	this->setWindowTitle(tr("Assignment Exception"));
 
 	QIcon logoIcon("../icons/logo.png");
 	this->setWindowIcon(logoIcon);

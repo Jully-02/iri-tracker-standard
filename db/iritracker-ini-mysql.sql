@@ -49,7 +49,6 @@ CREATE TABLE `bulletin_board` (
   `end_date` int(11) DEFAULT NULL,
   `is_active` int(11) DEFAULT NULL,
   `is_high_priority` int(11) DEFAULT NULL,
-  `user_id` varchar(36) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -171,19 +170,20 @@ CREATE TABLE `user_exception` (
 CREATE TABLE `user_bulletin_board` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` varchar(36) NOT NULL,
-  `bulletin_board_id` int(11) NOT NULL
+  `bulletin_board_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 -- Chỉ mục cho bảng `user_bulletin_board`
 ALTER TABLE `user_bulletin_board`
-  ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `bulletin_board_id` (`bulletin_board_id`);
 
--- Ràng buộc cho bảng `user_bulletin_board`
 ALTER TABLE `user_bulletin_board`
   ADD CONSTRAINT `user_bulletin_board_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`),
   ADD CONSTRAINT `user_bulletin_board_ibfk_2` FOREIGN KEY (`bulletin_board_id`) REFERENCES `bulletin_board` (`bulletin_board_id`);
+
 --
 -- Chỉ mục cho các bảng đã đổ
 --
@@ -199,8 +199,7 @@ ALTER TABLE `attendance_event`
 -- Chỉ mục cho bảng `bulletin_board`
 --
 ALTER TABLE `bulletin_board`
-  ADD PRIMARY KEY (`bulletin_board_id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD PRIMARY KEY (`bulletin_board_id`)
 
 --
 -- Chỉ mục cho bảng `department`

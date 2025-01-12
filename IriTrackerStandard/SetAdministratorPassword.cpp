@@ -17,7 +17,7 @@ SetAdministratorPassword::SetAdministratorPassword(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	this->setWindowTitle("Set Administrator Password");
+	this->setWindowTitle(tr("Set Administrator Password"));
 
 	QIcon logoIcon("../icons/logo.png");
 	this->setWindowIcon(logoIcon); 
@@ -79,18 +79,18 @@ void SetAdministratorPassword::onBtnOkClicked() {
     QString email = ui.emailEdit->text();
 
     if (password.length() < 4) {
-        QMessageBox::warning(this, "Error", "Password must be at least 4 characters.");
+        QMessageBox::warning(this, tr("Error"), tr("Password must be at least 4 characters."));
         return;
     }
 
     if (password != retypePassword) {
-        QMessageBox::warning(this, "Error", "Passwords do not match!");
+        QMessageBox::warning(this, tr("Error"), tr("Passwords do not match!"));
         return;
     }
 
     QRegularExpression emailRegex("^[\\w\\.]+@[\\w\\.]+\\.[a-z]{2,3}$");
     if (!emailRegex.match(email).hasMatch()) {
-        QMessageBox::warning(this, "Error", "Invalid email address!");
+        QMessageBox::warning(this, tr("Error"), tr("Invalid email address!"));
         return;
     }
 
